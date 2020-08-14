@@ -1,0 +1,43 @@
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+
+.fade-fast-enter-active,
+.fade-fast-leave-active {
+  transition: opacity 0.25s;
+}
+.fade-fast-enter, .fade-fast-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+
+.expand-enter-active,
+.expand-leave-active {
+  overflow: hidden;
+}
+
+.expand-enter,
+.expand-leave-to {
+  height: 0;
+}
+
+.hide-navbar-enter-active,
+.hide-navbar-leave-active {
+  transition: all 1s;
+}
+.hide-navbar-enter,
+.hide-navbar-leave-to {
+  left: -16vw;
+}
+
+.hide-popup-enter-active,
+.hide-popup-leave-active {
+  transition: all 1s;
+}
+.hide-popup-enter,
+.hide-popup-leave-to {
+  right: -44.25% !important;
+}

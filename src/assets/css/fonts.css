@@ -1,0 +1,68 @@
+@font-face {
+  font-family: "Gotham-Bold"; /*a name to be used later*/
+  src: url("../fonts/gotham/Gotham-Bold.otf"); /*URL to font*/
+}
+@font-face {
+  font-family: "Gotham-Light"; /*a name to be used later*/
+  src: url("../fonts/gotham/GothamLight.ttf"); /*URL to font*/
+}
+@font-face {
+  font-family: "Gotham-Medium"; /*a name to be used later*/
+  src: url("../fonts/gotham/GothamMedium.ttf"); /*URL to font*/
+}
+@font-face {
+  font-family: "Karla-Regular"; /*a name to be used later*/
+  src: url("../fonts/karla/Karla-Regular.ttf"); /*URL to font*/
+}
+@font-face {
+  font-family: "Karla-Bold"; /*a name to be used later*/
+  src: url("../fonts/karla/Karla-Bold.ttf"); /*URL to font*/
+}
+@font-face {
+  font-family: "Karla-Italic"; /*a name to be used later*/
+  src: url("../fonts/karla/Karla-Italic.ttf"); /*URL to font*/
+}
+@font-face {
+  font-family: "Poppins-Regular"; /*a name to be used later*/
+  src: url("../fonts/poppins/Poppins-Regular.woff"); /*URL to font*/
+}
+@font-face {
+  font-family: "Poppins-Medium"; /*a name to be used later*/
+  src: url("../fonts/poppins/Poppins-Medium.otf"); /*URL to font*/
+}
+@font-face {
+  font-family: "Poppins-Bold"; /*a name to be used later*/
+  src: url("../fonts/poppins/Poppins-Bold.ttf"); /*URL to font*/
+}
+@font-face {
+  font-family: "Poppins-SemiBold"; /*a name to be used later*/
+  src: url("../fonts/poppins/Poppins-SemiBold.ttf"); /*URL to font*/
+}
+@font-face {
+  font-family: "Poppins-Light"; /*a name to be used later*/
+  src: url("../fonts/poppins/Poppins-Light.ttf"); /*URL to font*/
+}
+@font-face {
+  font-family: "Poppins-ExtraLight"; /*a name to be used later*/
+  src: url("../fonts/poppins/Poppins-ExtraLight.ttf"); /*URL to font*/
+}
+@font-face {
+  font-family: "SegoeUI"; /*a name to be used later*/
+  src: url("../fonts/segoe ui/Segoe UI.ttf"); /*URL to font*/
+}
+@font-face {
+  font-family: "OpenSans-Light"; /*a name to be used later*/
+  src: url("../fonts/opensans/OpenSans-Light.woff"); /*URL to font*/
+}
+@font-face {
+  font-family: "OpenSans-Regular"; /*a name to be used later*/
+  src: url("../fonts/opensans/OpenSans-Regular.woff"); /*URL to font*/
+}
+@font-face {
+  font-family: "OpenSans-SemiBold"; /*a name to be used later*/
+  src: url("../fonts/opensans/OpenSans-SemiBold.woff"); /*URL to font*/
+}
+@font-face {
+  font-family: "OpenSans-Bold"; /*a name to be used later*/
+  src: url("../fonts/opensans/OpenSans-Bold.woff"); /*URL to font*/
+}

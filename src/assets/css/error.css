@@ -1,0 +1,12 @@
+.error-input {
+  border: 1px solid red !important;
+}
+.error-dropdown > input {
+  border: 1px solid red !important;
+}
+.error-checkbox .md-checkbox-container {
+  border-color: red !important;
+}
+.error-border {
+  border-color: red !important;
+}

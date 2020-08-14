@@ -1,0 +1,37 @@
+.conversacion {
+  height: 77px;
+  padding-left: 82px;
+  padding-top: 24px;
+  cursor: pointer;
+  position: relative;
+}
+.conversacion:hover {
+  background-color: gainsboro;
+}
+.conversacion-nombre {
+  font-family: OpenSans-SemiBold;
+  font-size: 19px;
+  margin-top: 0;
+  margin-bottom: 5px;
+}
+.conversacion-email {
+  font-family: OpenSans-Regular;
+  font-size: 17px;
+  margin: 0;
+}
+.conversacion-imagen {
+  height: 48px;
+  width: 48px;
+  position: absolute;
+  left: 5%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #e5ddd5;
+}
+.conversacion-imagen > img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}

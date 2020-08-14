@@ -1,0 +1,58 @@
+.home {
+  width: 100vw;
+  height: 100vh;
+  background-color: #ececec;
+}
+.home-body {
+  width: 90%;
+  height: 95%;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  display: flex;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.home-left {
+  width: 20%;
+  min-width: 250px;
+  overflow-y: scroll;
+}
+.home-right {
+  width: 80%;
+  background-color: #e5ddd5;
+}
+.home-buscar {
+  width: 100%;
+  height: 55px;
+  border: none;
+  border-bottom: 1px solid #dcdcdc;
+  font-family: OpenSans-Regular;
+  font-size: 14px;
+  padding-left: 19px;
+  box-sizing: border-box;
+}
+.home-conversacion-elegida {
+  background-color: gainsboro;
+}
+
+/* PORTRAIT */
+@media screen and (max-width: 500px) and (max-aspect-ratio: 13/9) {
+  .home-left {
+    width: 100%;
+  }
+  .home-right {
+    width: 100%;
+  }
+}
+
+/*MOBILE PORTRAIT CON KEYBOARD*/
+@media screen and (max-height: 400px) and (max-width: 400px) {
+  .home-left {
+    width: 100%;
+  }
+  .home-right {
+    width: 100%;
+  }
+}

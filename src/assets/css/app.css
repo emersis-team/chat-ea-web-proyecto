@@ -1,0 +1,127 @@
+html {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+body {
+  overflow-y: auto;
+  height: unset;
+  margin: 0;
+}
+.md-body-1,
+body {
+  line-height: unset !important;
+  letter-spacing: unset !important;
+}
+#app {
+  width: 100%;
+  height: auto;
+  background-color: #ffffff;
+  overflow-x: hidden;
+  display: flex;
+}
+.app-body {
+  width: 84%;
+  height: 100%;
+}
+button,
+input {
+  outline: none;
+}
+.app-pointer {
+  cursor: pointer;
+}
+.app-noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
+                                          supported by Chrome and Opera */
+}
+.app-hide {
+  display: none;
+}
+.app-hidden {
+  visibility: hidden;
+}
+.app-disabled {
+  cursor: default !important;
+  opacity: 0.5 !important;
+  pointer-events: none;
+}
+.app-uppercase {
+  text-transform: uppercase;
+}
+.app-popup-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000;
+}
+.app-popup-mask {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.47);
+}
+.app-popup {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 28.2vw;
+  height: 22.4vw;
+  background-color: #ffffff;
+  border: 1px solid #707070;
+  border-radius: 0.5vw;
+  text-align: center;
+  padding-top: 5.1vw;
+  box-sizing: border-box;
+}
+.app-popup-close {
+  position: absolute;
+  top: 1.6vw;
+  right: 1.9vw;
+  width: 1.2vw;
+  cursor: pointer;
+}
+.app-popup-img {
+  width: 5.4vw;
+  margin-bottom: 1.7vw;
+  margin-top: 1.7vw;
+}
+.app-popup-text {
+  font-family: Poppins-Regular;
+  font-size: 1.1vw;
+  color: #000000;
+  margin: auto;
+  margin-top: 0;
+  margin-bottom: 3vw;
+  width: 18vw;
+  line-height: 2vw;
+}
+.app-popup-btn {
+  display: block;
+  font-family: Gotham-Bold;
+  font-size: 1.05vw;
+  color: #ffffff;
+  background-color: #0d0d0d;
+  border: none;
+  border-radius: 1.8vw;
+  margin: auto;
+  width: 20vw;
+  height: 3.8vw;
+  cursor: pointer;
+}
+.app-popup-btn-cancel {
+  font-family: Poppins-Regular;
+  font-size: 1.05vw;
+  opacity: 0.49;
+  margin-top: 1.5vw;
+  cursor: pointer;
+}

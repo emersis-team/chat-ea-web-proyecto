@@ -1,0 +1,121 @@
+.chat {
+  height: 100%;
+  box-sizing: border-box;
+  position: relative;
+}
+.chat-scroll {
+  overflow-y: scroll;
+  height: calc(100% - 3vw);
+  padding: 5%;
+  box-sizing: border-box;
+}
+.chat-container {
+  display: block;
+  margin-bottom: 19px;
+  position: relative;
+}
+.chat-mensaje {
+  background-color: #fff;
+  display: inline-block;
+  padding: 10px;
+  border-radius: 0.25vw;
+  max-width: 45%;
+  text-align: left;
+}
+.chat-mensaje > label {
+  font-family: OpenSans-Regular;
+  font-size: 19px;
+}
+.chat-mensaje-propio {
+  text-align: right;
+}
+.chat-mensaje-propio > .chat-mensaje {
+  background-color: #dcf8c6;
+}
+.chat-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3vw;
+  box-sizing: border-box;
+  background-color: #efefef;
+}
+.chat-bottom > input {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50%;
+  height: 2vw;
+  font-family: OpenSans-Regular;
+  font-size: 0.8vw;
+  border: none;
+  border-radius: 1vw;
+  padding-left: 1vw;
+}
+.chat-enviar {
+  position: absolute;
+  right: 15%;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: OpenSans-Regular;
+  font-size: 0.8vw;
+  padding-left: 1vw;
+  padding-right: 1vw;
+  height: 2vw;
+  border-radius: 1vw;
+  border: none;
+  background-color: #ffffff;
+  cursor: pointer;
+}
+
+/* PORTRAIT */
+@media screen and (max-width: 500px) and (max-aspect-ratio: 13/9) {
+  .chat-scroll {
+    height: calc(100% - 40px);
+  }
+  .chat-bottom {
+    height: 40px;
+  }
+  .chat-bottom > input {
+    height: 30px;
+    font-size: 18px;
+    width: 70%;
+    left: 0%;
+    transform: translateY(-25%);
+    padding-left: 10px;
+  }
+  .chat-enviar {
+    font-size: 18px;
+    height: 30px;
+    width: 69px;
+    right: 0;
+    transform: translateY(-25%);
+  }
+}
+
+/*MOBILE PORTRAIT CON KEYBOARD*/
+@media screen and (max-height: 400px) and (max-width: 400px) {
+  .chat-scroll {
+    height: calc(100% - 40px);
+  }
+  .chat-bottom {
+    height: 40px;
+  }
+  .chat-bottom > input {
+    height: 30px;
+    font-size: 18px;
+    width: 70%;
+    left: 0%;
+    transform: translateY(-25%);
+    padding-left: 10px;
+  }
+  .chat-enviar {
+    font-size: 18px;
+    height: 30px;
+    width: 69px;
+    right: 0;
+    transform: translateY(-25%);
+  }
+}
