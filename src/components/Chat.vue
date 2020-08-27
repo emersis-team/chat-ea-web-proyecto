@@ -9,7 +9,15 @@
         v-bind:class="{ 'chat-mensaje-propio': mensaje.sender_id == userId }"
       >
         <div class="chat-mensaje">
-          <label>{{ mensaje.message }}</label>
+          <label v-show="message_type.substr(11,100) == 'TextMessage'">{{ mensaje.message.text }}</label>
+          <div
+            v-show="message_type.substr(11,100) == 'FileMessage'"
+            v-for="file in mensaje.message.files"
+            :key="file.id"
+          >
+            <label>{{file.original_file}}</label>
+            <p>Descargar</p>
+          </div>
         </div>
       </div>
     </div>
