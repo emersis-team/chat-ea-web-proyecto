@@ -15,9 +15,10 @@
   margin-bottom: 5px;
 }
 .conversacion-email {
-  font-family: OpenSans-Regular;
-  font-size: 17px;
+  font-family: OpenSans-SemiBold;
+  font-size: 16px;
   margin: 0;
+  color: #4082c4;
 }
 .conversacion-imagen {
   height: 48px;

@@ -9,19 +9,25 @@
           @keyup="buscar()"
           ref="inputBuscar"
         />
-        <div
-          v-for="conversacion in conversacionesFiltradas"
-          :key="conversacion.id"
-          @click="elegirConversacion(conversacion)"
-          v-bind:class="{
-            'home-conversacion-elegida': conversacion == conversacionElegida
-          }"
-        >
-          <Conversacion :conversacion="conversacion"></Conversacion>
+        <div class="home-left-conversaciones">
+          <div
+            v-for="conversacion in conversacionesFiltradas"
+            :key="conversacion.id"
+            @click="elegirConversacion(conversacion)"
+            v-bind:class="{
+              'home-conversacion-elegida': conversacion == conversacionElegida
+            }"
+          >
+            <Conversacion :conversacion="conversacion"></Conversacion>
+          </div>
         </div>
+        <button class="home-logout" @click="logout()">Cerrar sesión</button>
       </div>
       <div class="home-right" v-show="!$isMobile">
-        <Chat v-if="conversacionElegida != null" :conversacion="conversacionElegida"></Chat>
+        <Chat
+          v-if="conversacionElegida != null"
+          :conversacion="conversacionElegida"
+        ></Chat>
       </div>
     </div>
   </div>
@@ -30,6 +36,7 @@
 <script>
 import Conversacion from "@/components/Conversacion.vue";
 import Chat from "@/components/Chat.vue";
+import Vue from "vue";
 
 export default {
   name: "Home",
@@ -62,6 +69,7 @@ export default {
         })
         .catch(function(response) {
           if (response.response.status == 401) {
+            localStorage.removeItem("$expire");
             that.$router.push("/login");
           }
         });
@@ -81,7 +89,24 @@ export default {
         );
       }
       this.conversacionElegida = conversacion;
+      Vue.prototype.$conversacionElegida = conversacion;
+
       this.$eventHub.$emit("chat-get", conversacion.id);
+    },
+    logout() {
+      var that = this;
+      this.$axios
+        .post(this.$localurl + "/api/v1/auth/logout")
+        .then(function() {
+          localStorage.removeItem("$token");
+          localStorage.removeItem("$userId");
+          localStorage.removeItem("$expire");
+          that.$router.push("/login");
+        })
+        .catch(function(error) {
+          // handle error
+          console.log(error);
+        });
     }
   }
 };

@@ -2,7 +2,7 @@
   position: fixed;
   width: 100vw;
   height: 100vh;
-  background-color: #000000;
+  background-color: #ececeb;
   z-index: 10000;
   padding-top: 21vh;
 }
@@ -22,14 +22,14 @@
 .login-label {
   font-family: Poppins-Regular;
   font-size: 1.15vw;
-  color: #ffffff;
+  color: #616060;
   display: block;
   margin-bottom: 0.5vw;
 }
 .login-input {
   font-family: OpenSans-Light;
   font-size: 1.1vw;
-  color: #ffffff;
+  color: #4082c4;
   background-color: transparent;
   border: 1px solid #707070;
   border-radius: 0.25vw;
@@ -44,12 +44,13 @@
   bottom: 1vw;
   width: 1.5vw;
   cursor: pointer;
+  filter: brightness(0);
 }
 .login-btn {
   font-family: Poppins-Regular;
   font-size: 1.15vw;
   color: #ffffff;
-  background-color: #0090ff;
+  background-color: #4082c4;
   width: 24.8vw;
   margin: auto;
   display: block;

@@ -11,7 +11,9 @@ import Snackbar from "@/components/Snackbar.vue";
 
 export default {
   data() {
-    return {};
+    return {
+      deferredPrompt: null
+    };
   },
   components: { Snackbar },
   created() {
@@ -22,9 +24,24 @@ export default {
       this.$router.push("/login");
     }
     Vue.prototype.$isMobile = this.isMobile();
+
+    window.addEventListener("beforeinstallprompt", e => {
+      e.preventDefault();
+      // Stash the event so it can be triggered later.
+      this.deferredPrompt = e;
+    });
+    window.addEventListener("appinstalled", () => {
+      this.deferredPrompt = null;
+    });
   },
   mounted() {},
   methods: {
+    async dismiss() {
+      this.deferredPrompt = null;
+    },
+    async install() {
+      this.deferredPrompt.prompt();
+    },
     isMobile() {
       if (
         /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(

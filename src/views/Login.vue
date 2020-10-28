@@ -48,7 +48,14 @@ export default {
     };
   },
   created() {},
-  mounted() {},
+  mounted() {
+    if (
+      localStorage.getItem("$expire") != null &&
+      localStorage.getItem("$expire") < Date.now()
+    ) {
+      this.$router.push("/");
+    }
+  },
   methods: {
     changePasswordType(tipo) {
       if (tipo == "text") {
@@ -86,6 +93,10 @@ export default {
           .then(function(response) {
             localStorage.setItem("$token", response.data.token);
             localStorage.setItem("$userId", response.data.user.id);
+            localStorage.setItem(
+              "$expire",
+              Date.now() + response.data.expires_in
+            );
             that.$axios.defaults.headers.common["Authorization"] =
               "Bearer " + localStorage.getItem("$token");
             that.$eventHub.$emit("loged");

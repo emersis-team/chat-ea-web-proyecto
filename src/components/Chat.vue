@@ -1,6 +1,20 @@
 <template>
   <div class="chat">
-    <div id="chatScroll" class="chat-scroll" ref="chatScroll" @scroll="onScroll">
+    <div class="chat-top">
+      <p>
+        {{
+          $conversacionElegida != null
+            ? $conversacionElegida.user_dest.name
+            : ""
+        }}
+      </p>
+    </div>
+    <div
+      id="chatScroll"
+      class="chat-scroll"
+      ref="chatScroll"
+      @scroll="onScroll"
+    >
       <div
         v-for="mensaje in mensajes"
         :key="mensaje.id"
@@ -8,21 +22,107 @@
         class="chat-container"
         v-bind:class="{ 'chat-mensaje-propio': mensaje.sender_id == userId }"
       >
-        <div class="chat-mensaje">
-          <label v-show="message_type.substr(11,100) == 'TextMessage'">{{ mensaje.message.text }}</label>
-          <div
-            v-show="message_type.substr(11,100) == 'FileMessage'"
-            v-for="file in mensaje.message.files"
-            :key="file.id"
+        <span class="chat-tail" v-if="mensaje.sender_id != userId">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 8 13"
+            width="8"
+            height="13"
+            style="display: block;"
           >
-            <label>{{file.original_file}}</label>
-            <p>Descargar</p>
-          </div>
-        </div>
+            <path
+              opacity=".13"
+              fill="#0000000"
+              d="M1.533 3.568L8 12.193V1H2.812C1.042 1 .474 2.156 1.533 3.568z"
+            />
+            <path
+              fill="currentColor"
+              d="M1.533 2.568L8 11.193V0H2.812C1.042 0 .474 1.156 1.533 2.568z"
+            />
+          </svg>
+        </span>
+        <span class="chat-tail-out" v-if="mensaje.sender_id == userId">
+          <svg
+            class="chat-tail-svg"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 8 13"
+            width="8"
+            height="13"
+            style="display: block;"
+          >
+            <path
+              opacity=".13"
+              d="M5.188 1H0v11.193l6.467-8.625C7.526 2.156 6.958 1 5.188 1z"
+            />
+            <path
+              fill="currentColor"
+              d="M5.188 0H0v11.193l6.467-8.625C7.526 1.156 6.958 0 5.188 0z"
+            />
+          </svg>
+        </span>
+        <MensajeTexto
+          v-if="
+            mensaje.message_type != null &&
+              mensaje.message_type.substr(11, 100) == 'TextMessage'
+          "
+          :mensaje="mensaje.message"
+        ></MensajeTexto>
+        <MensajeArchivo
+          v-if="
+            mensaje.message_type != null &&
+              mensaje.message_type.substr(11, 100) == 'FileMessage' &&
+              esArchivo(mensaje)
+          "
+          :mensaje="mensaje.message"
+        ></MensajeArchivo>
+        <MensajeImagen
+          v-if="
+            mensaje.message_type != null &&
+              mensaje.message_type.substr(11, 100) == 'FileMessage' &&
+              esImagen(mensaje)
+          "
+          :mensaje="mensaje.message"
+        ></MensajeImagen>
+        <MensajeVideo
+          v-if="
+            mensaje.message_type != null &&
+              mensaje.message_type.substr(11, 100) == 'FileMessage' &&
+              esVideo(mensaje)
+          "
+          :mensaje="mensaje.message"
+        ></MensajeVideo>
+        <MensajeAudio
+          v-if="
+            mensaje.message_type != null &&
+              mensaje.message_type.substr(11, 100) == 'FileMessage' &&
+              esAudio(mensaje)
+          "
+          :mensaje="mensaje.message"
+        ></MensajeAudio>
       </div>
     </div>
-
     <div class="chat-bottom">
+      <div class="chat-adjuntar" title="Adjuntar" @click="adjuntar()">
+        <input
+          type="file"
+          class="app-hide"
+          @change="changeAdjunto()"
+          ref="adjuntoFiles"
+          multiple
+        />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          width="24"
+          height="24"
+          style="display: block;"
+        >
+          <path
+            fill="currentColor"
+            d="M1.816 15.556v.002c0 1.502.584 2.912 1.646 3.972s2.472 1.647 3.974 1.647a5.58 5.58 0 0 0 3.972-1.645l9.547-9.548c.769-.768 1.147-1.767 1.058-2.817-.079-.968-.548-1.927-1.319-2.698-1.594-1.592-4.068-1.711-5.517-.262l-7.916 7.915c-.881.881-.792 2.25.214 3.261.959.958 2.423 1.053 3.263.215l5.511-5.512c.28-.28.267-.722.053-.936l-.244-.244c-.191-.191-.567-.349-.957.04l-5.506 5.506c-.18.18-.635.127-.976-.214-.098-.097-.576-.613-.213-.973l7.915-7.917c.818-.817 2.267-.699 3.23.262.5.501.802 1.1.849 1.685.051.573-.156 1.111-.589 1.543l-9.547 9.549a3.97 3.97 0 0 1-2.829 1.171 3.975 3.975 0 0 1-2.83-1.173 3.973 3.973 0 0 1-1.172-2.828c0-1.071.415-2.076 1.172-2.83l7.209-7.211c.157-.157.264-.579.028-.814L11.5 4.36a.572.572 0 0 0-.834.018l-7.205 7.207a5.577 5.577 0 0 0-1.645 3.971z"
+          />
+        </svg>
+      </div>
       <input
         type="text"
         placeholder="Escribe un mensaje aquí"
@@ -35,7 +135,21 @@
 </template>
 
 <script>
+import MensajeTexto from "@/components/MensajeTexto.vue";
+import MensajeArchivo from "@/components/MensajeArchivo.vue";
+import MensajeImagen from "@/components/MensajeImagen.vue";
+import MensajeVideo from "@/components/MensajeVideo.vue";
+import MensajeAudio from "@/components/MensajeAudio.vue";
+
 export default {
+  name: "Chat",
+  components: {
+    MensajeTexto,
+    MensajeArchivo,
+    MensajeImagen,
+    MensajeVideo,
+    MensajeAudio
+  },
   data() {
     return {
       mensajes: [],
@@ -65,6 +179,53 @@ export default {
         that.getChat();
         that.actualizar();
       }, 3000);
+    },
+    esImagen(mensaje) {
+      var extension = mensaje.message.files[0].file.split(".")[1].toLowerCase();
+      if (
+        extension == "png" ||
+        extension == "jpg" ||
+        extension == "svg" ||
+        extension == "jpeg"
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    esVideo(mensaje) {
+      var extension = mensaje.message.files[0].file.split(".")[1].toLowerCase();
+      if (
+        extension == "webm" ||
+        extension == "mkv" ||
+        extension == "flv" ||
+        extension == "mp4" ||
+        extension == "mov" ||
+        extension == "avi"
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    esAudio(mensaje) {
+      var extension = mensaje.message.files[0].file.split(".")[1].toLowerCase();
+      if (extension == "m4a" || extension == "qt" || extension == "4mb") {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    esArchivo(mensaje) {
+      if (
+        this.esImagen(mensaje) == false &&
+        this.esVideo(mensaje) == false &&
+        this.esAudio(mensaje) == false
+      ) {
+        return true;
+      } else {
+        return false;
+      }
     },
     getChat(id) {
       if (id == null) {
@@ -103,6 +264,7 @@ export default {
         })
         .catch(function(response) {
           if (response.response.status == 401) {
+            localStorage.removeItem("$expire");
             that.$router.push("/login");
           }
         });
@@ -124,6 +286,7 @@ export default {
         })
         .catch(function(response) {
           if (response.response.status == 401) {
+            localStorage.removeItem("$expire");
             that.$router.push("/login");
           }
         });
@@ -141,9 +304,13 @@ export default {
     scrollToBottom() {
       var that = this;
       this.$nextTick(() => {
-        document.getElementById(
-          "chatScroll"
-        ).scrollTop = document.getElementById(that.mensajeOffset.id).offsetTop;
+        if (that.mensajeOffset != null) {
+          document.getElementById(
+            "chatScroll"
+          ).scrollTop = document.getElementById(
+            that.mensajeOffset.id
+          ).offsetTop;
+        }
         // var elem = document.getElementById("chatScroll");
         // velocity(elem, "scroll", {
         //   container: document.getElementById("chatScroll"),
@@ -167,12 +334,13 @@ export default {
         data.append("receiver_id", this.conversacion.user_dest.id);
         var that = this;
         this.$axios
-          .post(this.$localurl + "/api/v1/messages", data)
+          .post(this.$localurl + "/api/v1/messages/textMessage", data)
           .then(function() {
             that.getChat();
           })
           .catch(function(response) {
             if (response.response.status == 401) {
+              localStorage.removeItem("$expire");
               that.$router.push("/login");
             }
             alert("Se produjo un error, reintente");
@@ -184,6 +352,40 @@ export default {
         element.scrollHeight > element.clientHeight ||
         element.scrollWidth > element.clientWidth
       );
+    },
+    adjuntar() {
+      this.$refs.adjuntoFiles.click();
+    },
+    changeAdjunto() {
+      if (this.$refs.adjuntoFiles.files.length > 0) {
+        var data = new FormData();
+        data.append("message", "archivos");
+        data.append("receiver_id", this.conversacion.user_dest.id);
+
+        this.$refs.adjuntoFiles.files.forEach(function(value, i) {
+          data.append("file[" + i + "]", value);
+        });
+
+        var that = this;
+        this.$axios
+          .post(this.$localurl + "/api/v1/messages/fileMessage", data)
+          .then(function() {
+            that.getChat();
+          })
+          .catch(function(response) {
+            if (response.response.status == 401) {
+              localStorage.removeItem("$expire");
+              that.$router.push("/login");
+            }
+            var string = "";
+            response.response.data.errors["file.0"].forEach(
+              e => (string = string + e + ", ")
+            );
+            string = string.substr(0, string.length - 3);
+            console.log(string);
+            alert(string);
+          });
+      }
     }
   }
 };
