@@ -237,7 +237,9 @@ export default {
         .catch(function(response) {
           if (response.response.status == 401) {
             localStorage.removeItem("$expire");
-            that.$router.push("/login");
+            if(window.location.pathname.split("/").reverse()[0] != "login"){
+              that.$router.push("/login");
+            }
           }
         });
     },
@@ -259,7 +261,9 @@ export default {
         .catch(function(response) {
           if (response.response.status == 401) {
             localStorage.removeItem("$expire");
-            that.$router.push("/login");
+            if(window.location.pathname.split("/").reverse()[0] != "login"){
+              that.$router.push("/login");
+            }
           }
         });
     },
@@ -302,7 +306,9 @@ export default {
           .catch(function(response) {
             if (response.response.status == 401) {
               localStorage.removeItem("$expire");
+              if(window.location.pathname.split("/").reverse()[0] != "login"){
               that.$router.push("/login");
+            }
             }
             alert("Se produjo un error, reintente");
           });
@@ -336,7 +342,9 @@ export default {
           .catch(function(response) {
             if (response.response.status == 401) {
               localStorage.removeItem("$expire");
+              if(window.location.pathname.split("/").reverse()[0] != "login"){
               that.$router.push("/login");
+            }
             }
             alert("Se produjo un error, reintente");
           });

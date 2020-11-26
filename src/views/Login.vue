@@ -102,7 +102,8 @@ export default {
             that.$eventHub.$emit("loged");
             that.$router.push("/");
           })
-          .catch(function() {
+          .catch(function(response) {
+            console.log(response);
             that.errorUsuario = true;
             that.errorPassword = true;
           });

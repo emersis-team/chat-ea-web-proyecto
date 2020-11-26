@@ -37,6 +37,9 @@
 import Conversacion from "@/components/Conversacion.vue";
 import Chat from "@/components/Chat.vue";
 import Vue from "vue";
+import Echo from "laravel-echo";
+
+window.Pusher = require("pusher-js");
 
 export default {
   name: "Home",
@@ -57,6 +60,17 @@ export default {
       this.mostrarChat = false;
     }
     this.getConversaciones();
+
+    window.Echo = new Echo({
+      broadcaster: "pusher",
+      key: "ASDASD2121",
+      wsHost: "chat-ea-web-sockets-back.casya.com.ar",
+      wsPort: 6001,
+      disableStats: true
+    });
+    window.Echo.channel("home").listen("NewMessage", (e) => {
+      console.log(e);
+    });
   },
   methods: {
     getConversaciones() {
@@ -70,7 +84,9 @@ export default {
         .catch(function(response) {
           if (response.response.status == 401) {
             localStorage.removeItem("$expire");
-            that.$router.push("/login");
+            if(window.location.pathname.split("/").reverse()[0] != "login"){
+              that.$router.push("/login");
+            }
           }
         });
     },
@@ -101,7 +117,9 @@ export default {
           localStorage.removeItem("$token");
           localStorage.removeItem("$userId");
           localStorage.removeItem("$expire");
-          that.$router.push("/login");
+          if(window.location.pathname.split("/").reverse()[0] != "login"){
+              that.$router.push("/login");
+            }
         })
         .catch(function(error) {
           // handle error
