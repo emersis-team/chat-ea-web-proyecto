@@ -6,7 +6,7 @@
   position: relative;
 }
 .conversacion:hover {
-  background-color: gainsboro;
+  background-color: #d1d1d1;
 }
 .conversacion-nombre {
   font-family: OpenSans-SemiBold;
@@ -18,7 +18,7 @@
   font-family: OpenSans-SemiBold;
   font-size: 16px;
   margin: 0;
-  color: #4082c4;
+  color: #3f82c4;
 }
 .conversacion-imagen {
   height: 48px;

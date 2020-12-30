@@ -2,10 +2,11 @@
   <div class="chat-mensaje">
     <div
       class="chat-mensaje-audio"
-      v-for="file in mensaje.files"
+      v-for="file in mensaje.message.files"
       :key="file.id"
     >
-      <label>{{ file.original_file }}</label>
+      <label class="chat-mensaje-audio-titulo">{{ file.original_file }}</label>
+      <label class="chat-mensaje-hora">{{ getHora() }}</label>
       <audio controls name="media">
         <source
           :src="$localurl + '/public/storage/' + file.file"

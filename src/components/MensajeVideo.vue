@@ -1,8 +1,9 @@
 <template>
   <div class="chat-mensaje">
+    <label class="chat-mensaje-hora">{{ getHora() }}</label>
     <div
       class="chat-mensaje-video"
-      v-for="file in mensaje.files"
+      v-for="file in mensaje.message.files"
       :key="file.id"
     >
       <label>{{ file.original_file }}</label>
@@ -30,7 +31,12 @@ export default {
   computed: {},
   mounted() {},
   created() {},
-  methods: {}
+  methods: {
+    getHora(){
+      var hora = this.mensaje.created_at.split("T")[1].split(":");
+      return hora[0] + ":" + hora[1];
+    }
+  }
 };
 </script>
 

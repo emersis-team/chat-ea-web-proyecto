@@ -1,7 +1,7 @@
 .home {
   width: 100vw;
   height: 100vh;
-  background-color: #ececeb;
+  background-color: #ececec;
 }
 .home-body {
   width: 90%;
@@ -60,7 +60,7 @@
   color: #4082c4;
 }
 .home-conversacion-elegida {
-  background-color: gainsboro;
+  background-color: #b2b3b3;
 }
 
 /* PORTRAIT */

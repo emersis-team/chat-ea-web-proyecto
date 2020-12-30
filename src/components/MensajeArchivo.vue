@@ -1,7 +1,8 @@
 <template>
   <div class="chat-mensaje">
-    <div class="chat-mensaje-archivo" v-for="file in mensaje.files" :key="file.id">
-      <label>{{file.original_file}}</label>
+    <div class="chat-mensaje-archivo" v-for="file in mensaje.message.files" :key="file.id">
+      <label class="chat-mensaje-archivo-titulo">{{file.original_file}}</label>
+      <label class="chat-mensaje-hora">{{ getHora() }}</label>
       <a :href="$localurl +'/public/storage/'+ file.file" download>Descargar</a>
     </div>
   </div>
@@ -18,7 +19,12 @@ export default {
   computed: {},
   mounted() {},
   created() {},
-  methods: {}
+  methods: {
+    getHora(){
+      var hora = this.mensaje.created_at.split("T")[1].split(":");
+      return hora[0] + ":" + hora[1];
+    }
+  }
 };
 </script>
 

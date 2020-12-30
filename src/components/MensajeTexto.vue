@@ -1,6 +1,7 @@
 <template>
-  <div class="chat-mensaje">
-    <label>{{ mensaje.text }}</label>
+  <div class="chat-mensaje chat-mensaje-texto">
+    <label>{{ mensaje.message.text }}</label>
+    <label class="chat-mensaje-hora">{{ getHora() }}</label>
   </div>
 </template>
 
@@ -15,7 +16,12 @@ export default {
   computed: {},
   mounted() {},
   created() {},
-  methods: {}
+  methods: {
+    getHora(){
+      var hora = this.mensaje.created_at.split("T")[1].split(":");
+      return hora[0] + ":" + hora[1];
+    }
+  }
 };
 </script>
 
