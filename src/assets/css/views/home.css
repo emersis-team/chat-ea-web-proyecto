@@ -48,16 +48,22 @@
 .home-buscar {
   width: 92%;
   height: 42px;
-  border: 2px solid #4082c4;
+  border: none;
   border-radius: 10px;
   font-family: OpenSans-Regular;
   font-size: 14px;
-  padding-left: 19px;
+  padding-left: 53px;
   box-sizing: border-box;
   position: absolute;
   top: 0;
-  background-color: transparent;
+  background-color: #fff;
   color: #4082c4;
+}
+.home-buscar-img {
+  position: absolute;
+  top: 8px;
+  left: 15px;
+  width: 26px;
 }
 .home-conversacion-elegida {
   background-color: #b2b3b3;
