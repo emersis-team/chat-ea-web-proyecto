@@ -64,6 +64,7 @@ export default {
     }
     this.getConversaciones();
 
+    var that = this;
     window.Echo = new Echo({
       broadcaster: "pusher",
       key: "ASDASD2121",
@@ -73,6 +74,7 @@ export default {
     });
     window.Echo.channel("user."+localStorage.getItem("$userId")).listen("NewMessage", (e) => {
       console.log(e);
+      that.getConversaciones();
     });
   },
   methods: {
