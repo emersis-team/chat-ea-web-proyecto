@@ -295,26 +295,30 @@ export default {
       var fechas = [];
       var cantidad = this.mensajes.length;
       for (var i = 0; i < cantidad; i++) {
-          var m = this.mensajes[i];
-          var d = new Date(m.created_at);
-          d.setHours(d.getHours()+3);
-          let day = d.getDate();
-          let month = d.getMonth()+1;
-          let year = d.getFullYear();
-          let fecha = day+"/"+month+"/"+year;
-          var today = new Date();
-          let todayday = today.getDate();
-          let todaymonth = today.getMonth()+1;
-          let todayyear = today.getFullYear();
-          if(day != todayday || month != todaymonth || year != todayyear){
-            if(fechas.includes(fecha) == false){
-              var days = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-              fecha = days[d.getDay()] + " " + fecha;
+        var m = this.mensajes[i];
+        var d = new Date(m.created_at);
+        d.setHours(d.getHours()+3);
+        let day = d.getDate();
+        let month = d.getMonth()+1;
+        let year = d.getFullYear();
+        let fecha = day+"/"+month+"/"+year;
+        var today = new Date();
+        let todayday = today.getDate();
+        let todaymonth = today.getMonth()+1;
+        let todayyear = today.getFullYear();
+        if(day != todayday || month != todaymonth || year != todayyear){
+          if(fechas.includes(fecha) == false){
+            var days = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+            fecha = days[d.getDay()] + " " + fecha;
+            if(!this.mensajes.some(m => m.fecha == fecha)){
               this.mensajes.splice(i, 0, {fecha: fecha});
-            }
-          }else{
+              }
+          }
+        }else{
+          if(!this.mensajes.some(m => m.fecha == "HOY")){
             this.mensajes.splice(i, 0, {fecha: "HOY"});
           }
+        }
       }
     },
     onScroll() {
@@ -337,23 +341,12 @@ export default {
             that.mensajeOffset.id
           ).offsetTop;
         }
-        // var elem = document.getElementById("chatScroll");
-        // velocity(elem, "scroll", {
-        //   container: document.getElementById("chatScroll"),
-        //   duration: 10,
-        //   offset: that.mensajeOffset.offsetTop,
-        // });
       });
     },
     enviar() {
       this.scrollToBottom();
       var texto = this.$refs.inputTexto.value;
       if (texto != "") {
-        // this.mensajes.push({
-        //   id: 0,
-        //   sender_id: this.userId,
-        //   message: texto
-        // });
         this.$refs.inputTexto.value = "";
         var data = new FormData();
         data.append("message", texto);
