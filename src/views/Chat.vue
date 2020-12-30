@@ -222,6 +222,7 @@ export default {
             that.mensajeOffset = that.mensajes[that.mensajes.length - 1];
             that.scrollToBottom();
           }
+          that.getSeparadores();
         })
         .catch(function(response) {
           if (response.response.status == 401) {
@@ -245,6 +246,7 @@ export default {
         .then(function(response) {
           response.data.messages.data.reverse();
           that.mensajes = response.data.messages.data.concat(that.mensajes);
+          that.getSeparadores();
           that.scrollToBottom();
         })
         .catch(function(response) {
@@ -255,6 +257,36 @@ export default {
             }
           }
         });
+    },
+    getSeparadores(){
+      var fechas = [];
+      var cantidad = this.mensajes.length;
+      for (var i = 0; i < cantidad; i++) {
+        var m = this.mensajes[i];
+        var d = new Date(m.created_at);
+        d.setHours(d.getHours()+3);
+        let day = d.getDate();
+        let month = d.getMonth()+1;
+        let year = d.getFullYear();
+        let fecha = day+"/"+month+"/"+year;
+        var today = new Date();
+        let todayday = today.getDate();
+        let todaymonth = today.getMonth()+1;
+        let todayyear = today.getFullYear();
+        if(day != todayday || month != todaymonth || year != todayyear){
+          if(fechas.includes(fecha) == false){
+            var days = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+            fecha = days[d.getDay()] + " " + fecha;
+            if(!this.mensajes.some(m => m.fecha == fecha)){
+              this.mensajes.splice(i, 0, {fecha: fecha});
+              }
+          }
+        }else{
+          if(!this.mensajes.some(m => m.fecha == "HOY")){
+            this.mensajes.splice(i, 0, {fecha: "HOY"});
+          }
+        }
+      }
     },
     onScroll() {
       var target = this.$refs.chatScroll;
