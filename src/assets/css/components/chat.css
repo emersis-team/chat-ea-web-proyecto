@@ -185,7 +185,6 @@
   height: 2vw;
   border-radius: 1vw;
   border: none;
-  background-color: #ffffff;
   cursor: pointer;
 }
 .chat-adjuntar {
@@ -193,12 +192,18 @@
   top: 50%;
   transform: translateY(-50%);
   left: 1vw;
-  background-color: #fff;
   border-radius: 50%;
   padding: 0.1vw;
   width: 1.5vw;
   height: 1.5vw;
   cursor: pointer;
+}
+.chat-adjuntar > img {
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 .chat-adjuntar > svg {
   width: 1.3vw;
