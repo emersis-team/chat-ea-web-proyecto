@@ -293,7 +293,8 @@ export default {
     },
     getSeparadores(){
       var fechas = [];
-      for (var i = 0; i < this.mensajes.length; i++) {
+      var cantidad = this.mensajes.length;
+      for (var i = 0; i < cantidad; i++) {
           var m = this.mensajes[i];
           var d = new Date(m.created_at);
           d.setHours(d.getHours()+3);
