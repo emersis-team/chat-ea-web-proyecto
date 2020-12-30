@@ -40,9 +40,9 @@
 import Conversacion from "@/components/Conversacion.vue";
 import Chat from "@/components/Chat.vue";
 import Vue from "vue";
-// import Echo from "laravel-echo";
+import Echo from "laravel-echo";
 
-// window.Pusher = require("pusher-js");
+window.Pusher = require("pusher-js");
 
 export default {
   name: "Home",
@@ -64,16 +64,16 @@ export default {
     }
     this.getConversaciones();
 
-    // window.Echo = new Echo({
-    //   broadcaster: "pusher",
-    //   key: "ASDASD2121",
-    //   wsHost: "chat-ea-web-sockets-back.casya.com.ar",
-    //   wsPort: 6001,
-    //   disableStats: true
-    // });
-    // window.Echo.channel("home").listen("NewMessage", (e) => {
-    //   console.log(e);
-    // });
+    window.Echo = new Echo({
+      broadcaster: "pusher",
+      key: "ASDASD2121",
+      wsHost: "chat-ea-web-sockets-back.casya.com.ar",
+      wsPort: 6001,
+      disableStats: true
+    });
+    window.Echo.channel("user."+localStorage.getItem("$userId")).listen("NewMessage", (e) => {
+      console.log(e);
+    });
   },
   methods: {
     getConversaciones() {
