@@ -10,7 +10,7 @@
             @keyup="buscar()"
             ref="inputBuscar"
           />
-          <img src="../assets/img/buscar.png" />
+          <img class="home-buscar-img" src="../assets/img/buscar.png" />
         </div>
         <div class="home-left-conversaciones">
           <div
