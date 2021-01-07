@@ -175,7 +175,7 @@ export default {
       }, 3000);
     },
     esImagen(mensaje) {
-      var extension = mensaje.message.files[0].file.split(".")[1].toLowerCase();
+      var extension = mensaje.message.files[0].file.split(".")[mensaje.message.files[0].file.split(".").length-1].toLowerCase();
       if (
         extension == "png" ||
         extension == "jpg" ||
@@ -188,7 +188,7 @@ export default {
       }
     },
     esVideo(mensaje) {
-      var extension = mensaje.message.files[0].file.split(".")[1].toLowerCase();
+      var extension = mensaje.message.files[0].file.split(".")[mensaje.message.files[0].file.split(".").length-1].toLowerCase();
       if (
         extension == "webm" ||
         extension == "mkv" ||
@@ -203,7 +203,7 @@ export default {
       }
     },
     esAudio(mensaje) {
-      var extension = mensaje.message.files[0].file.split(".")[1].toLowerCase();
+      var extension = mensaje.message.files[0].file.split(".")[mensaje.message.files[0].file.split(".").length-1].toLowerCase();
       if (extension == "m4a" || extension == "qt" || extension == "4mb") {
         return true;
       } else {
@@ -337,11 +337,15 @@ export default {
       var that = this;
       this.$nextTick(() => {
         if (that.mensajeOffset != null) {
-          document.getElementById(
-            "chatScroll"
-          ).scrollTop = document.getElementById(
-            that.mensajeOffset.id
-          ).offsetTop;
+          if(document.getElementById(that.mensajeOffset.id) != null){
+            document.getElementById(
+              "chatScroll"
+            ).scrollTop = document.getElementById(
+              that.mensajeOffset.id
+            ).offsetTop;
+          }else{
+            that.scrollToBottom();
+          }
         }
       });
     },

@@ -75,7 +75,7 @@
                     mensaje.message_type != null &&
                       mensaje.message_type.substr(11, 100) == 'TextMessage'
                   "
-                  :mensaje="mensaje.message"
+                  :mensaje="mensaje"
                 ></MensajeTexto>
                 <MensajeArchivo
                   v-if="
@@ -83,7 +83,7 @@
                       mensaje.message_type.substr(11, 100) == 'FileMessage' &&
                       esArchivo(mensaje)
                   "
-                  :mensaje="mensaje.message"
+                  :mensaje="mensaje"
                 ></MensajeArchivo>
                 <MensajeImagen
                   v-if="
@@ -91,7 +91,7 @@
                       mensaje.message_type.substr(11, 100) == 'FileMessage' &&
                       esImagen(mensaje)
                   "
-                  :mensaje="mensaje.message"
+                  :mensaje="mensaje"
                 ></MensajeImagen>
                 <MensajeVideo
                   v-if="
@@ -99,7 +99,7 @@
                       mensaje.message_type.substr(11, 100) == 'FileMessage' &&
                       esVideo(mensaje)
                   "
-                  :mensaje="mensaje.message"
+                  :mensaje="mensaje"
                 ></MensajeVideo>
                 <MensajeAudio
                   v-if="
@@ -107,7 +107,7 @@
                       mensaje.message_type.substr(11, 100) == 'FileMessage' &&
                       esAudio(mensaje)
                   "
-                  :mensaje="mensaje.message"
+                  :mensaje="mensaje"
                 ></MensajeAudio>
               </div>
             </div>
@@ -122,18 +122,7 @@
                 ref="adjuntoFiles"
                 multiple
               />
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                width="24"
-                height="24"
-                style="display: block;"
-              >
-                <path
-                  fill="currentColor"
-                  d="M1.816 15.556v.002c0 1.502.584 2.912 1.646 3.972s2.472 1.647 3.974 1.647a5.58 5.58 0 0 0 3.972-1.645l9.547-9.548c.769-.768 1.147-1.767 1.058-2.817-.079-.968-.548-1.927-1.319-2.698-1.594-1.592-4.068-1.711-5.517-.262l-7.916 7.915c-.881.881-.792 2.25.214 3.261.959.958 2.423 1.053 3.263.215l5.511-5.512c.28-.28.267-.722.053-.936l-.244-.244c-.191-.191-.567-.349-.957.04l-5.506 5.506c-.18.18-.635.127-.976-.214-.098-.097-.576-.613-.213-.973l7.915-7.917c.818-.817 2.267-.699 3.23.262.5.501.802 1.1.849 1.685.051.573-.156 1.111-.589 1.543l-9.547 9.549a3.97 3.97 0 0 1-2.829 1.171 3.975 3.975 0 0 1-2.83-1.173 3.973 3.973 0 0 1-1.172-2.828c0-1.071.415-2.076 1.172-2.83l7.209-7.211c.157-.157.264-.579.028-.814L11.5 4.36a.572.572 0 0 0-.834.018l-7.205 7.207a5.577 5.577 0 0 0-1.645 3.971z"
-                />
-              </svg>
+              <img src="../assets/img/adjuntar.png"/>
             </div>
             <input
               type="text"
@@ -141,7 +130,7 @@
               ref="inputTexto"
               v-on:keyup.enter="enviar()"
             />
-            <button class="chat-enviar" @click="enviar()">Enviar</button>
+            <img class="chat-enviar" src="../assets/img/enviar.png" @click="enviar()"/>
           </div>
         </div>
       </div>
@@ -196,7 +185,7 @@ export default {
       }, 3000);
     },
     esImagen(mensaje) {
-      var extension = mensaje.message.files[0].file.split(".")[1].toLowerCase();
+      var extension = mensaje.message.files[0].file.split(".")[mensaje.message.files[0].file.split(".").length-1].toLowerCase();
       if (
         extension == "png" ||
         extension == "jpg" ||
@@ -209,7 +198,7 @@ export default {
       }
     },
     esVideo(mensaje) {
-      var extension = mensaje.message.files[0].file.split(".")[1].toLowerCase();
+      var extension = mensaje.message.files[0].file.split(".")[mensaje.message.files[0].file.split(".").length-1].toLowerCase();
       if (
         extension == "webm" ||
         extension == "mkv" ||
@@ -224,7 +213,7 @@ export default {
       }
     },
     esAudio(mensaje) {
-      var extension = mensaje.message.files[0].file.split(".")[1].toLowerCase();
+      var extension = mensaje.message.files[0].file.split(".")[mensaje.message.files[0].file.split(".").length-1].toLowerCase();
       if (extension == "m4a" || extension == "qt" || extension == "4mb") {
         return true;
       } else {
@@ -358,11 +347,15 @@ export default {
       var that = this;
       this.$nextTick(() => {
         if (that.mensajeOffset != null) {
-          document.getElementById(
-            "chatScroll"
-          ).scrollTop = document.getElementById(
-            that.mensajeOffset.id
-          ).offsetTop;
+          if(document.getElementById(that.mensajeOffset.id) != null){
+            document.getElementById(
+              "chatScroll"
+            ).scrollTop = document.getElementById(
+              that.mensajeOffset.id
+            ).offsetTop;
+          }else{
+            that.scrollToBottom();
+          }
         }
       });
     },
