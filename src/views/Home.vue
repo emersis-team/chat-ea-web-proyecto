@@ -68,9 +68,11 @@ export default {
     window.Echo = new Echo({
       broadcaster: "pusher",
       key: "ASDASD2121",
-      wsHost: "chat-ea-web-sockets-back.casya.com.ar",
+      wsHost: "127.0.0.1",
       wsPort: 6001,
-      disableStats: true
+      wssPort: 6001,
+      disableStats: true,
+      enabledTransports: ["ws", "wss"]
     });
     window.Echo.channel("user."+localStorage.getItem("$userId")).listen("NewMessage", (e) => {
       console.log(e);
