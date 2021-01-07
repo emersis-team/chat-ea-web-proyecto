@@ -70,7 +70,7 @@ export default {
       key: "ASDASD2121",
       wsHost: "127.0.0.1",
       wsPort: 6001,
-      wssPort: 6001,
+     // wssPort: 6001,
       disableStats: true,
       forceTLS: false,
       enabledTransports: ["ws"]

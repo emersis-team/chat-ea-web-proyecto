@@ -132,7 +132,7 @@
 .chat-mensaje-propio {
   text-align: right;
 }
-.chat-mensaje-propio > .chat-mensaje {
+.chat-mensaje-propio > div > .chat-mensaje {
   background-color: #d0eaf2;
   border-top-left-radius: 0.25vw;
   border-top-right-radius: 0;
