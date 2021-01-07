@@ -3,7 +3,7 @@
     <div v-show="conversacion.ammount_no_read > 0"></div>
 
     <div class="conversacion-imagen">
-      <img src="../assets/img/user.png" />
+      <img src="../assets/img/contacto.png" />
     </div>
     <p class="conversacion-nombre">{{ conversacion.user_dest.name }}</p>
     <p class="conversacion-email">{{ conversacion.user_dest.email }}</p>
