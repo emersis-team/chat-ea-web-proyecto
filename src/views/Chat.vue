@@ -161,7 +161,8 @@ export default {
       primeraPagina: true,
       currentPage: 0,
       lastPage: 0,
-      mensajeOffset: null
+      mensajeOffset: null,
+      actualizarTimer: null
     };
   },
   props: {},
@@ -179,7 +180,8 @@ export default {
   methods: {
     actualizar() {
       var that = this;
-      setTimeout(function() {
+      clearTimeout(this.actualizarTimer);
+      this.actualizarTimer = setTimeout(function() {
         that.getChat();
         that.actualizar();
       }, 3000);
@@ -268,6 +270,7 @@ export default {
           that.getSeparadores();
         })
         .catch(function(response) {
+          clearTimeout(that.actualizarTimer);
           if (response.response.status == 401) {
             localStorage.removeItem("$expire");
             if(window.location.pathname.split("/").reverse()[0] != "login"){
