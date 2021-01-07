@@ -72,9 +72,12 @@ export default {
       wsPort: 6001,
       wssPort: 6001,
       disableStats: true,
-      enabledTransports: ["ws", "wss"]
+      forceTLS: false,
+      enabledTransports: ["ws"]
     });
+    console.log("Conectando al websocket canal: " + "user."+localStorage.getItem("$userId"));
     window.Echo.channel("user."+localStorage.getItem("$userId")).listen("NewMessage", (e) => {
+      console.log("Recibo mensaje por websocket");
       console.log(e);
       that.$eventHub.$emit("chat-get");
       that.getConversaciones();

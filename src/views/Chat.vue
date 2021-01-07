@@ -75,7 +75,7 @@
                     mensaje.message_type != null &&
                       mensaje.message_type.substr(11, 100) == 'TextMessage'
                   "
-                  :mensaje="mensaje.message"
+                  :mensaje="mensaje"
                 ></MensajeTexto>
                 <MensajeArchivo
                   v-if="
@@ -83,7 +83,7 @@
                       mensaje.message_type.substr(11, 100) == 'FileMessage' &&
                       esArchivo(mensaje)
                   "
-                  :mensaje="mensaje.message"
+                  :mensaje="mensaje"
                 ></MensajeArchivo>
                 <MensajeImagen
                   v-if="
@@ -91,7 +91,7 @@
                       mensaje.message_type.substr(11, 100) == 'FileMessage' &&
                       esImagen(mensaje)
                   "
-                  :mensaje="mensaje.message"
+                  :mensaje="mensaje"
                 ></MensajeImagen>
                 <MensajeVideo
                   v-if="
@@ -99,7 +99,7 @@
                       mensaje.message_type.substr(11, 100) == 'FileMessage' &&
                       esVideo(mensaje)
                   "
-                  :mensaje="mensaje.message"
+                  :mensaje="mensaje"
                 ></MensajeVideo>
                 <MensajeAudio
                   v-if="
@@ -107,7 +107,7 @@
                       mensaje.message_type.substr(11, 100) == 'FileMessage' &&
                       esAudio(mensaje)
                   "
-                  :mensaje="mensaje.message"
+                  :mensaje="mensaje"
                 ></MensajeAudio>
               </div>
             </div>
@@ -179,11 +179,16 @@ export default {
     window.Echo = new Echo({
       broadcaster: "pusher",
       key: "ASDASD2121",
-      wsHost: "chat-ea-web-sockets-back.casya.com.ar",
+      wsHost: "127.0.0.1",
       wsPort: 6001,
-      disableStats: true
+      wssPort: 6001,
+      disableStats: true,
+      forceTLS: false,
+      enabledTransports: ["ws"]
     });
+    console.log("Conectando al websocket canal: " + "user."+localStorage.getItem("$userId"));
     window.Echo.channel("user."+localStorage.getItem("$userId")).listen("NewMessage", (e) => {
+      console.log("Recibo mensaje por websocket");
       console.log(e);
       that.getChat();
     });
