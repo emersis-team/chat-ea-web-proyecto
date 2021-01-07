@@ -144,6 +144,9 @@ import MensajeArchivo from "@/components/MensajeArchivo.vue";
 import MensajeImagen from "@/components/MensajeImagen.vue";
 import MensajeVideo from "@/components/MensajeVideo.vue";
 import MensajeAudio from "@/components/MensajeAudio.vue";
+import Echo from "laravel-echo";
+
+window.Pusher = require("pusher-js");
 
 export default {
   name: "Chat",
@@ -169,21 +172,26 @@ export default {
   mounted() {
     this.userId = localStorage.getItem("$userId");
     this.getChat();
-    this.actualizar();
     this.mensajes = [];
     this.$refs.chatScroll.addEventListener("touchmove", this.onScroll);
+
+    var that = this;
+    window.Echo = new Echo({
+      broadcaster: "pusher",
+      key: "ASDASD2121",
+      wsHost: "chat-ea-web-sockets-back.casya.com.ar",
+      wsPort: 6001,
+      disableStats: true
+    });
+    window.Echo.channel("user."+localStorage.getItem("$userId")).listen("NewMessage", (e) => {
+      console.log(e);
+      that.getChat();
+    });
   },
   created() {
     this.$eventHub.$on("chat-get", id => this.getChat(id));
   },
   methods: {
-    actualizar() {
-      var that = this;
-      setTimeout(function() {
-        that.getChat();
-        that.actualizar();
-      }, 3000);
-    },
     esImagen(mensaje) {
       var extension = mensaje.message.files[0].file.split(".")[1].toLowerCase();
       if (

@@ -74,6 +74,7 @@ export default {
     });
     window.Echo.channel("user."+localStorage.getItem("$userId")).listen("NewMessage", (e) => {
       console.log(e);
+      that.$eventHub.$emit("chat-get");
       that.getConversaciones();
     });
   },

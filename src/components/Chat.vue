@@ -159,7 +159,6 @@ export default {
   mounted() {
     this.userId = localStorage.getItem("$userId");
     this.getChat();
-    this.actualizar();
     this.mensajes = [];
     this.$refs.chatScroll.addEventListener("touchmove", this.onScroll);
   },
@@ -167,13 +166,6 @@ export default {
     this.$eventHub.$on("chat-get", id => this.getChat(id));
   },
   methods: {
-    actualizar() {
-      var that = this;
-      setTimeout(function() {
-        that.getChat();
-        that.actualizar();
-      }, 3000);
-    },
     esImagen(mensaje) {
       var extension = mensaje.message.files[0].file.split(".")[1].toLowerCase();
       if (
