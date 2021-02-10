@@ -122,6 +122,7 @@
         placeholder="Escribe un mensaje aquí"
         ref="inputTexto"
         v-on:keyup.enter="enviar()"
+        maxlength="140"
       />
       <img class="chat-enviar" src="../assets/img/enviar.png" @click="enviar()"/>
     </div>
