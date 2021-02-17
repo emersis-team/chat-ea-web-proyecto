@@ -266,7 +266,6 @@ export default {
           });
           if (scrollear == true) {
             that.mensajeOffset = that.mensajes[that.mensajes.length - 1];
-            that.scrollToBottom();
           }
           that.getSeparadores();
         })
@@ -282,6 +281,9 @@ export default {
     },
     getChatPage(pagina) {
       this.mensajeOffset = this.mensajes[0];
+      if(this.mensajeOffset.id == null){
+        this.mensajeOffset = this.mensajes[1];
+      }
       this.currentPage = pagina;
       var pag = "";
       if (pagina != null) {
@@ -294,7 +296,6 @@ export default {
           response.data.messages.data.reverse();
           that.mensajes = response.data.messages.data.concat(that.mensajes);
           that.getSeparadores();
-          that.scrollToBottom();
         })
         .catch(function(response) {
           if (response.response.status == 401) {
@@ -307,6 +308,7 @@ export default {
     },
     getSeparadores(){
       var fechas = [];
+      this.mensajes = this.mensajes.filter(m => m.fecha == null);
       var cantidad = this.mensajes.length;
       for (var i = 0; i < cantidad; i++) {
         var m = this.mensajes[i];
@@ -336,6 +338,10 @@ export default {
           }
         }
       }
+      var that = this;
+      this.$nextTick(() => {
+        that.scrollToBottom();
+      });
     },
     onScroll() {
       var target = this.$refs.chatScroll;
@@ -358,7 +364,9 @@ export default {
               that.mensajeOffset.id
             ).offsetTop;
           }else{
-            that.scrollToBottom();
+            setTimeout(function(){
+              that.scrollToBottom();
+            }, 200);
           }
         }
       });
