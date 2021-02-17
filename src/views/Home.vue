@@ -102,6 +102,7 @@ export default {
       );
     },
     elegirConversacion(conversacion) {
+      conversacion.ammount_no_read = 0;
       if (this.$isMobile) {
         this.$router.push(
           "/chat/" + conversacion.id + "/" + conversacion.user_dest.id
