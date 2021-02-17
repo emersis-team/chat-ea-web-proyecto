@@ -252,7 +252,7 @@
   .chat-bottom > input {
     height: 30px;
     font-size: 18px;
-    width: 58%;
+    width: 70%;
     left: 13%;
     transform: translateY(-25%);
     padding-left: 10px;
@@ -260,7 +260,7 @@
   .chat-enviar {
     font-size: 18px;
     height: 30px;
-    width: 69px;
+    width: auto;
     right: 0;
     transform: translateY(-25%);
   }
