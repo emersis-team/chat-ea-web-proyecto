@@ -261,7 +261,7 @@ export default {
         })
         .catch(function(response) {
           clearTimeout(that.actualizarTimer);
-          if (response.response.status == 401) {
+          if (response != null && response.response.status == 401) {
             localStorage.removeItem("$expire");
             if(window.location.pathname.split("/").reverse()[0] != "login"){
               that.$router.push("/login");
@@ -288,7 +288,7 @@ export default {
           that.getSeparadores();
         })
         .catch(function(response) {
-          if (response.response.status == 401) {
+          if (response != null && response.response.status == 401) {
             localStorage.removeItem("$expire");
             if(window.location.pathname.split("/").reverse()[0] != "login"){
               that.$router.push("/login");
@@ -319,11 +319,13 @@ export default {
               fecha = days[d.getDay()] + " " + fecha;
               if(!this.mensajes.some(m => m.fecha == fecha)){
                 this.mensajes.splice(i, 0, {fecha: fecha});
+                cantidad++;
                 }
             }
           }else{
             if(!this.mensajes.some(m => m.fecha == "HOY")){
               this.mensajes.splice(i, 0, {fecha: "HOY"});
+              cantidad++;
             }
           }
         }
@@ -376,7 +378,7 @@ export default {
             that.getChat();
           })
           .catch(function(response) {
-            if (response.response.status == 401) {
+            if (response != null && response.response.status == 401) {
               localStorage.removeItem("$expire");
               if(window.location.pathname.split("/").reverse()[0] != "login"){
               that.$router.push("/login");
@@ -412,7 +414,7 @@ export default {
             that.getChat();
           })
           .catch(function(response) {
-            if (response.response.status == 401) {
+            if (response != null && response.response.status == 401) {
               localStorage.removeItem("$expire");
               if(window.location.pathname.split("/").reverse()[0] != "login"){
               that.$router.push("/login");
