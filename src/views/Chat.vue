@@ -339,11 +339,13 @@ export default {
               fecha = days[d.getDay()] + " " + fecha;
               if(!this.mensajes.some(m => m.fecha == fecha)){
                 this.mensajes.splice(i, 0, {fecha: fecha});
+                cantidad++;
                 }
             }
           }else{
             if(!this.mensajes.some(m => m.fecha == "HOY")){
               this.mensajes.splice(i, 0, {fecha: "HOY"});
+              cantidad++;
             }
           }
         }
