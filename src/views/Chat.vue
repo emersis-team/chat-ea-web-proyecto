@@ -170,20 +170,20 @@ export default {
   computed: {},
   mounted() {
     this.userId = localStorage.getItem("$userId");
-    this.getChat();
+    this.getChat(null, true);
     this.actualizar();
     this.mensajes = [];
     this.$refs.chatScroll.addEventListener("touchmove", this.onScroll);
   },
   created() {
-    this.$eventHub.$on("chat-get", id => this.getChat(id));
+    this.$eventHub.$on("chat-get", id => this.getChat(id, true));
   },
   methods: {
     actualizar() {
       var that = this;
       clearTimeout(this.actualizarTimer);
       this.actualizarTimer = setTimeout(function() {
-        that.getChat();
+        that.getChat(null, false);
         that.actualizar();
       }, 3000);
     },
@@ -234,7 +234,7 @@ export default {
         return false;
       }
     },
-    getChat(id) {
+    getChat(id, scroll) {
       if (id == null) {
         id = this.$route.params.id;
       } else {
@@ -267,7 +267,7 @@ export default {
           if (scrollear == true) {
             that.mensajeOffset = that.mensajes[that.mensajes.length - 1];
           }
-          that.getSeparadores();
+          that.getSeparadores(scroll);
         })
         .catch(function(response) {
           clearTimeout(that.actualizarTimer);
@@ -295,7 +295,7 @@ export default {
         .then(function(response) {
           response.data.messages.data.reverse();
           that.mensajes = response.data.messages.data.concat(that.mensajes);
-          that.getSeparadores();
+          that.getSeparadores(true);
         })
         .catch(function(response) {
           if (response != null && response.response.status == 401) {
@@ -306,7 +306,7 @@ export default {
           }
         });
     },
-    getSeparadores(){
+    getSeparadores(scrollear){
       var fechas = [];
       this.mensajes = this.mensajes.filter(m => m.fecha == null);
       var cantidad = this.mensajes.length;
@@ -340,10 +340,12 @@ export default {
           }
         }
       }
-      var that = this;
-      this.$nextTick(() => {
-        that.scrollToBottom();
-      });
+      if(scrollear == true){
+        var that = this;
+        this.$nextTick(() => {
+          that.scrollToBottom();
+        });
+      }
     },
     onScroll() {
       var target = this.$refs.chatScroll;
@@ -385,7 +387,7 @@ export default {
         this.$axios
           .post(this.$localurl + "/api/v1/messages/textMessage", data)
           .then(function() {
-            that.getChat();
+            that.getChat(null, true);
           })
           .catch(function(response) {
             if (response != null && response.response.status == 401) {
@@ -421,7 +423,7 @@ export default {
         this.$axios
           .post(this.$localurl + "/api/v1/messages/fileMessage", data)
           .then(function() {
-            that.getChat();
+            that.getChat(null, true);
           })
           .catch(function(response) {
             if (response != null && response.response.status == 401) {
