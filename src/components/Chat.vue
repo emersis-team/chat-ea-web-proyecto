@@ -271,7 +271,7 @@ export default {
     },
     getChatPage(pagina) {
       this.mensajeOffset = this.mensajes[0];
-      if(this.mensajeOffset.id == null){
+      if(this.mensajeOffset != null && this.mensajeOffset.id == null){
         this.mensajeOffset = this.mensajes[1];
       }
       this.currentPage = pagina;
