@@ -85,7 +85,7 @@ export default {
           that.conversacionesFiltradas = that.conversaciones;
         })
         .catch(function(response) {
-          if (response.response.status == 401) {
+          if (response != null && response.response.status == 401) {
             localStorage.removeItem("$expire");
             if(window.location.pathname.split("/").reverse()[0] != "login"){
               that.$router.push("/login");
