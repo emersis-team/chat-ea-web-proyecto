@@ -50,7 +50,11 @@ export default {
           navigator.userAgent
         )
       ) {
-        return true;
+        if(screen.width > 500){
+          return false;
+        }else{
+          return true;
+        }
       } else {
         return false;
       }
