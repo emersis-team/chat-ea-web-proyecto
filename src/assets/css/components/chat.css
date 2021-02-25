@@ -277,6 +277,10 @@
 
 /*MOBILE PORTRAIT CON KEYBOARD*/
 @media screen and (max-height: 400px) and (max-width: 400px) {
+  .chat-mensaje {
+    border-radius: 5px;
+    max-width: 80%;
+  }
   .chat-scroll {
     height: calc(100% - 40px);
   }
@@ -299,15 +303,117 @@
   .chat-bottom > input {
     height: 30px;
     font-size: 18px;
-    width: 58%;
+    width: 70%;
     left: 13%;
     transform: translateY(-25%);
     padding-left: 10px;
   }
   .chat-enviar {
-    font-size: 18px;
+    font-size: 19px;
     height: 30px;
-    width: 69px;
+    width: auto;
+    right: 0;
+    transform: translateY(-25%);
+  }
+  .chat-adjuntar {
+    width: 30px;
+    height: 30px;
+    transform: translateY(-25%);
+  }
+  .chat-adjuntar > svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/*MOBILE LANDSCAPE*/
+@media screen and (max-height: 500px) and (max-width: 800px) and (min-width: 500px) {
+  .chat-mensaje {
+    border-radius: 5px;
+    max-width: 80%;
+  }
+  .chat-scroll {
+    height: calc(100% - 40px);
+  }
+  .chat-top {
+    height: 40px;
+  }
+  .chat-top > p {
+    left: 50px;
+  }
+  .chat-top > img {
+    width: 20px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 10px;
+  }
+  .chat-bottom {
+    height: 40px;
+  }
+  .chat-bottom > input {
+    height: 30px;
+    font-size: 18px;
+    width: 73%;
+    left: 13%;
+    transform: translateY(-25%);
+    padding-left: 10px;
+  }
+  .chat-enviar {
+    font-size: 19px;
+    height: 30px;
+    width: auto;
+    right: 0;
+    transform: translateY(-25%);
+  }
+  .chat-adjuntar {
+    width: 30px;
+    height: 30px;
+    transform: translateY(-25%);
+  }
+  .chat-adjuntar > svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/*MOBILE LANDSCAPE CON KEYBOARD*/
+@media screen and (max-height: 120px) and (max-width: 800px) {
+  .chat-mensaje {
+    border-radius: 5px;
+    max-width: 80%;
+  }
+  .chat-scroll {
+    height: calc(100% - 40px);
+  }
+  .chat-top {
+    height: 40px;
+  }
+  .chat-top > p {
+    left: 50px;
+  }
+  .chat-top > img {
+    width: 20px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 10px;
+  }
+  .chat-bottom {
+    height: 40px;
+  }
+  .chat-bottom > input {
+    height: 30px;
+    font-size: 18px;
+    width: 73%;
+    left: 13%;
+    transform: translateY(-25%);
+    padding-left: 10px;
+  }
+  .chat-enviar {
+    font-size: 19px;
+    height: 30px;
+    width: auto;
     right: 0;
     transform: translateY(-25%);
   }
