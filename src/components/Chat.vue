@@ -250,7 +250,7 @@ export default {
           that.getSeparadores();
         })
         .catch(function(response) {
-          if (response != null && response.response.status == 401) {
+          if (response != null && response.response != null && response.response.status == 401) {
             localStorage.removeItem("$expire");
             if(window.location.pathname.split("/").reverse()[0] != "login"){
               that.$router.push("/login");
@@ -277,7 +277,7 @@ export default {
           that.getSeparadores();
         })
         .catch(function(response) {
-          if (response != null && response.response.status == 401) {
+          if (response != null && response.response != null && response.response.status == 401) {
             localStorage.removeItem("$expire");
             if(window.location.pathname.split("/").reverse()[0] != "login"){
               that.$router.push("/login");
@@ -370,7 +370,7 @@ export default {
             that.getChat();
           })
           .catch(function(response) {
-            if (response != null && response.response.status == 401) {
+            if (response != null && response.response != null && response.response.status == 401) {
               localStorage.removeItem("$expire");
               if(window.location.pathname.split("/").reverse()[0] != "login"){
               that.$router.push("/login");
@@ -406,7 +406,7 @@ export default {
             that.getChat();
           })
           .catch(function(response) {
-            if (response != null && response.response.status == 401) {
+            if (response != null && response.response != null && response.response.status == 401) {
               localStorage.removeItem("$expire");
               if(window.location.pathname.split("/").reverse()[0] != "login"){
               that.$router.push("/login");
