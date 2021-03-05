@@ -170,12 +170,14 @@ export default {
   },
   methods: {
     actualizar() {
-      var that = this;
-      clearTimeout(this.actualizarTimer);
-      this.actualizarTimer = setTimeout(function() {
-        that.getChat(null, false);
-        that.actualizar();
-      }, 3000);
+      if(window.location.pathname == "/chat-ea-web/"){
+        var that = this;
+        clearTimeout(this.actualizarTimer);
+        this.actualizarTimer = setTimeout(function() {
+          that.getChat(null, false);
+          that.actualizar();
+        }, 3000);
+      }
     },
     esImagen(mensaje) {
       var extension = mensaje.message.files[0].file.split(".")[mensaje.message.files[0].file.split(".").length-1].toLowerCase();
@@ -261,7 +263,7 @@ export default {
         })
         .catch(function(response) {
           clearTimeout(that.actualizarTimer);
-          if (response != null && response.response.status == 401) {
+          if (response != null && response.response != null && response.response.status == 401) {
             localStorage.removeItem("$expire");
             if(window.location.pathname.split("/").reverse()[0] != "login"){
               that.$router.push("/login");
@@ -288,7 +290,7 @@ export default {
           that.getSeparadores(true);
         })
         .catch(function(response) {
-          if (response != null && response.response.status == 401) {
+          if (response != null && response.response != null && response.response.status == 401) {
             localStorage.removeItem("$expire");
             if(window.location.pathname.split("/").reverse()[0] != "login"){
               that.$router.push("/login");
@@ -380,7 +382,7 @@ export default {
             that.getChat(null, true);
           })
           .catch(function(response) {
-            if (response != null && response.response.status == 401) {
+            if (response != null && response.response != null && response.response.status == 401) {
               localStorage.removeItem("$expire");
               if(window.location.pathname.split("/").reverse()[0] != "login"){
               that.$router.push("/login");
@@ -416,7 +418,7 @@ export default {
             that.getChat(null, true);
           })
           .catch(function(response) {
-            if (response != null && response.response.status == 401) {
+            if (response != null && response.response != null && response.response.status == 401) {
               localStorage.removeItem("$expire");
               if(window.location.pathname.split("/").reverse()[0] != "login"){
               that.$router.push("/login");
