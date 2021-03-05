@@ -180,14 +180,12 @@ export default {
   },
   methods: {
     actualizar() {
-      if(window.location.pathname == "/chat-ea-web/"){
-        var that = this;
-        clearTimeout(this.actualizarTimer);
-        this.actualizarTimer = setTimeout(function() {
-          that.getChat(null, false);
-          that.actualizar();
-        }, 3000);
-      }
+      var that = this;
+      clearTimeout(this.actualizarTimer);
+      this.actualizarTimer = setTimeout(function() {
+        that.getChat(null, false);
+        that.actualizar();
+      }, 3000);
     },
     esImagen(mensaje) {
       var extension = mensaje.message.files[0].file.split(".")[mensaje.message.files[0].file.split(".").length-1].toLowerCase();
@@ -243,43 +241,45 @@ export default {
         this.mensajes = [];
         this.primeraPagina = true;
       }
-      var that = this;
-      this.$axios
-        .get(this.$localurl + "/api/v1/messages/" + id)
-        .then(function(response) {
-          if (
-            that.primeraPagina == true &&
-            !that.isOverflown(document.getElementById("chatScroll"))
-          ) {
-            that.primeraPagina = false;
-            that.getChatPage(2);
-          }
-          var scrollear = false;
-          that.lastPage = response.data.messages.last_page;
-          response.data.messages.data.reverse();
-          response.data.messages.data.forEach(m => {
+      if(id != null){
+        var that = this;
+        this.$axios
+          .get(this.$localurl + "/api/v1/messages/" + id)
+          .then(function(response) {
             if (
-              !that.mensajes.some(mensaje => mensaje.id == m.id) &&
-              m.conversation_id == that.$route.params.id
+              that.primeraPagina == true &&
+              !that.isOverflown(document.getElementById("chatScroll"))
             ) {
-              that.mensajes.push(m);
-              scrollear = true;
+              that.primeraPagina = false;
+              that.getChatPage(2);
+            }
+            var scrollear = false;
+            that.lastPage = response.data.messages.last_page;
+            response.data.messages.data.reverse();
+            response.data.messages.data.forEach(m => {
+              if (
+                !that.mensajes.some(mensaje => mensaje.id == m.id) &&
+                m.conversation_id == that.$route.params.id
+              ) {
+                that.mensajes.push(m);
+                scrollear = true;
+              }
+            });
+            if (scrollear == true) {
+              that.mensajeOffset = that.mensajes[that.mensajes.length - 1];
+            }
+            that.getSeparadores(scroll);
+          })
+          .catch(function(response) {
+            clearTimeout(that.actualizarTimer);
+            if (response != null && response.response != null && response.response.status == 401) {
+              localStorage.removeItem("$expire");
+              if(window.location.pathname.split("/").reverse()[0] != "login"){
+                that.$router.push("/login");
+              }
             }
           });
-          if (scrollear == true) {
-            that.mensajeOffset = that.mensajes[that.mensajes.length - 1];
-          }
-          that.getSeparadores(scroll);
-        })
-        .catch(function(response) {
-          clearTimeout(that.actualizarTimer);
-          if (response != null && response.response != null && response.response.status == 401) {
-            localStorage.removeItem("$expire");
-            if(window.location.pathname.split("/").reverse()[0] != "login"){
-              that.$router.push("/login");
-            }
-          }
-        });
+      }
     },
     getChatPage(pagina) {
       this.mensajeOffset = this.mensajes[0];

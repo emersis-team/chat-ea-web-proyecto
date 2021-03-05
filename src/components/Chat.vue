@@ -170,14 +170,12 @@ export default {
   },
   methods: {
     actualizar() {
-      if(window.location.pathname == "/chat-ea-web/"){
-        var that = this;
-        clearTimeout(this.actualizarTimer);
-        this.actualizarTimer = setTimeout(function() {
-          that.getChat(null, false);
-          that.actualizar();
-        }, 3000);
-      }
+      var that = this;
+      clearTimeout(this.actualizarTimer);
+      this.actualizarTimer = setTimeout(function() {
+        that.getChat(null, false);
+        that.actualizar();
+      }, 3000);
     },
     esImagen(mensaje) {
       var extension = mensaje.message.files[0].file.split(".")[mensaje.message.files[0].file.split(".").length-1].toLowerCase();
