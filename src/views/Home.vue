@@ -14,8 +14,8 @@
         </div>
         <div class="home-left-conversaciones">
           <div
-            v-for="conversacion in conversacionesFiltradas"
-            :key="conversacion.id"
+            v-for="(conversacion, index) in conversacionesFiltradas"
+            :key="index"
             @click="elegirConversacion(conversacion)"
             v-bind:class="{
               'home-conversacion-elegida': conversacion == conversacionElegida
@@ -63,27 +63,31 @@ export default {
       this.mostrarChat = false;
     }
     this.getConversaciones();
-
-    var that = this;
-    window.Echo = new Echo({
-      broadcaster: "pusher",
-      key: "ASDASD2121",
-      wsHost: "127.0.0.1",
-      wsPort: 6001,
-     // wssPort: 6001,
-      disableStats: true,
-      forceTLS: false,
-      enabledTransports: ["ws"]
-    });
-    console.log("Conectando al websocket canal: " + "user."+localStorage.getItem("$userId"));
-    window.Echo.channel("user."+localStorage.getItem("$userId")).listen("NewMessage", (e) => {
-      console.log("Recibo mensaje por websocket");
-      console.log(e);
-      that.$eventHub.$emit("chat-get");
-      that.getConversaciones();
-    });
+    this.conectarSocket();    
   },
   methods: {
+    conectarSocket(){
+      if(localStorage.getItem("$userId") != null){
+        var that = this;
+        window.Echo = new Echo({
+          broadcaster: "pusher",
+          key: "ASDASD2121",
+          wsHost: "127.0.0.1",
+          wsPort: 6001,
+        // wssPort: 6001,
+          disableStats: true,
+          forceTLS: false,
+          enabledTransports: ["ws"]
+        });
+        console.log("Conectando al websocket canal: " + "user."+localStorage.getItem("$userId"));
+        window.Echo.channel("user."+localStorage.getItem("$userId")).listen("NewMessage", (e) => {
+          console.log("Recibo mensaje por websocket");
+          console.log(e);
+          that.$eventHub.$emit("chat-get");
+          that.getConversaciones();
+        });
+      }
+    },
     getConversaciones() {
       var that = this;
       this.$axios
