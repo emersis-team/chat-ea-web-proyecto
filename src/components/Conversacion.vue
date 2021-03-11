@@ -1,7 +1,8 @@
 <template>
   <div class="conversacion">
-    <div v-show="conversacion.ammount_no_read > 0"></div>
-
+    <div class="conversacion-sinleer" v-show="conversacion.ammount_no_read > 0">
+      <label>{{conversacion.ammount_no_read}}</label>
+    </div>
     <div class="conversacion-imagen">
       <img src="../assets/img/contacto.png" />
     </div>
