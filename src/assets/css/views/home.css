@@ -81,6 +81,10 @@
 
 /*MOBILE PORTRAIT CON KEYBOARD*/
 @media screen and (max-height: 400px) and (max-width: 400px) {
+  .home {
+    position: fixed;
+    height: 100%;
+  }
   .home-left {
     width: 100%;
   }
@@ -91,6 +95,10 @@
 
 /*MOBILE LANDSCAPE*/
 @media screen and (max-height: 500px) and (max-width: 800px) and (min-width: 500px) {
+  .home {
+    position: fixed;
+    height: 100%;
+  }
   .home-body {
     top: 0;
     transform: translateX(-50%);
