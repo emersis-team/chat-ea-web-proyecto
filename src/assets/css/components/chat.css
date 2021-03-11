@@ -228,7 +228,11 @@
 @media screen and (max-width: 500px) and (max-aspect-ratio: 13/9) {
   .chat-mensaje {
     border-radius: 5px;
+    border-top-left-radius: 0;
     max-width: 80%;
+  }
+  .chat-mensaje-propio > div > .chat-mensaje {
+    border-top-left-radius: 5px;
   }
   .chat-scroll {
     height: calc(100% - 40px);
@@ -279,7 +283,11 @@
 @media screen and (max-height: 400px) and (max-width: 400px) {
   .chat-mensaje {
     border-radius: 5px;
+    border-top-left-radius: 0;
     max-width: 80%;
+  }
+  .chat-mensaje-propio > div > .chat-mensaje {
+    border-top-left-radius: 5px;
   }
   .chat-scroll {
     height: calc(100% - 40px);
@@ -330,7 +338,11 @@
 @media screen and (max-height: 500px) and (max-width: 800px) and (min-width: 500px) {
   .chat-mensaje {
     border-radius: 5px;
+    border-top-left-radius: 0;
     max-width: 80%;
+  }
+  .chat-mensaje-propio > div > .chat-mensaje {
+    border-top-left-radius: 5px;
   }
   .chat-scroll {
     height: calc(100% - 40px);
@@ -381,7 +393,11 @@
 @media screen and (max-height: 120px) and (max-width: 800px) {
   .chat-mensaje {
     border-radius: 5px;
+    border-top-left-radius: 0;
     max-width: 80%;
+  }
+  .chat-mensaje-propio > div > .chat-mensaje {
+    border-top-left-radius: 5px;
   }
   .chat-scroll {
     height: calc(100% - 40px);

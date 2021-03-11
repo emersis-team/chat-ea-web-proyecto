@@ -198,6 +198,9 @@ export default {
     this.$eventHub.$on("chat-get", id => this.getChat(id));
   },
   methods: {
+    desconectarSocket(){
+      window.Echo.channel("user."+localStorage.getItem("$userId")).stopListening('NewMessage');
+    },
     esImagen(mensaje) {
       var extension = mensaje.message.files[0].file.split(".")[mensaje.message.files[0].file.split(".").length-1].toLowerCase();
       if (
@@ -284,6 +287,7 @@ export default {
           if (response != null && response.response != null && response.response.status == 401) {
             localStorage.removeItem("$expire");
             if(window.location.pathname.split("/").reverse()[0] != "login"){
+              that.desconectarSocket();
               that.$router.push("/login");
             }
           }
@@ -311,6 +315,7 @@ export default {
           if (response != null && response.response != null && response.response.status == 401) {
             localStorage.removeItem("$expire");
             if(window.location.pathname.split("/").reverse()[0] != "login"){
+              that.desconectarSocket();
               that.$router.push("/login");
             }
           }
@@ -401,8 +406,9 @@ export default {
             if (response != null && response.response != null && response.response.status == 401) {
               localStorage.removeItem("$expire");
               if(window.location.pathname.split("/").reverse()[0] != "login"){
-              that.$router.push("/login");
-            }
+                that.desconectarSocket();
+                that.$router.push("/login");
+              }
             }
             alert("Se produjo un error, reintente");
           });
@@ -437,8 +443,9 @@ export default {
             if (response != null && response.response != null && response.response.status == 401) {
               localStorage.removeItem("$expire");
               if(window.location.pathname.split("/").reverse()[0] != "login"){
-              that.$router.push("/login");
-            }
+                that.desconectarSocket();
+                that.$router.push("/login");
+              }
             }
             alert("Se produjo un error, reintente");
           });

@@ -251,6 +251,7 @@ export default {
         })
         .catch(function(response) {
           if (response != null && response.response != null && response.response.status == 401) {
+            that.$eventHub.$emit("home-desconectar-socket");
             localStorage.removeItem("$expire");
             if(window.location.pathname.split("/").reverse()[0] != "login"){
               that.$router.push("/login");
@@ -278,6 +279,7 @@ export default {
         })
         .catch(function(response) {
           if (response != null && response.response != null && response.response.status == 401) {
+            that.$eventHub.$emit("home-desconectar-socket");
             localStorage.removeItem("$expire");
             if(window.location.pathname.split("/").reverse()[0] != "login"){
               that.$router.push("/login");
@@ -371,6 +373,7 @@ export default {
           })
           .catch(function(response) {
             if (response != null && response.response != null && response.response.status == 401) {
+              that.$eventHub.$emit("home-desconectar-socket");
               localStorage.removeItem("$expire");
               if(window.location.pathname.split("/").reverse()[0] != "login"){
               that.$router.push("/login");
@@ -407,6 +410,7 @@ export default {
           })
           .catch(function(response) {
             if (response != null && response.response != null && response.response.status == 401) {
+              that.$eventHub.$emit("home-desconectar-socket");
               localStorage.removeItem("$expire");
               if(window.location.pathname.split("/").reverse()[0] != "login"){
               that.$router.push("/login");
