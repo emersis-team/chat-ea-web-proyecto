@@ -14,8 +14,8 @@
         </div>
         <div class="home-left-conversaciones">
           <div
-            v-for="conversacion in conversacionesFiltradas"
-            :key="conversacion.id"
+            v-for="(conversacion, index) in conversacionesFiltradas"
+            :key="index"
             @click="elegirConversacion(conversacion)"
             v-bind:class="{
               'home-conversacion-elegida': conversacion == conversacionElegida
