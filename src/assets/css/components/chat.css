@@ -232,6 +232,7 @@
   }
   .chat-scroll {
     height: calc(100% - 40px);
+    padding-bottom: 11vw;
   }
   .chat-top {
     height: 40px;
@@ -283,6 +284,7 @@
   }
   .chat-scroll {
     height: calc(100% - 40px);
+    padding-bottom: 11vw;
   }
   .chat-top {
     height: 40px;
