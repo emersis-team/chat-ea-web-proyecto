@@ -71,6 +71,10 @@
 
 /* PORTRAIT */
 @media screen and (max-width: 500px) and (max-aspect-ratio: 13/9) {
+  .home {
+    position: fixed;
+    height: 100%;
+  }
   .home-left {
     width: 100%;
   }
@@ -95,10 +99,6 @@
 
 /*MOBILE LANDSCAPE*/
 @media screen and (max-height: 500px) and (max-width: 800px) and (min-width: 500px) {
-  .home {
-    position: fixed;
-    height: 100%;
-  }
   .home-body {
     top: 0;
     transform: translateX(-50%);
