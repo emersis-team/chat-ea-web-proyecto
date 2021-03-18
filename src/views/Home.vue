@@ -69,15 +69,17 @@ export default {
   },
   methods: {
     conectarSSE() {
-      console.log("Conectando al sse canal: " + "user."+localStorage.getItem("$userId"));
-      var that = this;
-      this.eventSource = new EventSource('http://awesomestockdata.com/feed');
-      this.eventSource.addEventListener('NewMessage', e => {
-        console.log("Recibo mensaje por SSE");
-        console.log(e);
-        that.$eventHub.$emit("chat-get");
-        that.getConversaciones();
-      }, false);
+      if(localStorage.getItem("$userId") != null){
+        console.log("Conectando al sse");
+        var that = this;
+        this.eventSource = new EventSource('http://127.0.0.1:8000/api/v1/openStreamedResponse');
+        this.eventSource.addEventListener('NewMessage', e => {
+          console.log("Recibo mensaje por SSE");
+          console.log(e);
+          that.$eventHub.$emit("chat-get");
+          that.getConversaciones();
+        }, false);        
+      }
     },
     desconectarSSE(){
       console.log("Desconecto SSE");
