@@ -55,7 +55,8 @@ export default {
       conversacionElegida: null,
       conversacionesFiltradas: [],
       conversaciones: [],
-      mensajes: []
+      mensajes: [],
+      eventSource: null
     };
   },
   mounted() {
@@ -63,34 +64,24 @@ export default {
       this.mostrarChat = false;
     }
     this.getConversaciones();
-    this.conectarSocket();
-    this.$eventHub.$on("home-desconectar-socket", this.desconectarSocket());
+    this.conectarSSE();
+    this.$eventHub.$on("home-desconectar-socket", this.desconectarSSE());
   },
   methods: {
-    conectarSocket(){
-      if(localStorage.getItem("$userId") != null){
-        var that = this;
-        window.Echo = new Echo({
-          broadcaster: "pusher",
-          key: "ASDASD2121",
-          wsHost: "127.0.0.1",
-          wsPort: 6001,
-        // wssPort: 6001,
-          disableStats: true,
-          forceTLS: false,
-          enabledTransports: ["ws"]
-        });
-        console.log("Conectando al websocket canal: " + "user."+localStorage.getItem("$userId"));
-        window.Echo.channel("user."+localStorage.getItem("$userId")).listen("NewMessage", (e) => {
-          console.log("Recibo mensaje por websocket");
-          console.log(e);
-          that.$eventHub.$emit("chat-get");
-          that.getConversaciones();
-        });
-      }
+    conectarSSE() {
+      console.log("Conectando al sse canal: " + "user."+localStorage.getItem("$userId"));
+      var that = this;
+      this.eventSource = new EventSource('http://awesomestockdata.com/feed');
+      this.eventSource.addEventListener('NewMessage', e => {
+        console.log("Recibo mensaje por SSE");
+        console.log(e);
+        that.$eventHub.$emit("chat-get");
+        that.getConversaciones();
+      }, false);
     },
-    desconectarSocket(){
-      window.Echo.channel("user."+localStorage.getItem("$userId")).stopListening('NewMessage');
+    desconectarSSE(){
+      console.log("Desconecto SSE");
+      this.eventSource = null;
     },
     getConversaciones() {
       var that = this;
@@ -102,7 +93,7 @@ export default {
         })
         .catch(function(response) {
           if (response.response.status == 401) {
-            that.desconectarSocket();
+            that.desconectarSSE();
             localStorage.removeItem("$expire");
             if(window.location.pathname.split("/").reverse()[0] != "login"){
               that.$router.push("/login");
@@ -131,12 +122,12 @@ export default {
       this.$eventHub.$emit("chat-get", conversacion.id);
     },
     logout() {
-      this.desconectarSocket();
+      this.desconectarSSE();
       var that = this;
       this.$axios
         .post(this.$localurl + "/api/v1/auth/logout")
         .then(function() {
-          that.desconectarSocket();
+          that.desconectarSSE();
           localStorage.removeItem("$token");
           localStorage.removeItem("$userId");
           localStorage.removeItem("$expire");

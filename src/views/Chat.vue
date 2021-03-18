@@ -175,31 +175,24 @@ export default {
     this.getChat();
     this.mensajes = [];
     this.$refs.chatScroll.addEventListener("touchmove", this.onScroll);
-
-    var that = this;
-    window.Echo = new Echo({
-      broadcaster: "pusher",
-      key: "ASDASD2121",
-      wsHost: "127.0.0.1",
-      wsPort: 6001,
-     // wssPort: 6001,
-      disableStats: true,
-      forceTLS: false,
-      enabledTransports: ["ws"]
-    });
-    console.log("Conectando al websocket canal: " + "user."+localStorage.getItem("$userId"));
-    window.Echo.channel("user."+localStorage.getItem("$userId")).listen("NewMessage", (e) => {
-      console.log("Recibo mensaje por websocket");
-      console.log(e);
-      that.getChat();
-    });
   },
   created() {
     this.$eventHub.$on("chat-get", id => this.getChat(id));
   },
   methods: {
-    desconectarSocket(){
-      window.Echo.channel("user."+localStorage.getItem("$userId")).stopListening('NewMessage');
+    conectarSSE() {
+      console.log("Conectando al sse canal: " + "user."+localStorage.getItem("$userId"));
+      var that = this;
+      this.eventSource = new EventSource('http://awesomestockdata.com/feed');
+      this.eventSource.addEventListener('NewMessage', e => {
+        console.log("Recibo mensaje por SSE");
+        console.log(e);
+        that.getChat();
+      }, false);
+    },
+    desconectarSSE(){
+      console.log("Desconecto SSE");
+      this.eventSource = null;
     },
     esImagen(mensaje) {
       var extension = mensaje.message.files[0].file.split(".")[mensaje.message.files[0].file.split(".").length-1].toLowerCase();
@@ -287,7 +280,7 @@ export default {
           if (response != null && response.response != null && response.response.status == 401) {
             localStorage.removeItem("$expire");
             if(window.location.pathname.split("/").reverse()[0] != "login"){
-              that.desconectarSocket();
+              that.desconectarSSE();
               that.$router.push("/login");
             }
           }
@@ -315,7 +308,7 @@ export default {
           if (response != null && response.response != null && response.response.status == 401) {
             localStorage.removeItem("$expire");
             if(window.location.pathname.split("/").reverse()[0] != "login"){
-              that.desconectarSocket();
+              that.desconectarSSE();
               that.$router.push("/login");
             }
           }
@@ -406,7 +399,7 @@ export default {
             if (response != null && response.response != null && response.response.status == 401) {
               localStorage.removeItem("$expire");
               if(window.location.pathname.split("/").reverse()[0] != "login"){
-                that.desconectarSocket();
+                that.desconectarSSE();
                 that.$router.push("/login");
               }
             }
@@ -443,7 +436,7 @@ export default {
             if (response != null && response.response != null && response.response.status == 401) {
               localStorage.removeItem("$expire");
               if(window.location.pathname.split("/").reverse()[0] != "login"){
-                that.desconectarSocket();
+                that.desconectarSSE();
                 that.$router.push("/login");
               }
             }
