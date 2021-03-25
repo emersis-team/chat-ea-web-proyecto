@@ -82,8 +82,10 @@ export default {
       }
     },
     desconectarSSE(){
-      console.log("Desconecto SSE");
-      this.eventSource = null;
+      if(this.eventSource != null){
+        console.log("Desconecto SSE");
+        this.eventSource.close();
+      }
     },
     getConversaciones() {
       var that = this;

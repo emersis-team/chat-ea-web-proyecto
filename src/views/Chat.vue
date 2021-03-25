@@ -193,8 +193,10 @@ export default {
       }
     },
     desconectarSSE(){
-      console.log("Desconecto SSE");
-      this.eventSource = null;
+      if(this.eventSource != null){
+        console.log("Desconecto SSE");
+        this.eventSource.close();
+      }
     },
     esImagen(mensaje) {
       var extension = mensaje.message.files[0].file.split(".")[mensaje.message.files[0].file.split(".").length-1].toLowerCase();
