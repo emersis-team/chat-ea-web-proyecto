@@ -145,7 +145,6 @@ import MensajeArchivo from "@/components/MensajeArchivo.vue";
 import MensajeImagen from "@/components/MensajeImagen.vue";
 import MensajeVideo from "@/components/MensajeVideo.vue";
 import MensajeAudio from "@/components/MensajeAudio.vue";
-import Echo from "laravel-echo";
 
 window.Pusher = require("pusher-js");
 
@@ -185,11 +184,21 @@ export default {
         console.log("Conectando al sse");
         var that = this;
         this.eventSource = new EventSource('http://127.0.0.1:8000/api/v1/openStreamedResponse');
-        this.eventSource.addEventListener('NewMessage', e => {
-          console.log("Recibo mensaje por SSE");
-          console.log(e);
-          that.getChat();
-        }, false);
+        this.eventSource.onopen = () => {
+          console.log("connection opened");
+        };
+        this.eventSource.onmessage = (event) => {
+          console.log("result", event.data);
+          that.$eventHub.$emit("chat-get");
+          that.getConversaciones();
+        };
+        this.eventSource.onerror = (event) => {
+          console.log(event.target.readyState)
+          if (event.target.readyState === EventSource.CLOSED) {
+            console.log('eventsource closed (' + event.target.readyState + ')')
+          }
+          that.desconectarSSE();
+        };
       }
     },
     desconectarSSE(){

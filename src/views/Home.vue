@@ -40,7 +40,6 @@
 import Conversacion from "@/components/Conversacion.vue";
 import Chat from "@/components/Chat.vue";
 import Vue from "vue";
-import Echo from "laravel-echo";
 
 window.Pusher = require("pusher-js");
 
@@ -73,12 +72,21 @@ export default {
         console.log("Conectando al sse");
         var that = this;
         this.eventSource = new EventSource('http://127.0.0.1:8000/api/v1/openStreamedResponse');
-        this.eventSource.addEventListener('NewMessage', e => {
-          console.log("Recibo mensaje por SSE");
-          console.log(e);
+        this.eventSource.onopen = () => {
+          console.log("connection opened");
+        }
+        this.eventSource.onmessage = (event) => {
+          console.log("result", event.data);
           that.$eventHub.$emit("chat-get");
           that.getConversaciones();
-        }, false);        
+        }
+        this.eventSource.onerror = (event) => {
+          console.log(event.target.readyState)
+          if (event.target.readyState === EventSource.CLOSED) {
+            console.log('eventsource closed (' + event.target.readyState + ')')
+          }
+          that.desconectarSSE();
+        }     
       }
     },
     desconectarSSE(){
@@ -96,7 +104,7 @@ export default {
           that.conversacionesFiltradas = that.conversaciones;
         })
         .catch(function(response) {
-          if (response.response.status == 401) {
+          if (response.response != null && response.response.status == 401) {
             that.desconectarSSE();
             localStorage.removeItem("$expire");
             if(window.location.pathname.split("/").reverse()[0] != "login"){
