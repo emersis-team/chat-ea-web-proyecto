@@ -64,7 +64,7 @@ export default {
     }
     this.getConversaciones();
     this.conectarSSE();
-    this.$eventHub.$on("home-desconectar-socket", this.desconectarSSE());
+    // this.$eventHub.$on("home-desconectar-socket", this.desconectarSSE());
   },
   methods: {
     conectarSSE() {
@@ -81,11 +81,10 @@ export default {
           that.getConversaciones();
         }
         this.eventSource.onerror = (event) => {
-          console.log(event.target.readyState)
+          console.log("onerror: "+event.target.readyState)
           if (event.target.readyState === EventSource.CLOSED) {
             console.log('eventsource closed (' + event.target.readyState + ')')
           }
-          that.desconectarSSE();
         }     
       }
     },
@@ -105,8 +104,8 @@ export default {
         })
         .catch(function(response) {
           if (response.response != null && response.response.status == 401) {
-            that.desconectarSSE();
             localStorage.removeItem("$expire");
+            localStorage.removeItem("$userId");
             if(window.location.pathname.split("/").reverse()[0] != "login"){
               that.$router.push("/login");
             }
@@ -134,7 +133,6 @@ export default {
       this.$eventHub.$emit("chat-get", conversacion.id);
     },
     logout() {
-      this.desconectarSSE();
       var that = this;
       this.$axios
         .post(this.$localurl + "/api/v1/auth/logout")

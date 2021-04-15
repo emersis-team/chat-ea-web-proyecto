@@ -174,6 +174,7 @@ export default {
     this.getChat();
     this.mensajes = [];
     this.$refs.chatScroll.addEventListener("touchmove", this.onScroll);
+    this.conectarSSE();
   },
   created() {
     this.$eventHub.$on("chat-get", id => this.getChat(id));
@@ -193,18 +194,11 @@ export default {
           that.getConversaciones();
         };
         this.eventSource.onerror = (event) => {
-          console.log(event.target.readyState)
+          console.log("onerror: "+event.target.readyState)
           if (event.target.readyState === EventSource.CLOSED) {
             console.log('eventsource closed (' + event.target.readyState + ')')
           }
-          that.desconectarSSE();
         };
-      }
-    },
-    desconectarSSE(){
-      if(this.eventSource != null){
-        console.log("Desconecto SSE");
-        this.eventSource.close();
       }
     },
     esImagen(mensaje) {
@@ -292,8 +286,8 @@ export default {
         .catch(function(response) {
           if (response != null && response.response != null && response.response.status == 401) {
             localStorage.removeItem("$expire");
+            localStorage.removeItem("$userId");
             if(window.location.pathname.split("/").reverse()[0] != "login"){
-              that.desconectarSSE();
               that.$router.push("/login");
             }
           }
@@ -320,8 +314,8 @@ export default {
         .catch(function(response) {
           if (response != null && response.response != null && response.response.status == 401) {
             localStorage.removeItem("$expire");
+            localStorage.removeItem("$userId");
             if(window.location.pathname.split("/").reverse()[0] != "login"){
-              that.desconectarSSE();
               that.$router.push("/login");
             }
           }
@@ -411,8 +405,8 @@ export default {
           .catch(function(response) {
             if (response != null && response.response != null && response.response.status == 401) {
               localStorage.removeItem("$expire");
+              localStorage.removeItem("$userId");
               if(window.location.pathname.split("/").reverse()[0] != "login"){
-                that.desconectarSSE();
                 that.$router.push("/login");
               }
             }
@@ -448,8 +442,8 @@ export default {
           .catch(function(response) {
             if (response != null && response.response != null && response.response.status == 401) {
               localStorage.removeItem("$expire");
+              localStorage.removeItem("$userId");
               if(window.location.pathname.split("/").reverse()[0] != "login"){
-                that.desconectarSSE();
                 that.$router.push("/login");
               }
             }
