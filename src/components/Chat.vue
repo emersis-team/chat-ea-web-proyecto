@@ -126,6 +126,7 @@
       />
       <img class="chat-enviar" src="../assets/img/enviar.png" @click="enviar()"/>
     </div>
+    <Loading v-show="mostrarLoading"></Loading>
   </div>
 </template>
 
@@ -135,6 +136,7 @@ import MensajeArchivo from "@/components/MensajeArchivo.vue";
 import MensajeImagen from "@/components/MensajeImagen.vue";
 import MensajeVideo from "@/components/MensajeVideo.vue";
 import MensajeAudio from "@/components/MensajeAudio.vue";
+import Loading from "@/components/Loading.vue";
 
 export default {
   name: "Chat",
@@ -143,7 +145,8 @@ export default {
     MensajeArchivo,
     MensajeImagen,
     MensajeVideo,
-    MensajeAudio
+    MensajeAudio,
+    Loading
   },
   data() {
     return {
@@ -152,12 +155,14 @@ export default {
       primeraPagina: true,
       currentPage: 0,
       lastPage: 0,
-      mensajeOffset: null
+      mensajeOffset: null,
+      mostrarLoading: false
     };
   },
   props: { conversacion: [Object] },
   computed: {},
   mounted() {
+    this.mostrarLoading = true;
     this.userId = localStorage.getItem("$userId");
     this.getChat();
     this.mensajes = [];
@@ -225,6 +230,7 @@ export default {
       this.$axios
         .get(this.$localurl + "/api/v1/messages/" + id)
         .then(function(response) {
+          that.mostrarLoading = false;
           if (
             that.primeraPagina == true &&
             !that.isOverflown(document.getElementById("chatScroll"))
@@ -250,6 +256,7 @@ export default {
           that.getSeparadores();
         })
         .catch(function(response) {
+          that.mostrarLoading = false;
           if (response != null && response.response != null && response.response.status == 401) {
             that.$eventHub.$emit("home-desconectar-socket");
             localStorage.removeItem("$expire");
@@ -274,11 +281,13 @@ export default {
       this.$axios
         .get(this.$localurl + "/api/v1/messages/" + this.conversacion.id + pag)
         .then(function(response) {
+          that.mostrarLoading = false;
           response.data.messages.data.reverse();
           that.mensajes = response.data.messages.data.concat(that.mensajes);
           that.getSeparadores();
         })
         .catch(function(response) {
+          that.mostrarLoading = false;
           if (response != null && response.response != null && response.response.status == 401) {
             that.$eventHub.$emit("home-desconectar-socket");
             localStorage.removeItem("$expire");
