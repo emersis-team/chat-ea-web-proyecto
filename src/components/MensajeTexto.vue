@@ -24,8 +24,9 @@ export default {
 
       hora = hora + offset;
       if(hora < 0){
-        hora = (hora + 24).toString();
+        hora = hora + 24;
       }
+      hora = hora.toString();
       if(hora.length == 1){
         hora = "0" + hora;
       }
