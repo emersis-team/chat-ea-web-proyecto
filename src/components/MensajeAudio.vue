@@ -44,7 +44,7 @@ export default {
       if(hora.length == 1){
         hora = "0" + hora;
       }
-      return hora[0] + ":" + horaCompleta[1];
+      return hora + ":" + horaCompleta[1];
     }
   }
 };
