@@ -35,7 +35,7 @@ export default {
     getHora(){
             var offset = new Date().getTimezoneOffset() / 60 * -1;
       var horaCompleta = this.mensaje.created_at.split("T")[1].split(":");
-      var hora = horaCompleta[0];
+      var hora = parseFloat(horaCompleta[0]);
 
       hora = hora + offset;
       if(hora < 0){
