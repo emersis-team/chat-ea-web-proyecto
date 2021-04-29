@@ -184,7 +184,7 @@ export default {
       if(localStorage.getItem("$userId") != null){
         console.log("Conectando al sse");
         var that = this;
-        this.eventSource = new EventSource('http://127.0.0.1:8000/api/v1/openStreamedResponse/'+ localStorage.getItem("$userId"));
+        this.eventSource = new EventSource(this.$localurl + '/api/v1/openStreamedResponse/'+ localStorage.getItem("$userId"));
         this.eventSource.onopen = () => {
           console.log("connection opened");
         };

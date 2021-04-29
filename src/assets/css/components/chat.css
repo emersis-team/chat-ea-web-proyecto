@@ -156,33 +156,33 @@
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 3vw;
+  height: 60px;
   box-sizing: border-box;
   background-color: #efefef;
 }
 .chat-bottom > input {
   position: absolute;
   top: 50%;
-  left: 45%;
+  left: 49%;
   transform: translate(-50%, -50%);
-  width: 79%;
-  height: 2vw;
+  width: 80%;
+  height: 40px;
+  border-radius: 20px;
   font-family: OpenSans-Regular;
   font-size: 17px;
   border: none;
-  border-radius: 1vw;
   padding-left: 1vw;
 }
 .chat-enviar {
   position: absolute;
-  right: 6%;
+  right: 2%;
   top: 50%;
   transform: translateY(-50%);
   font-family: OpenSans-Regular;
   font-size: 17px;
   padding-left: 1vw;
   padding-right: 1vw;
-  height: 2vw;
+  height: 35px;
   border-radius: 1vw;
   border: none;
   cursor: pointer;
@@ -191,11 +191,10 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  left: 1vw;
+  left: 2%;
   border-radius: 50%;
   padding: 0.1vw;
-  width: 1.5vw;
-  height: 1.5vw;
+  width: 32px;
   cursor: pointer;
 }
 .chat-adjuntar > img {
