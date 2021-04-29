@@ -18,8 +18,18 @@ export default {
   created() {},
   methods: {
     getHora(){
-      var hora = this.mensaje.created_at.split("T")[1].split(":");
-      return hora[0] + ":" + hora[1];
+      var offset = new Date().getTimezoneOffset() / 60 * -1;
+      var horaCompleta = this.mensaje.created_at.split("T")[1].split(":");
+      var hora = horaCompleta[0];
+
+      hora = hora + offset;
+      if(hora < 0){
+        hora = (hora + 24).toString();
+      }
+      if(hora.length == 1){
+        hora = "0" + hora;
+      }
+      return hora[0] + ":" + horaCompleta[1];
     }
   }
 };
