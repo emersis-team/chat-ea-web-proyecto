@@ -342,6 +342,7 @@ export default {
             if(fechas.includes(fecha) == false){
               var days = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
               fecha = days[d.getDay()] + " " + fecha;
+              fechas.push(fecha);
               if(!this.mensajes.some(m => m.fecha == fecha)){
                 this.mensajes.splice(i, 0, {fecha: fecha});
                 cantidad++;
