@@ -164,12 +164,12 @@ export default {
   mounted() {
     this.mostrarLoading = true;
     this.userId = localStorage.getItem("$userId");
-    this.getChat();
     this.mensajes = [];
+    this.getChat();
     this.$refs.chatScroll.addEventListener("touchmove", this.onScroll);
   },
   created() {
-    this.$eventHub.$on("chat-get", id => this.getChat(id));
+    this.$eventHub.$on("chat-get", id => this.onGetChat(id));
   },
   methods: {
     esImagen(mensaje) {
@@ -218,6 +218,12 @@ export default {
       } else {
         return false;
       }
+    },
+    onGetChat(id){
+      if(id != null){
+        this.mostrarLoading = true;
+      }
+      this.getChat(id);
     },
     getChat(id) {
       if (id == null) {

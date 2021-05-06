@@ -11,7 +11,7 @@
 .loading {
   position: absolute;
   top: 50%;
-  left: 50%;
+  left: 62%;
   transform: translate(-50%, -50%);
 }
 .sk-fading-circle {
@@ -159,5 +159,30 @@
   }
   40% {
     opacity: 1;
+  }
+}
+
+/* PORTRAIT */
+@media screen and (max-width: 500px) and (max-aspect-ratio: 13/9) {
+  .loading {
+    left: 50%;
+  }
+}
+/*MOBILE PORTRAIT CON KEYBOARD*/
+@media screen and (max-height: 400px) and (max-width: 400px) {
+  .loading {
+    left: 50%;
+  }
+}
+/*MOBILE LANDSCAPE*/
+@media screen and (max-height: 500px) and (max-width: 800px) and (min-width: 500px) {
+  .loading {
+    left: 50%;
+  }
+}
+/*MOBILE LANDSCAPE CON KEYBOARD*/
+@media screen and (max-height: 120px) and (max-width: 800px) {
+  .loading {
+    left: 50%;
   }
 }

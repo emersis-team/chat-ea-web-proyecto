@@ -1,7 +1,9 @@
 <template>
-  <div class="chat-mensaje chat-mensaje-texto">
-    <label>{{ mensaje.message.text }}</label>
-    <label class="chat-mensaje-hora">{{ getHora() }}</label>
+  <div class="chat-mensaje">
+    <div class="chat-mensaje-texto">
+      <label>{{ mensaje.message.text }}</label>
+      <label class="chat-mensaje-hora">{{ getHora() }}</label>
+    </div>
   </div>
 </template>
 

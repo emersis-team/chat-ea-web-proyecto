@@ -182,7 +182,7 @@ export default {
     this.conectarSSE();
   },
   created() {
-    this.$eventHub.$on("chat-get", id => this.getChat(id));
+    this.$eventHub.$on("chat-get", id => this.onGetChat(id));
   },
   methods: {
     conectarSSE() {
@@ -195,7 +195,7 @@ export default {
         };
         this.eventSource.onmessage = (event) => {
           console.log("result", event.data);
-          that.$eventHub.$emit("chat-get");
+          that.onGetChat();
           that.getConversaciones();
         };
         this.eventSource.onerror = (event) => {
@@ -252,6 +252,12 @@ export default {
       } else {
         return false;
       }
+    },
+    onGetChat(id){
+      if(id != null){
+        this.mostrarLoading = true;
+      }
+      this.getChat(id);
     },
     getChat(id) {
       if (id == null) {

@@ -56,10 +56,12 @@
 .chat-mensaje-hora {
   position: absolute;
   right: 10px;
-  top: 10px;
+  top: 0;
 }
 .chat-mensaje-texto {
-  padding-right: 120px;
+  position: relative;
+  padding-right: 100px;
+  word-break: break-all;
 }
 .chat-mensaje-imagen > img {
   width: 100%;
@@ -69,6 +71,12 @@
 .chat-mensaje-imagen > label {
   color: #07b9c1;
   margin-bottom: 5px;
+  max-width: 47vw;
+  word-break: unset;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .chat-mensaje-imagen > a {
   text-align: center;
