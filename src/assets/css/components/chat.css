@@ -5,9 +5,10 @@
 }
 .chat-scroll {
   overflow-y: scroll;
-  height: calc(100% - 6vw);
+  height: calc(100% - 102px);
   padding: 5%;
   box-sizing: border-box;
+  padding-bottom: 2vh;
 }
 .chat-container {
   display: block;
@@ -229,6 +230,20 @@
   font-family: "OpenSans-Regular";
   padding-top: 3px;
   padding-bottom: 3px;
+}
+.chat-mobile-noLeidos {
+  position: absolute;
+  left: 21px;
+  bottom: 1px;
+  font-family: OpenSans-Regular;
+  font-size: 11px;
+  background-color: #e94639;
+  color: #fff;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  z-index: 1000;
+  text-align: center;
 }
 
 /* PORTRAIT */

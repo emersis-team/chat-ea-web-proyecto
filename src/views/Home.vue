@@ -55,7 +55,8 @@ export default {
       conversacionesFiltradas: [],
       conversaciones: [],
       mensajes: [],
-      eventSource: null
+      eventSource: null,
+      reconectar: true
     };
   },
   mounted() {
@@ -78,12 +79,34 @@ export default {
         this.eventSource.onmessage = (event) => {
           console.log("result", event.data);
           that.$eventHub.$emit("chat-get");
-          that.getConversaciones();
+          // that.getConversaciones();
+          event.data.forEach(d => {
+            that.conversaciones.forEach(c => {
+              if(c.id == d.id){
+                c.ammount_no_read = d.pendiente;
+              }
+            });
+            that.conversacionesFiltradas.forEach(c => {
+              if(c.id == d.id){
+                c.ammount_no_read = d.pendiente;
+              }
+            });
+          });
         }
         this.eventSource.onerror = (event) => {
-          console.log("onerror: "+event.target.readyState)
-          if (event.target.readyState === EventSource.CLOSED) {
-            console.log('eventsource closed (' + event.target.readyState + ')')
+          if(window.location.pathname == "/chat-ea-web/"){
+            console.log("onerror: "+event.target.readyState)
+            if (event.target.readyState === EventSource.CLOSED) {
+              console.log('eventsource closed (' + event.target.readyState + ')')
+              if(that.reconectar == true){
+                that.reconectar = false;
+                that.conectarSSE();
+              }else{
+                that.logout();
+              }
+            }
+          }else{
+            that.desconectarSSE();
           }
         }     
       }

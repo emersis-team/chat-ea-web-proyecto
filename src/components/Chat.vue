@@ -124,7 +124,8 @@
         v-on:keyup.enter="enviar()"
         maxlength="140"
       />
-      <img class="chat-enviar" src="../assets/img/enviar.png" @click="enviar()"/>
+      <img v-show="!enviando" class="chat-enviar" src="../assets/img/enviar.png" @click="enviar()"/>
+      <img v-show="enviando" class="chat-enviar" style="opacity: 0.5;" src="../assets/img/enviar.png"/>
     </div>
     <Loading v-show="mostrarLoading"></Loading>
   </div>
@@ -156,7 +157,8 @@ export default {
       currentPage: 0,
       lastPage: 0,
       mensajeOffset: null,
-      mostrarLoading: false
+      mostrarLoading: false,
+      enviando: false
     };
   },
   props: { conversacion: [Object] },
@@ -373,35 +375,40 @@ export default {
       });
     },
     enviar() {
-      this.scrollToBottom();
-      var texto = this.$refs.inputTexto.value;
-      if (texto != "") {
-        // this.mensajes.push({
-        //   id: 0,
-        //   sender_id: this.userId,
-        //   message: texto
-        // });
-        this.$refs.inputTexto.value = "";
-        var data = new FormData();
-        data.append("message", texto);
-        data.append("receiver_id", this.conversacion.user_dest.id);
-        var that = this;
-        this.$axios
-          .post(this.$localurl + "/api/v1/messages/textMessage", data)
-          .then(function() {
-            that.getChat();
-          })
-          .catch(function(response) {
-            if (response != null && response.response != null && response.response.status == 401) {
-              that.$eventHub.$emit("home-desconectar-socket");
-              localStorage.removeItem("$expire");
-              localStorage.removeItem("$userId");
-              if(window.location.pathname.split("/").reverse()[0] != "login"){
-              that.$router.push("/login");
-            }
-            }
-            alert("Se produjo un error, reintente");
-          });
+      if(this.enviando == false){
+        this.enviando = true;
+        this.scrollToBottom();
+        var texto = this.$refs.inputTexto.value;
+        if (texto != "") {
+          // this.mensajes.push({
+          //   id: 0,
+          //   sender_id: this.userId,
+          //   message: texto
+          // });
+          this.$refs.inputTexto.value = "";
+          var data = new FormData();
+          data.append("message", texto);
+          data.append("receiver_id", this.conversacion.user_dest.id);
+          var that = this;
+          this.$axios
+            .post(this.$localurl + "/api/v1/messages/textMessage", data)
+            .then(function() {
+              that.enviando = false;
+              that.getChat();
+            })
+            .catch(function(response) {
+              that.enviando = false;
+              if (response != null && response.response != null && response.response.status == 401) {
+                that.$eventHub.$emit("home-desconectar-socket");
+                localStorage.removeItem("$expire");
+                localStorage.removeItem("$userId");
+                if(window.location.pathname.split("/").reverse()[0] != "login"){
+                that.$router.push("/login");
+              }
+              }
+              alert("Se produjo un error, reintente");
+            });
+        }
       }
     },
     isOverflown(element) {

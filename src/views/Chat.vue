@@ -5,6 +5,7 @@
         <div class="chat">
           <div class="chat-top">
             <img @click="$router.back()" src="../assets/img/left_black.png" />
+            <div class="chat-mobile-noLeidos" v-show="mensajesNoLeidos > 0" @click="$router.back()">{{mensajesNoLeidos}}</div>
             <p @click="$router.back()">
               {{
                 $conversacionElegida != null
@@ -131,7 +132,8 @@
               v-on:keyup.enter="enviar()"
               maxlength="140"
             />
-            <img class="chat-enviar" src="../assets/img/enviar.png" @click="enviar()"/>
+            <img v-show="!enviando" class="chat-enviar" src="../assets/img/enviar.png" @click="enviar()"/>
+            <img v-show="enviando" class="chat-enviar" style="opacity: 0.5;" src="../assets/img/enviar.png"/>
           </div>
         </div>
       </div>
@@ -168,7 +170,10 @@ export default {
       currentPage: 0,
       lastPage: 0,
       mensajeOffset: null,
-      mostrarLoading: false
+      mostrarLoading: false,
+      reconectar: true,
+      enviando: false,
+      mensajesNoLeidos: 0
     };
   },
   props: {},
@@ -196,14 +201,36 @@ export default {
         this.eventSource.onmessage = (event) => {
           console.log("result", event.data);
           that.onGetChat();
-          that.getConversaciones();
+          // that.getConversaciones();
+          that.mensajesNoLeidos = 0;
+          event.data.forEach(d => {
+            if(d.id != that.$route.params.id){
+              that.mensajesNoLeidos = that.mensajesNoLeidos + d.ammount_no_read;
+            }
+          });
         };
         this.eventSource.onerror = (event) => {
-          console.log("onerror: "+event.target.readyState)
-          if (event.target.readyState === EventSource.CLOSED) {
-            console.log('eventsource closed (' + event.target.readyState + ')')
+          if(window.location.pathname != "/chat-ea-web/"){
+            console.log("onerror: "+event.target.readyState)
+            if (event.target.readyState === EventSource.CLOSED) {
+              console.log('eventsource closed (' + event.target.readyState + ')')
+              if(that.reconectar == true){
+                that.reconectar = false;
+                that.conectarSSE();
+              }else{
+                that.logout();
+              }
+            }
+          }else{
+            that.desconectarSSE();
           }
         };
+      }
+    },
+    desconectarSSE(){
+      if(this.eventSource != null){
+        console.log("Desconecto SSE");
+        this.eventSource.close();
       }
     },
     esImagen(mensaje) {
@@ -376,6 +403,21 @@ export default {
         that.scrollToBottom();
       });
     },
+    getConversaciones() {
+      var that = this;
+      this.$axios
+        .get(this.$localurl + "/api/v1/messages")
+        .then(function(response) {
+          that.mensajesNoLeidos = 0;
+          response.data.conversations.forEach(c => {
+            if(c.id != that.$route.params.id){
+              that.mensajesNoLeidos = that.mensajesNoLeidos + c.ammount_no_read;
+            }
+          });
+        })
+        .catch(function() {
+        });
+    },
     onScroll() {
       var target = this.$refs.chatScroll;
       if (target.scrollTop < target.clientHeight * 0.1) {
@@ -405,29 +447,34 @@ export default {
       });
     },
     enviar() {
-      this.scrollToBottom();
-      var texto = this.$refs.inputTexto.value;
-      if (texto != "") {
-        this.$refs.inputTexto.value = "";
-        var data = new FormData();
-        data.append("message", texto);
-        data.append("receiver_id", this.$route.params.user_dest_id);
-        var that = this;
-        this.$axios
-          .post(this.$localurl + "/api/v1/messages/textMessage", data)
-          .then(function() {
-            that.getChat();
-          })
-          .catch(function(response) {
-            if (response != null && response.response != null && response.response.status == 401) {
-              localStorage.removeItem("$expire");
-              localStorage.removeItem("$userId");
-              if(window.location.pathname.split("/").reverse()[0] != "login"){
-                that.$router.push("/login");
+      if(this.enviando == false){
+        this.enviando = true;
+        this.scrollToBottom();
+        var texto = this.$refs.inputTexto.value;
+        if (texto != "") {
+          this.$refs.inputTexto.value = "";
+          var data = new FormData();
+          data.append("message", texto);
+          data.append("receiver_id", this.$route.params.user_dest_id);
+          var that = this;
+          this.$axios
+            .post(this.$localurl + "/api/v1/messages/textMessage", data)
+            .then(function() {
+              that.enviando = false;
+              that.getChat();
+            })
+            .catch(function(response) {
+              that.enviando = false;
+              if (response != null && response.response != null && response.response.status == 401) {
+                localStorage.removeItem("$expire");
+                localStorage.removeItem("$userId");
+                if(window.location.pathname.split("/").reverse()[0] != "login"){
+                  that.$router.push("/login");
+                }
               }
-            }
-            alert("Se produjo un error, reintente");
-          });
+              alert("Se produjo un error, reintente");
+            });
+        }
       }
     },
     isOverflown(element) {
@@ -466,6 +513,24 @@ export default {
             alert("Se produjo un error, reintente");
           });
       }
+    },
+    logout() {
+      var that = this;
+      this.$axios
+        .post(this.$localurl + "/api/v1/auth/logout")
+        .then(function() {
+          that.desconectarSSE();
+          localStorage.removeItem("$token");
+          localStorage.removeItem("$userId");
+          localStorage.removeItem("$expire");
+          if(window.location.pathname.split("/").reverse()[0] != "login"){
+              that.$router.push("/login");
+            }
+        })
+        .catch(function(error) {
+          // handle error
+          console.log(error);
+        });
     }
   }
 };
