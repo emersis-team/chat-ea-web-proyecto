@@ -200,7 +200,7 @@ export default {
         };
         this.eventSource.onmessage = (event) => {
           console.log("result", event.data);
-          if(JSON.parse(event.data).some(a => a.conversation_id == that.$route.params.id)){
+          if(that.conversacionElegida != null && JSON.parse(event.data).some(a => a.conversation_id == that.$route.params.id)){
             that.onGetChat();
           }
           // that.getConversaciones();

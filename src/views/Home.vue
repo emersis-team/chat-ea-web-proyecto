@@ -78,7 +78,7 @@ export default {
         }
         this.eventSource.onmessage = (event) => {
           console.log("result", event.data);
-          if(JSON.parse(event.data).some(a => a.conversation_id == that.conversacionElegida.id)){
+          if(that.conversacionElegida != null && JSON.parse(event.data).some(a => a.conversation_id == that.conversacionElegida.id)){
             that.$eventHub.$emit("chat-get");
           }
           // that.getConversaciones();
