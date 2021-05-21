@@ -206,7 +206,7 @@ export default {
           // that.getConversaciones();
           that.mensajesNoLeidos = 0;
           JSON.parse(event.data).forEach(d => {
-            if(d.id != that.$route.params.id){
+            if(d.conversation_id != that.$route.params.id){
               that.mensajesNoLeidos = that.mensajesNoLeidos + d.ammount_no_read;
             }
           });

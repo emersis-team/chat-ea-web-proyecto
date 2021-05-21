@@ -84,12 +84,12 @@ export default {
           // that.getConversaciones();
           JSON.parse(event.data).forEach(d => {
             that.conversaciones.forEach(c => {
-              if(c.id == d.id){
+              if(c.id == d.conversation_id){
                 c.ammount_no_read = d.pendiente;
               }
             });
             that.conversacionesFiltradas.forEach(c => {
-              if(c.id == d.id){
+              if(c.id == d.conversation_id){
                 c.ammount_no_read = d.pendiente;
               }
             });
