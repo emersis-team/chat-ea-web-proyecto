@@ -93,6 +93,9 @@ export default {
                 c.ammount_no_read = d.pendiente;
               }
             });
+            if(that.conversacionElegida != null){
+              that.conversacionElegida.ammount_no_read = 0;
+            }
           });
         }
         this.eventSource.onerror = (event) => {

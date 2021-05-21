@@ -210,6 +210,9 @@ export default {
               that.mensajesNoLeidos = that.mensajesNoLeidos + d.ammount_no_read;
             }
           });
+          if(that.conversacionElegida != null){
+            that.conversacionElegida.ammount_no_read = 0;
+          }
         };
         this.eventSource.onerror = (event) => {
           if(window.location.pathname != "/chat-ea-web/"){
