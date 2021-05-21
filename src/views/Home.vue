@@ -78,9 +78,11 @@ export default {
         }
         this.eventSource.onmessage = (event) => {
           console.log("result", event.data);
-          that.$eventHub.$emit("chat-get");
+          if(JSON.parse(event.data).some(a => a.conversation_id == that.conversacionElegida.id)){
+            that.$eventHub.$emit("chat-get");
+          }
           // that.getConversaciones();
-          event.data.forEach(d => {
+          JSON.parse(event.data).forEach(d => {
             that.conversaciones.forEach(c => {
               if(c.id == d.id){
                 c.ammount_no_read = d.pendiente;

@@ -200,10 +200,12 @@ export default {
         };
         this.eventSource.onmessage = (event) => {
           console.log("result", event.data);
-          that.onGetChat();
+          if(JSON.parse(event.data).some(a => a.conversation_id == that.$route.params.id)){
+            that.onGetChat();
+          }
           // that.getConversaciones();
           that.mensajesNoLeidos = 0;
-          event.data.forEach(d => {
+          JSON.parse(event.data).forEach(d => {
             if(d.id != that.$route.params.id){
               that.mensajesNoLeidos = that.mensajesNoLeidos + d.ammount_no_read;
             }
