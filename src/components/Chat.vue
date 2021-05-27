@@ -477,17 +477,17 @@ export default {
       }
     },
     enviarPosicion(){
+      var that = this;
       this.mostrarOpciones = false;
       navigator.geolocation.getCurrentPosition(function(position) {
-        this.enviando = true;
+        that.enviando = true;
         var json = {
           lat: position.coords.latitude,
           lon: position.coords.longitude,
           alt: position.coords.altitude
         };
-        var that = this;
-          this.$axios
-            .post(this.$localurl + "/api/v1/messages/positionMessage", json)
+          that.$axios
+            .post(that.$localurl + "/api/v1/messages/positionMessage", json)
             .then(function() {
               that.enviando = false;
               that.getChat();

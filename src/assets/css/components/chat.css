@@ -274,8 +274,9 @@
   width: 30px;
   display: block;
   margin: auto;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   cursor: pointer;
+  filter: brightness(0);
 }
 
 /* PORTRAIT */
