@@ -71,6 +71,13 @@
             "
             :mensaje="mensaje"
           ></MensajeTexto>
+          <MensajePosicion
+            v-if="
+              mensaje.message_type != null &&
+                mensaje.message_type.substr(11, 100) == 'PositionMessage'
+            "
+            :mensaje="mensaje"
+          ></MensajePosicion>
           <MensajeArchivo
             v-if="
               mensaje.message_type != null &&
@@ -107,14 +114,7 @@
       </div>
     </div>
     <div class="chat-bottom">
-      <div class="chat-adjuntar" title="Adjuntar" @click="adjuntar()">
-        <input
-          type="file"
-          class="app-hide"
-          @change="changeAdjunto()"
-          ref="adjuntoFiles"
-          multiple
-        />
+      <div class="chat-adjuntar" title="Adjuntar" @click="mostrarOpciones = true">
         <img src="../assets/img/adjuntar.png"/>
       </div>
       <input
@@ -128,11 +128,30 @@
       <img v-show="enviando" class="chat-enviar" style="opacity: 0.5;" src="../assets/img/enviar.png"/>
     </div>
     <Loading v-show="mostrarLoading"></Loading>
+    <div v-show="mostrarOpciones" class="chat-opciones">
+      <div class="chat-opciones-mask" @click="mostrarOpciones = false"></div>
+      <div class="chat-opciones-container">
+        <div>
+          <input
+            type="file"
+            class="app-hide"
+            @change="changeAdjunto()"
+            ref="adjuntoFiles"
+            multiple
+          />
+          <img class="chat-opciones-img" src="../assets/img/adjuntar.png" @click="adjuntar()"/>
+        </div>
+        <div>
+          <img class="chat-opciones-img" src="../assets/img/ubicacion.png" @click="enviarPosicion()"/>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import MensajeTexto from "@/components/MensajeTexto.vue";
+import MensajePosicion from "@/components/MensajePosicion.vue";
 import MensajeArchivo from "@/components/MensajeArchivo.vue";
 import MensajeImagen from "@/components/MensajeImagen.vue";
 import MensajeVideo from "@/components/MensajeVideo.vue";
@@ -147,6 +166,7 @@ export default {
     MensajeImagen,
     MensajeVideo,
     MensajeAudio,
+    MensajePosicion,
     Loading
   },
   data() {
@@ -158,6 +178,7 @@ export default {
       lastPage: 0,
       mensajeOffset: null,
       mostrarLoading: false,
+      mostrarOpciones: false,
       enviando: false
     };
   },
@@ -454,6 +475,36 @@ export default {
             alert(string);
           });
       }
+    },
+    enviarPosicion(){
+      this.mostrarOpciones = false;
+      navigator.geolocation.getCurrentPosition(function(position) {
+        this.enviando = true;
+        var json = {
+          lat: position.coords.latitude,
+          lon: position.coords.longitude,
+          alt: position.coords.altitude
+        };
+        var that = this;
+          this.$axios
+            .post(this.$localurl + "/api/v1/messages/positionMessage", json)
+            .then(function() {
+              that.enviando = false;
+              that.getChat();
+            })
+            .catch(function(response) {
+              that.enviando = false;
+              if (response != null && response.response != null && response.response.status == 401) {
+                that.$eventHub.$emit("home-desconectar-socket");
+                localStorage.removeItem("$expire");
+                localStorage.removeItem("$userId");
+                if(window.location.pathname.split("/").reverse()[0] != "login"){
+                that.$router.push("/login");
+              }
+              }
+              alert("Se produjo un error, reintente");
+            });
+      });
     }
   }
 };
