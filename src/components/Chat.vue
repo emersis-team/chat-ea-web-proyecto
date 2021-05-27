@@ -401,11 +401,6 @@ export default {
         this.scrollToBottom();
         var texto = this.$refs.inputTexto.value;
         if (texto != "") {
-          // this.mensajes.push({
-          //   id: 0,
-          //   sender_id: this.userId,
-          //   message: texto
-          // });
           this.$refs.inputTexto.value = "";
           var data = new FormData();
           data.append("message", texto);
@@ -481,13 +476,13 @@ export default {
       this.mostrarOpciones = false;
       navigator.geolocation.getCurrentPosition(function(position) {
         that.enviando = true;
-        var json = {
-          lat: position.coords.latitude,
-          lon: position.coords.longitude,
-          alt: position.coords.altitude
-        };
+         var data = new FormData();
+        data.append("lat", position.coords.latitude);
+        data.append("lon", position.coords.longitude);
+        data.append("alt", position.coords.altitude);
+        data.append("receiver_id", this.conversacion.user_dest.id);
           that.$axios
-            .post(that.$localurl + "/api/v1/messages/positionMessage", json)
+            .post(that.$localurl + "/api/v1/messages/positionMessage", data)
             .then(function() {
               that.enviando = false;
               that.getChat();
