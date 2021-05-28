@@ -554,13 +554,13 @@ export default {
       this.mostrarOpciones = false;
       navigator.geolocation.getCurrentPosition(function(position) {
         that.enviando = true;
-        var json = {
-          lat: position.coords.latitude,
-          lon: position.coords.longitude,
-          alt: position.coords.altitude
-        };
-          that.$axios
-            .post(that.$localurl + "/api/v1/messages/positionMessage", json)
+        var data = new FormData();
+        data.append("lat", position.coords.latitude);
+        data.append("lon", position.coords.longitude);
+        data.append("alt", position.coords.altitude);
+        data.append("receiver_id", that.conversacion.user_dest.id);
+        that.$axios
+            .post(that.$localurl + "/api/v1/messages/positionMessage", data)
             .then(function() {
               that.enviando = false;
               that.getChat();
