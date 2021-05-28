@@ -476,7 +476,7 @@ export default {
       this.mostrarOpciones = false;
       navigator.geolocation.getCurrentPosition(function(position) {
         that.enviando = true;
-         var data = new FormData();
+        var data = new FormData();
         data.append("lat", position.coords.latitude);
         data.append("lon", position.coords.longitude);
         data.append("alt", position.coords.altitude);
