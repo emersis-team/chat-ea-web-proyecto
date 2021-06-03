@@ -557,8 +557,8 @@ export default {
         var data = new FormData();
         data.append("lat", position.coords.latitude);
         data.append("lon", position.coords.longitude);
-        data.append("alt", position.coords.altitude);
-        data.append("receiver_id", that.conversacion.user_dest.id);
+        data.append("alt", (position.coords.altitude != null ? position.coords.altitude : 0));
+        data.append("receiver_id", that.$route.params.user_dest_id);
         that.$axios
             .post(that.$localurl + "/api/v1/messages/positionMessage", data)
             .then(function() {
