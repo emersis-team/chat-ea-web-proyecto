@@ -268,16 +268,18 @@
   left: 17px;
   background-color: #fff;
   width: 56px;
-  height: 6vw;
-  padding-top: 0.5vw;
-  border-radius: 0.5vw;
+  height: auto;
+  padding-top: 15px;
+  padding-bottom: 15px;
   box-shadow: 0 1px 0.5px 0 rgb(0 0 0 / 13%);
+  display: grid;
+  grid-template-rows: auto auto;
+  row-gap: 15px;
 }
 .chat-opciones-img {
   width: 30px;
   display: block;
   margin: auto;
-  margin-bottom: 20px;
   cursor: pointer;
   filter: brightness(0);
 }

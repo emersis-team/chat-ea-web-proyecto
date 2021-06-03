@@ -78,6 +78,13 @@
                   "
                   :mensaje="mensaje"
                 ></MensajeTexto>
+                <MensajePosicion
+                  v-if="
+                    mensaje.message_type != null &&
+                      mensaje.message_type.substr(11, 100) == 'PositionMessage'
+                  "
+                  :mensaje="mensaje"
+                ></MensajePosicion>
                 <MensajeArchivo
                   v-if="
                     mensaje.message_type != null &&
@@ -159,6 +166,7 @@ import MensajeArchivo from "@/components/MensajeArchivo.vue";
 import MensajeImagen from "@/components/MensajeImagen.vue";
 import MensajeVideo from "@/components/MensajeVideo.vue";
 import MensajeAudio from "@/components/MensajeAudio.vue";
+import MensajePosicion from "@/components/MensajePosicion.vue";
 import Loading from "@/components/Loading.vue";
 
 window.Pusher = require("pusher-js");
@@ -171,6 +179,7 @@ export default {
     MensajeImagen,
     MensajeVideo,
     MensajeAudio,
+    MensajePosicion,
     Loading
   },
   data() {
