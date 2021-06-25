@@ -1,5 +1,15 @@
 <template>
   <div class="chat-mensaje">
+    <img
+      v-show="mensaje.read_at == null"
+      class="chat-mensaje-estado"
+      src="../assets/img/pendiente.png"
+    />
+    <img
+      v-show="mensaje.read_at != null"
+      class="chat-mensaje-estado"
+      src="../assets/img/entregado.png"
+    />
     <label class="chat-mensaje-hora">{{ getHora() }}</label>
     <div
       class="chat-mensaje-video"
@@ -32,22 +42,22 @@ export default {
   mounted() {},
   created() {},
   methods: {
-    getHora(){
-            var offset = new Date().getTimezoneOffset() / 60 * -1;
+    getHora() {
+      var offset = (new Date().getTimezoneOffset() / 60) * -1;
       var horaCompleta = this.mensaje.created_at.split("T")[1].split(":");
       var hora = parseFloat(horaCompleta[0]);
 
       hora = hora + offset;
-      if(hora < 0){
+      if (hora < 0) {
         hora = hora + 24;
       }
       hora = hora.toString();
-      if(hora.length == 1){
+      if (hora.length == 1) {
         hora = "0" + hora;
       }
       return hora + ":" + horaCompleta[1];
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -1,9 +1,27 @@
 <template>
   <div class="chat-mensaje">
-    <div class="chat-mensaje-archivo" v-for="file in mensaje.message.files" :key="file.id">
-      <label class="chat-mensaje-archivo-titulo">{{file.original_file}}</label>
+    <img
+      v-show="mensaje.read_at == null"
+      class="chat-mensaje-estado"
+      src="../assets/img/pendiente.png"
+    />
+    <img
+      v-show="mensaje.read_at != null"
+      class="chat-mensaje-estado"
+      src="../assets/img/entregado.png"
+    />
+    <div
+      class="chat-mensaje-archivo"
+      v-for="file in mensaje.message.files"
+      :key="file.id"
+    >
+      <label class="chat-mensaje-archivo-titulo">{{
+        file.original_file
+      }}</label>
       <label class="chat-mensaje-hora">{{ getHora() }}</label>
-      <a :href="$localurl +'/public/storage/'+ file.file" download>Descargar</a>
+      <a :href="$localurl + '/public/storage/' + file.file" download
+        >Descargar</a
+      >
     </div>
   </div>
 </template>
@@ -20,22 +38,22 @@ export default {
   mounted() {},
   created() {},
   methods: {
-    getHora(){
-            var offset = new Date().getTimezoneOffset() / 60 * -1;
+    getHora() {
+      var offset = (new Date().getTimezoneOffset() / 60) * -1;
       var horaCompleta = this.mensaje.created_at.split("T")[1].split(":");
       var hora = parseFloat(horaCompleta[0]);
 
       hora = hora + offset;
-      if(hora < 0){
+      if (hora < 0) {
         hora = hora + 24;
       }
       hora = hora.toString();
-      if(hora.length == 1){
+      if (hora.length == 1) {
         hora = "0" + hora;
       }
       return hora + ":" + horaCompleta[1];
-    }
-  }
+    },
+  },
 };
 </script>
 

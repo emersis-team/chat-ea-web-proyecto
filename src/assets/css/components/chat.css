@@ -283,6 +283,13 @@
   cursor: pointer;
   filter: brightness(0);
 }
+.chat-mensaje-estado {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 15px;
+  height: 15px;
+}
 
 /* PORTRAIT */
 @media screen and (max-width: 500px) and (max-aspect-ratio: 13/9) {
