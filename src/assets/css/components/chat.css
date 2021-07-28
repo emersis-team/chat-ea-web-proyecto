@@ -194,7 +194,7 @@
   font-size: 17px;
   padding-left: 1vw;
   padding-right: 1vw;
-  height: 35px;
+  width: 1.8vw;
   border-radius: 1vw;
   border: none;
   cursor: pointer;
@@ -206,7 +206,7 @@
   left: 2%;
   border-radius: 50%;
   padding: 0.1vw;
-  width: 32px;
+  width: 1.7vw;
   cursor: pointer;
 }
 .chat-adjuntar > img {
@@ -285,10 +285,11 @@
 }
 .chat-mensaje-estado {
   position: absolute;
-  bottom: 10px;
-  right: 10px;
-  width: 15px;
-  height: 15px;
+  bottom: 7px;
+  right: 7px;
+  width: 10px;
+  height: auto;
+  opacity: 0.9;
 }
 
 /* PORTRAIT */

@@ -1,12 +1,12 @@
 <template>
   <div class="chat-mensaje">
     <img
-      v-show="mensaje.read_at == null"
+      v-show="mensajePropio && mensaje.read_at == null"
       class="chat-mensaje-estado"
       src="../assets/img/pendiente.png"
     />
     <img
-      v-show="mensaje.read_at != null"
+      v-show="mensajePropio && mensaje.read_at != null"
       class="chat-mensaje-estado"
       src="../assets/img/entregado.png"
     />
@@ -33,7 +33,7 @@ export default {
   data() {
     return {};
   },
-  props: { mensaje: [Object] },
+  props: { mensaje: [Object], mensajePropio: [Boolean] },
   computed: {},
   mounted() {},
   created() {},

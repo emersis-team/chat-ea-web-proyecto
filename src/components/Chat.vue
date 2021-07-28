@@ -70,6 +70,7 @@
                 mensaje.message_type.substr(11, 100) == 'TextMessage'
             "
             :mensaje="mensaje"
+            :mensajePropio="mensaje.sender_id == userId"
           ></MensajeTexto>
           <MensajePosicion
             v-if="
@@ -77,6 +78,7 @@
                 mensaje.message_type.substr(11, 100) == 'PositionMessage'
             "
             :mensaje="mensaje"
+            :mensajePropio="mensaje.sender_id == userId"
           ></MensajePosicion>
           <MensajeArchivo
             v-if="
@@ -85,6 +87,7 @@
                 esArchivo(mensaje)
             "
             :mensaje="mensaje"
+            :mensajePropio="mensaje.sender_id == userId"
           ></MensajeArchivo>
           <MensajeImagen
             v-if="
@@ -93,6 +96,7 @@
                 esImagen(mensaje)
             "
             :mensaje="mensaje"
+            :mensajePropio="mensaje.sender_id == userId"
           ></MensajeImagen>
           <MensajeVideo
             v-if="
@@ -101,6 +105,7 @@
                 esVideo(mensaje)
             "
             :mensaje="mensaje"
+            :mensajePropio="mensaje.sender_id == userId"
           ></MensajeVideo>
           <MensajeAudio
             v-if="
@@ -109,6 +114,7 @@
                 esAudio(mensaje)
             "
             :mensaje="mensaje"
+            :mensajePropio="mensaje.sender_id == userId"
           ></MensajeAudio>
       </div>
       </div>
