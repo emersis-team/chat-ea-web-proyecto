@@ -17,9 +17,10 @@ export default {
   },
   components: { Snackbar },
   created() {
-    Vue.prototype.$localurl = "https://emersis.casya.com.ar";
+    // Vue.prototype.$localurl = "https://emersis.casya.com.ar";
     // Vue.prototype.$localurl = "http://chat-ea-web-sockets-back.casya.com.ar";
-    // Vue.prototype.$localurl = "http://localhost:8185";
+    // Vue.prototype.$localurl = "http://chat-ea-web.test";
+    Vue.prototype.$localurl = "http://chat-ea-web.test";
     this.$axios.defaults.headers.common["Authorization"] =
       "Bearer " + localStorage.getItem("$token");
     if (localStorage.getItem("$token") == null) {
