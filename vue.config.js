@@ -1,3 +1,3 @@
 module.exports = {
-  // publicPath: "/chat-ea-web/public/",
+  publicPath: "/chat-ea-web/"
 };
