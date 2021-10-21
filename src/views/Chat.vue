@@ -5,6 +5,11 @@
         <div class="chat">
           <div class="chat-top">
             <img @click="$router.back()" src="../assets/img/left_black.png">
+            <div
+              class="chat-mobile-noLeidos"
+              v-show="mensajesNoLeidos > 0"
+              @click="$router.back()"
+            >{{mensajesNoLeidos}}</div>
             <p @click="$router.back()">
               {{
               $conversacionElegida != null
@@ -116,15 +121,8 @@
           </div>
 
           <div class="chat-bottom">
-            <div class="chat-adjuntar" title="Adjuntar" @click="adjuntar()">
-              <input
-                type="file"
-                class="app-hide"
-                @change="changeAdjunto()"
-                ref="adjuntoFiles"
-                multiple
-              >
-              <img src="../assets/img/adjuntar.png">
+            <div class="chat-adjuntar" title="Adjuntar">
+              <img src="../assets/img/adjuntar.png" @click="mostrarOpciones = true">
             </div>
             <input
               type="text"
@@ -133,11 +131,45 @@
               v-on:keyup.enter="enviar()"
               maxlength="140"
             >
-            <img class="chat-enviar" src="../assets/img/enviar.png" @click="enviar()">
+            <img
+              v-show="!enviando"
+              class="chat-enviar"
+              src="../assets/img/enviar.png"
+              @click="enviar()"
+            >
+            <img
+              v-show="enviando"
+              class="chat-enviar"
+              style="opacity: 0.5;"
+              src="../assets/img/enviar.png"
+            >
+          </div>
+          <div v-show="mostrarOpciones" class="chat-opciones">
+            <div class="chat-opciones-mask" @click="mostrarOpciones = false"></div>
+            <div class="chat-opciones-container">
+              <div>
+                <input
+                  type="file"
+                  class="app-hide"
+                  @change="changeAdjunto()"
+                  ref="adjuntoFiles"
+                  multiple
+                >
+                <img class="chat-opciones-img" src="../assets/img/adjuntar.png" @click="adjuntar()">
+              </div>
+              <div>
+                <img
+                  class="chat-opciones-img"
+                  src="../assets/img/ubicacion.png"
+                  @click="enviarPosicion()"
+                >
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
+    <Loading v-show="mostrarLoading"></Loading>
   </div>
 </template>
 
@@ -149,6 +181,7 @@ import MensajeVideo from "@/components/MensajeVideo.vue";
 import MensajeAudio from "@/components/MensajeAudio.vue";
 import MensajePosicion from "@/components/MensajePosicion.vue";
 import Echo from "laravel-echo";
+import Loading from "@/components/Loading.vue";
 
 window.Pusher = require("pusher-js");
 
@@ -160,7 +193,8 @@ export default {
     MensajeImagen,
     MensajeVideo,
     MensajeAudio,
-    MensajePosicion
+    MensajePosicion,
+    Loading
   },
   data() {
     return {
@@ -169,12 +203,17 @@ export default {
       primeraPagina: true,
       currentPage: 0,
       lastPage: 0,
-      mensajeOffset: null
+      mensajeOffset: null,
+      mostrarLoading: false,
+      enviando: false,
+      mensajesNoLeidos: 0,
+      mostrarOpciones: false
     };
   },
   props: {},
   computed: {},
   mounted() {
+    this.mostrarLoading = true;
     this.userId = localStorage.getItem("$userId");
     this.getChat();
     this.mensajes = [];
@@ -206,7 +245,7 @@ export default {
     );
   },
   created() {
-    this.$eventHub.$on("chat-get", id => this.getChat(id));
+    this.$eventHub.$on("chat-get", id => this.onGetChat(id));
   },
   methods: {
     desconectarSocket() {
@@ -267,6 +306,12 @@ export default {
         return false;
       }
     },
+    onGetChat(id) {
+      if (id != null) {
+        this.mostrarLoading = true;
+      }
+      this.getChat(id);
+    },
     getChat(id) {
       if (id == null) {
         id = this.$route.params.id;
@@ -278,6 +323,7 @@ export default {
       this.$axios
         .get(this.$localurl + "/api/v1/messages/" + id)
         .then(function(response) {
+          that.mostrarLoading = false;
           if (
             that.primeraPagina == true &&
             !that.isOverflown(document.getElementById("chatScroll"))
@@ -303,12 +349,14 @@ export default {
           that.getSeparadores();
         })
         .catch(function(response) {
+          that.mostrarLoading = false;
           if (
             response != null &&
             response.response != null &&
             response.response.status == 401
           ) {
             localStorage.removeItem("$expire");
+            localStorage.removeItem("$userId");
             if (window.location.pathname.split("/").reverse()[0] != "login") {
               that.desconectarSocket();
               that.$router.push("/login");
@@ -330,11 +378,13 @@ export default {
       this.$axios
         .get(this.$localurl + "/api/v1/messages/" + this.$route.params.id + pag)
         .then(function(response) {
+          that.mostrarLoading = false;
           response.data.messages.data.reverse();
           that.mensajes = response.data.messages.data.concat(that.mensajes);
           that.getSeparadores();
         })
         .catch(function(response) {
+          that.mostrarLoading = false;
           if (
             response != null &&
             response.response != null &&
@@ -377,6 +427,7 @@ export default {
                 "Sábado"
               ];
               fecha = days[d.getDay()] + " " + fecha;
+              fechas.push(fecha);
               if (!this.mensajes.some(m => m.fecha == fecha)) {
                 this.mensajes.splice(i, 0, { fecha: fecha });
                 cantidad++;
@@ -394,6 +445,20 @@ export default {
       this.$nextTick(() => {
         that.scrollToBottom();
       });
+    },
+    getConversaciones() {
+      var that = this;
+      this.$axios
+        .get(this.$localurl + "/api/v1/messages")
+        .then(function(response) {
+          that.mensajesNoLeidos = 0;
+          response.data.conversations.forEach(c => {
+            if (c.id != that.$route.params.id) {
+              that.mensajesNoLeidos = that.mensajesNoLeidos + c.ammount_no_read;
+            }
+          });
+        })
+        .catch(function() {});
     },
     onScroll() {
       var target = this.$refs.chatScroll;
@@ -424,33 +489,40 @@ export default {
       });
     },
     enviar() {
-      this.scrollToBottom();
-      var texto = this.$refs.inputTexto.value;
-      if (texto != "") {
-        this.$refs.inputTexto.value = "";
-        var data = new FormData();
-        data.append("message", texto);
-        data.append("receiver_id", this.$route.params.user_dest_id);
-        var that = this;
-        this.$axios
-          .post(this.$localurl + "/api/v1/messages/textMessage", data)
-          .then(function() {
-            that.getChat();
-          })
-          .catch(function(response) {
-            if (
-              response != null &&
-              response.response != null &&
-              response.response.status == 401
-            ) {
-              localStorage.removeItem("$expire");
-              if (window.location.pathname.split("/").reverse()[0] != "login") {
-                that.desconectarSocket();
-                that.$router.push("/login");
+      if (this.enviando == false) {
+        this.enviando = true;
+        this.scrollToBottom();
+        var texto = this.$refs.inputTexto.value;
+        if (texto != "") {
+          this.$refs.inputTexto.value = "";
+          var data = new FormData();
+          data.append("message", texto);
+          data.append("receiver_id", this.$route.params.user_dest_id);
+          var that = this;
+          this.$axios
+            .post(this.$localurl + "/api/v1/messages/textMessage", data)
+            .then(function() {
+              that.enviando = false;
+              that.getChat();
+            })
+            .catch(function(response) {
+              that.enviando = false;
+              if (
+                response != null &&
+                response.response != null &&
+                response.response.status == 401
+              ) {
+                localStorage.removeItem("$expire");
+                localStorage.removeItem("$userId");
+                if (
+                  window.location.pathname.split("/").reverse()[0] != "login"
+                ) {
+                  that.$router.push("/login");
+                }
               }
-            }
-            alert("Se produjo un error, reintente");
-          });
+              alert("Se produjo un error, reintente");
+            });
+        }
       }
     },
     isOverflown(element) {
@@ -485,6 +557,7 @@ export default {
               response.response.status == 401
             ) {
               localStorage.removeItem("$expire");
+              localStorage.removeItem("$userId");
               if (window.location.pathname.split("/").reverse()[0] != "login") {
                 that.desconectarSocket();
                 that.$router.push("/login");
@@ -493,6 +566,54 @@ export default {
             alert("Se produjo un error, reintente");
           });
       }
+    },
+    logout() {
+      var that = this;
+      this.$axios
+        .post(this.$localurl + "/api/v1/auth/logout")
+        .then(function() {
+          that.desconectarSSE();
+          localStorage.removeItem("$token");
+          localStorage.removeItem("$userId");
+          localStorage.removeItem("$expire");
+          if(window.location.pathname.split("/").reverse()[0] != "login"){
+              that.$router.push("/login");
+            }
+        })
+        .catch(function(error) {
+          // handle error
+          console.log(error);
+        });
+    },
+    enviarPosicion(){
+      var that = this;
+      this.mostrarOpciones = false;
+      navigator.geolocation.getCurrentPosition(function(position) {
+        that.enviando = true;
+        var data = new FormData();
+        data.append("lat", position.coords.latitude);
+        data.append("lon", position.coords.longitude);
+        data.append("alt", (position.coords.altitude != null ? position.coords.altitude : 0));
+        data.append("receiver_id", that.$route.params.user_dest_id);
+        that.$axios
+            .post(that.$localurl + "/api/v1/messages/positionMessage", data)
+            .then(function() {
+              that.enviando = false;
+              that.getChat();
+            })
+            .catch(function(response) {
+              that.enviando = false;
+              if (response != null && response.response != null && response.response.status == 401) {
+                that.$eventHub.$emit("home-desconectar-socket");
+                localStorage.removeItem("$expire");
+                localStorage.removeItem("$userId");
+                if(window.location.pathname.split("/").reverse()[0] != "login"){
+                that.$router.push("/login");
+              }
+              }
+              alert("Se produjo un error, reintente");
+            });
+      });
     }
   }
 };
