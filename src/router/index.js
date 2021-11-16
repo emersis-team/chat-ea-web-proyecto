@@ -21,6 +21,11 @@ const routes = [
     name: "chat",
     component: () => import(/* webpackChunkName: "chat" */ "../views/Chat.vue"),
   },
+  {
+    path: "/token/:token",
+    name: "token",
+    component: () => import("../views/Token.vue")
+  }
 ];
 
 const router = new VueRouter({

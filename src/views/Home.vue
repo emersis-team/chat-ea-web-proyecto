@@ -73,7 +73,7 @@ export default {
         window.Echo = new Echo({
           broadcaster: "pusher",
           key: "ASDASD2121",
-          wsHost: "127.0.0.1",
+          wsHost: "23.237.173.86",
           wsPort: 6001,
         // wssPort: 6001,
           disableStats: true,
