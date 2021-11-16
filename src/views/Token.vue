@@ -15,6 +15,8 @@ export default {
   created() {},
   mounted() {
     localStorage.setItem("$token", this.$route.params.token);
+    this.$axios.defaults.headers.common["Authorization"] =
+              "Bearer " + localStorage.getItem("$token");
     this.getUsuario();
   },
   methods: {
