@@ -4,21 +4,21 @@
       <div class="home-right">
         <div class="chat">
           <div class="chat-top">
-            <img @click="$router.back()" src="../assets/img/left_black.png" />
+            <img @click="$router.back()" src="../assets/img/left_black.png">
+            <div
+              class="chat-mobile-noLeidos"
+              v-show="mensajesNoLeidos > 0"
+              @click="$router.back()"
+            >{{mensajesNoLeidos}}</div>
             <p @click="$router.back()">
               {{
-                $conversacionElegida != null
-                  ? $conversacionElegida.user_dest.name
-                  : ""
+              $conversacionElegida != null
+              ? $conversacionElegida.user_dest.name
+              : ""
               }}
             </p>
           </div>
-          <div
-            id="chatScroll"
-            class="chat-scroll"
-            ref="chatScroll"
-            @scroll="onScroll"
-          >
+          <div id="chatScroll" class="chat-scroll" ref="chatScroll" @scroll="onScroll">
             <div
               v-for="mensaje in mensajes"
               :key="mensaje.id"
@@ -28,48 +28,48 @@
                 'chat-mensaje-propio': mensaje.sender_id == userId
               }"
             >
-            <div v-if="mensaje.fecha != null" class="chat-separador">
-              <label>{{mensaje.fecha}}</label>
-            </div>
-            <div v-if="mensaje.fecha == null">
-              <span class="chat-tail" v-if="mensaje.sender_id != userId">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 8 13"
-                width="8"
-                height="13"
-                style="display: block;"
-              >
-                <path
-                  opacity=".13"
-                  fill="#0000000"
-                  d="M1.533 3.568L8 12.193V1H2.812C1.042 1 .474 2.156 1.533 3.568z"
-                />
-                <path
-                  fill="currentColor"
-                  d="M1.533 2.568L8 11.193V0H2.812C1.042 0 .474 1.156 1.533 2.568z"
-                />
-              </svg>
-              </span>
-              <span class="chat-tail-out" v-if="mensaje.sender_id == userId">
-                <svg
-                  class="chat-tail-svg"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 8 13"
-                  width="8"
-                  height="13"
-                  style="display: block;"
-                >
-                  <path
-                    opacity=".13"
-                    d="M5.188 1H0v11.193l6.467-8.625C7.526 2.156 6.958 1 5.188 1z"
-                  />
-                  <path
-                    fill="currentColor"
-                    d="M5.188 0H0v11.193l6.467-8.625C7.526 1.156 6.958 0 5.188 0z"
-                  />
-                </svg>
-              </span>
+              <div v-if="mensaje.fecha != null" class="chat-separador">
+                <label>{{mensaje.fecha}}</label>
+              </div>
+              <div v-if="mensaje.fecha == null">
+                <span class="chat-tail" v-if="mensaje.sender_id != userId">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 8 13"
+                    width="8"
+                    height="13"
+                    style="display: block;"
+                  >
+                    <path
+                      opacity=".13"
+                      fill="#0000000"
+                      d="M1.533 3.568L8 12.193V1H2.812C1.042 1 .474 2.156 1.533 3.568z"
+                    ></path>
+                    <path
+                      fill="currentColor"
+                      d="M1.533 2.568L8 11.193V0H2.812C1.042 0 .474 1.156 1.533 2.568z"
+                    ></path>
+                  </svg>
+                </span>
+                <span class="chat-tail-out" v-if="mensaje.sender_id == userId">
+                  <svg
+                    class="chat-tail-svg"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 8 13"
+                    width="8"
+                    height="13"
+                    style="display: block;"
+                  >
+                    <path
+                      opacity=".13"
+                      d="M5.188 1H0v11.193l6.467-8.625C7.526 2.156 6.958 1 5.188 1z"
+                    ></path>
+                    <path
+                      fill="currentColor"
+                      d="M5.188 0H0v11.193l6.467-8.625C7.526 1.156 6.958 0 5.188 0z"
+                    ></path>
+                  </svg>
+                </span>
                 <MensajeTexto
                   v-if="
                     mensaje.message_type != null &&
@@ -77,6 +77,13 @@
                   "
                   :mensaje="mensaje"
                 ></MensajeTexto>
+                <MensajePosicion
+                  v-if="
+                    mensaje.message_type != null &&
+                      mensaje.message_type.substr(11, 100) == 'PositionMessage'
+                  "
+                  :mensaje="mensaje"
+                ></MensajePosicion>
                 <MensajeArchivo
                   v-if="
                     mensaje.message_type != null &&
@@ -114,15 +121,8 @@
           </div>
 
           <div class="chat-bottom">
-            <div class="chat-adjuntar" title="Adjuntar" @click="adjuntar()">
-              <input
-                type="file"
-                class="app-hide"
-                @change="changeAdjunto()"
-                ref="adjuntoFiles"
-                multiple
-              />
-              <img src="../assets/img/adjuntar.png"/>
+            <div class="chat-adjuntar" title="Adjuntar">
+              <img src="../assets/img/adjuntar.png" @click="mostrarOpciones = true">
             </div>
             <input
               type="text"
@@ -130,12 +130,46 @@
               ref="inputTexto"
               v-on:keyup.enter="enviar()"
               maxlength="140"
-            />
-            <img class="chat-enviar" src="../assets/img/enviar.png" @click="enviar()"/>
+            >
+            <img
+              v-show="!enviando"
+              class="chat-enviar"
+              src="../assets/img/enviar.png"
+              @click="enviar()"
+            >
+            <img
+              v-show="enviando"
+              class="chat-enviar"
+              style="opacity: 0.5;"
+              src="../assets/img/enviar.png"
+            >
+          </div>
+          <div v-show="mostrarOpciones" class="chat-opciones">
+            <div class="chat-opciones-mask" @click="mostrarOpciones = false"></div>
+            <div class="chat-opciones-container">
+              <div>
+                <input
+                  type="file"
+                  class="app-hide"
+                  @change="changeAdjunto()"
+                  ref="adjuntoFiles"
+                  multiple
+                >
+                <img class="chat-opciones-img" src="../assets/img/adjuntar.png" @click="adjuntar()">
+              </div>
+              <div>
+                <img
+                  class="chat-opciones-img"
+                  src="../assets/img/ubicacion.png"
+                  @click="enviarPosicion()"
+                >
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
+    <Loading v-show="mostrarLoading"></Loading>
   </div>
 </template>
 
@@ -145,7 +179,9 @@ import MensajeArchivo from "@/components/MensajeArchivo.vue";
 import MensajeImagen from "@/components/MensajeImagen.vue";
 import MensajeVideo from "@/components/MensajeVideo.vue";
 import MensajeAudio from "@/components/MensajeAudio.vue";
+import MensajePosicion from "@/components/MensajePosicion.vue";
 import Echo from "laravel-echo";
+import Loading from "@/components/Loading.vue";
 
 window.Pusher = require("pusher-js");
 
@@ -156,7 +192,9 @@ export default {
     MensajeArchivo,
     MensajeImagen,
     MensajeVideo,
-    MensajeAudio
+    MensajeAudio,
+    MensajePosicion,
+    Loading
   },
   data() {
     return {
@@ -165,12 +203,17 @@ export default {
       primeraPagina: true,
       currentPage: 0,
       lastPage: 0,
-      mensajeOffset: null
+      mensajeOffset: null,
+      mostrarLoading: false,
+      enviando: false,
+      mensajesNoLeidos: 0,
+      mostrarOpciones: false
     };
   },
   props: {},
   computed: {},
   mounted() {
+    this.mostrarLoading = true;
     this.userId = localStorage.getItem("$userId");
     this.getChat();
     this.mensajes = [];
@@ -182,27 +225,38 @@ export default {
       key: "ASDASD2121",
       wsHost: "23.237.173.86",
       wsPort: 6001,
-     // wssPort: 6001,
+      // wssPort: 6001,
       disableStats: true,
       forceTLS: false,
       enabledTransports: ["ws"]
     });
-    console.log("Conectando al websocket canal: " + "user."+localStorage.getItem("$userId"));
-    window.Echo.channel("user."+localStorage.getItem("$userId")).listen("NewMessage", (e) => {
-      console.log("Recibo mensaje por websocket");
-      console.log(e);
-      that.getChat();
-    });
+    console.log(
+      "Conectando al websocket canal: " +
+        "user." +
+        localStorage.getItem("$userId")
+    );
+    window.Echo.channel("user." + localStorage.getItem("$userId")).listen(
+      "NewMessage",
+      e => {
+        console.log("Recibo mensaje por websocket");
+        console.log(e);
+        that.getChat();
+      }
+    );
   },
   created() {
-    this.$eventHub.$on("chat-get", id => this.getChat(id));
+    this.$eventHub.$on("chat-get", id => this.onGetChat(id));
   },
   methods: {
-    desconectarSocket(){
-      window.Echo.channel("user."+localStorage.getItem("$userId")).stopListening('NewMessage');
+    desconectarSocket() {
+      window.Echo.channel(
+        "user." + localStorage.getItem("$userId")
+      ).stopListening("NewMessage");
     },
     esImagen(mensaje) {
-      var extension = mensaje.message.files[0].file.split(".")[mensaje.message.files[0].file.split(".").length-1].toLowerCase();
+      var extension = mensaje.message.files[0].file
+        .split(".")
+        [mensaje.message.files[0].file.split(".").length - 1].toLowerCase();
       if (
         extension == "png" ||
         extension == "jpg" ||
@@ -215,7 +269,9 @@ export default {
       }
     },
     esVideo(mensaje) {
-      var extension = mensaje.message.files[0].file.split(".")[mensaje.message.files[0].file.split(".").length-1].toLowerCase();
+      var extension = mensaje.message.files[0].file
+        .split(".")
+        [mensaje.message.files[0].file.split(".").length - 1].toLowerCase();
       if (
         extension == "webm" ||
         extension == "mkv" ||
@@ -230,7 +286,9 @@ export default {
       }
     },
     esAudio(mensaje) {
-      var extension = mensaje.message.files[0].file.split(".")[mensaje.message.files[0].file.split(".").length-1].toLowerCase();
+      var extension = mensaje.message.files[0].file
+        .split(".")
+        [mensaje.message.files[0].file.split(".").length - 1].toLowerCase();
       if (extension == "m4a" || extension == "qt" || extension == "4mb") {
         return true;
       } else {
@@ -248,6 +306,12 @@ export default {
         return false;
       }
     },
+    onGetChat(id) {
+      if (id != null) {
+        this.mostrarLoading = true;
+      }
+      this.getChat(id);
+    },
     getChat(id) {
       if (id == null) {
         id = this.$route.params.id;
@@ -259,6 +323,7 @@ export default {
       this.$axios
         .get(this.$localurl + "/api/v1/messages/" + id)
         .then(function(response) {
+          that.mostrarLoading = false;
           if (
             that.primeraPagina == true &&
             !that.isOverflown(document.getElementById("chatScroll"))
@@ -284,9 +349,15 @@ export default {
           that.getSeparadores();
         })
         .catch(function(response) {
-          if (response != null && response.response != null && response.response.status == 401) {
+          that.mostrarLoading = false;
+          if (
+            response != null &&
+            response.response != null &&
+            response.response.status == 401
+          ) {
             localStorage.removeItem("$expire");
-            if(window.location.pathname.split("/").reverse()[0] != "login"){
+            localStorage.removeItem("$userId");
+            if (window.location.pathname.split("/").reverse()[0] != "login") {
               that.desconectarSocket();
               that.$router.push("/login");
             }
@@ -295,7 +366,7 @@ export default {
     },
     getChatPage(pagina) {
       this.mensajeOffset = this.mensajes[0];
-      if(this.mensajeOffset != null && this.mensajeOffset.id == null){
+      if (this.mensajeOffset != null && this.mensajeOffset.id == null) {
         this.mensajeOffset = this.mensajes[1];
       }
       this.currentPage = pagina;
@@ -307,49 +378,64 @@ export default {
       this.$axios
         .get(this.$localurl + "/api/v1/messages/" + this.$route.params.id + pag)
         .then(function(response) {
+          that.mostrarLoading = false;
           response.data.messages.data.reverse();
           that.mensajes = response.data.messages.data.concat(that.mensajes);
           that.getSeparadores();
         })
         .catch(function(response) {
-          if (response != null && response.response != null && response.response.status == 401) {
+          that.mostrarLoading = false;
+          if (
+            response != null &&
+            response.response != null &&
+            response.response.status == 401
+          ) {
             localStorage.removeItem("$expire");
-            if(window.location.pathname.split("/").reverse()[0] != "login"){
+            if (window.location.pathname.split("/").reverse()[0] != "login") {
               that.desconectarSocket();
               that.$router.push("/login");
             }
           }
         });
     },
-    getSeparadores(){
+    getSeparadores() {
       var fechas = [];
       this.mensajes = this.mensajes.filter(m => m.fecha == null);
       var cantidad = this.mensajes.length;
       for (var i = 0; i < cantidad; i++) {
         var m = this.mensajes[i];
-        if(m.created_at != null){
+        if (m.created_at != null) {
           var d = new Date(m.created_at);
-          d.setHours(d.getHours()+3);
+          d.setHours(d.getHours() + 3);
           let day = d.getDate();
-          let month = d.getMonth()+1;
+          let month = d.getMonth() + 1;
           let year = d.getFullYear();
-          let fecha = day+"/"+month+"/"+year;
+          let fecha = day + "/" + month + "/" + year;
           var today = new Date();
           let todayday = today.getDate();
-          let todaymonth = today.getMonth()+1;
+          let todaymonth = today.getMonth() + 1;
           let todayyear = today.getFullYear();
-          if(day != todayday || month != todaymonth || year != todayyear){
-            if(fechas.includes(fecha) == false){
-              var days = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+          if (day != todayday || month != todaymonth || year != todayyear) {
+            if (fechas.includes(fecha) == false) {
+              var days = [
+                "Domingo",
+                "Lunes",
+                "Martes",
+                "Miércoles",
+                "Jueves",
+                "Viernes",
+                "Sábado"
+              ];
               fecha = days[d.getDay()] + " " + fecha;
-              if(!this.mensajes.some(m => m.fecha == fecha)){
-                this.mensajes.splice(i, 0, {fecha: fecha});
+              fechas.push(fecha);
+              if (!this.mensajes.some(m => m.fecha == fecha)) {
+                this.mensajes.splice(i, 0, { fecha: fecha });
                 cantidad++;
-                }
+              }
             }
-          }else{
-            if(!this.mensajes.some(m => m.fecha == "HOY")){
-              this.mensajes.splice(i, 0, {fecha: "HOY"});
+          } else {
+            if (!this.mensajes.some(m => m.fecha == "HOY")) {
+              this.mensajes.splice(i, 0, { fecha: "HOY" });
               cantidad++;
             }
           }
@@ -359,6 +445,20 @@ export default {
       this.$nextTick(() => {
         that.scrollToBottom();
       });
+    },
+    getConversaciones() {
+      var that = this;
+      this.$axios
+        .get(this.$localurl + "/api/v1/messages")
+        .then(function(response) {
+          that.mensajesNoLeidos = 0;
+          response.data.conversations.forEach(c => {
+            if (c.id != that.$route.params.id) {
+              that.mensajesNoLeidos = that.mensajesNoLeidos + c.ammount_no_read;
+            }
+          });
+        })
+        .catch(function() {});
     },
     onScroll() {
       var target = this.$refs.chatScroll;
@@ -374,14 +474,14 @@ export default {
       var that = this;
       this.$nextTick(() => {
         if (that.mensajeOffset != null) {
-          if(document.getElementById(that.mensajeOffset.id) != null){
+          if (document.getElementById(that.mensajeOffset.id) != null) {
             document.getElementById(
               "chatScroll"
             ).scrollTop = document.getElementById(
               that.mensajeOffset.id
             ).offsetTop;
-          }else{
-            setTimeout(function(){
+          } else {
+            setTimeout(function() {
               that.scrollToBottom();
             }, 200);
           }
@@ -389,29 +489,40 @@ export default {
       });
     },
     enviar() {
-      this.scrollToBottom();
-      var texto = this.$refs.inputTexto.value;
-      if (texto != "") {
-        this.$refs.inputTexto.value = "";
-        var data = new FormData();
-        data.append("message", texto);
-        data.append("receiver_id", this.$route.params.user_dest_id);
-        var that = this;
-        this.$axios
-          .post(this.$localurl + "/api/v1/messages/textMessage", data)
-          .then(function() {
-            that.getChat();
-          })
-          .catch(function(response) {
-            if (response != null && response.response != null && response.response.status == 401) {
-              localStorage.removeItem("$expire");
-              if(window.location.pathname.split("/").reverse()[0] != "login"){
-                that.desconectarSocket();
-                that.$router.push("/login");
+      if (this.enviando == false) {
+        this.enviando = true;
+        this.scrollToBottom();
+        var texto = this.$refs.inputTexto.value;
+        if (texto != "") {
+          this.$refs.inputTexto.value = "";
+          var data = new FormData();
+          data.append("message", texto);
+          data.append("receiver_id", this.$route.params.user_dest_id);
+          var that = this;
+          this.$axios
+            .post(this.$localurl + "/api/v1/messages/textMessage", data)
+            .then(function() {
+              that.enviando = false;
+              that.getChat();
+            })
+            .catch(function(response) {
+              that.enviando = false;
+              if (
+                response != null &&
+                response.response != null &&
+                response.response.status == 401
+              ) {
+                localStorage.removeItem("$expire");
+                localStorage.removeItem("$userId");
+                if (
+                  window.location.pathname.split("/").reverse()[0] != "login"
+                ) {
+                  that.$router.push("/login");
+                }
               }
-            }
-            alert("Se produjo un error, reintente");
-          });
+              alert("Se produjo un error, reintente");
+            });
+        }
       }
     },
     isOverflown(element) {
@@ -440,9 +551,14 @@ export default {
             that.getChat();
           })
           .catch(function(response) {
-            if (response != null && response.response != null && response.response.status == 401) {
+            if (
+              response != null &&
+              response.response != null &&
+              response.response.status == 401
+            ) {
               localStorage.removeItem("$expire");
-              if(window.location.pathname.split("/").reverse()[0] != "login"){
+              localStorage.removeItem("$userId");
+              if (window.location.pathname.split("/").reverse()[0] != "login") {
                 that.desconectarSocket();
                 that.$router.push("/login");
               }
@@ -450,6 +566,54 @@ export default {
             alert("Se produjo un error, reintente");
           });
       }
+    },
+    logout() {
+      var that = this;
+      this.$axios
+        .post(this.$localurl + "/api/v1/auth/logout")
+        .then(function() {
+          that.desconectarSSE();
+          localStorage.removeItem("$token");
+          localStorage.removeItem("$userId");
+          localStorage.removeItem("$expire");
+          if(window.location.pathname.split("/").reverse()[0] != "login"){
+              that.$router.push("/login");
+            }
+        })
+        .catch(function(error) {
+          // handle error
+          console.log(error);
+        });
+    },
+    enviarPosicion(){
+      var that = this;
+      this.mostrarOpciones = false;
+      navigator.geolocation.getCurrentPosition(function(position) {
+        that.enviando = true;
+        var data = new FormData();
+        data.append("lat", position.coords.latitude);
+        data.append("lon", position.coords.longitude);
+        data.append("alt", (position.coords.altitude != null ? position.coords.altitude : 0));
+        data.append("receiver_id", that.$route.params.user_dest_id);
+        that.$axios
+            .post(that.$localurl + "/api/v1/messages/positionMessage", data)
+            .then(function() {
+              that.enviando = false;
+              that.getChat();
+            })
+            .catch(function(response) {
+              that.enviando = false;
+              if (response != null && response.response != null && response.response.status == 401) {
+                that.$eventHub.$emit("home-desconectar-socket");
+                localStorage.removeItem("$expire");
+                localStorage.removeItem("$userId");
+                if(window.location.pathname.split("/").reverse()[0] != "login"){
+                that.$router.push("/login");
+              }
+              }
+              alert("Se produjo un error, reintente");
+            });
+      });
     }
   }
 };

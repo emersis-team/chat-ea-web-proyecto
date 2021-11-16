@@ -5,9 +5,10 @@
 }
 .chat-scroll {
   overflow-y: scroll;
-  height: calc(100% - 6vw);
+  height: calc(100% - 102px);
   padding: 5%;
   box-sizing: border-box;
+  padding-bottom: 2vh;
 }
 .chat-container {
   display: block;
@@ -56,10 +57,15 @@
 .chat-mensaje-hora {
   position: absolute;
   right: 10px;
-  top: 10px;
+  top: 0;
 }
 .chat-mensaje-texto {
-  padding-right: 120px;
+  position: relative;
+  padding-right: 100px;
+  word-break: break-all;
+}
+.chat-mensaje-texto > label {
+  display: block;
 }
 .chat-mensaje-imagen > img {
   width: 100%;
@@ -69,6 +75,12 @@
 .chat-mensaje-imagen > label {
   color: #07b9c1;
   margin-bottom: 5px;
+  max-width: 47vw;
+  word-break: unset;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .chat-mensaje-imagen > a {
   text-align: center;
@@ -156,33 +168,33 @@
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 3vw;
+  height: 60px;
   box-sizing: border-box;
   background-color: #efefef;
 }
 .chat-bottom > input {
   position: absolute;
   top: 50%;
-  left: 45%;
+  left: 49%;
   transform: translate(-50%, -50%);
-  width: 79%;
-  height: 2vw;
+  width: 80%;
+  height: 40px;
+  border-radius: 20px;
   font-family: OpenSans-Regular;
   font-size: 17px;
   border: none;
-  border-radius: 1vw;
   padding-left: 1vw;
 }
 .chat-enviar {
   position: absolute;
-  right: 6%;
+  right: 2%;
   top: 50%;
   transform: translateY(-50%);
   font-family: OpenSans-Regular;
   font-size: 17px;
   padding-left: 1vw;
   padding-right: 1vw;
-  height: 2vw;
+  width: 1.8vw;
   border-radius: 1vw;
   border: none;
   cursor: pointer;
@@ -191,11 +203,10 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  left: 1vw;
+  left: 2%;
   border-radius: 50%;
   padding: 0.1vw;
-  width: 1.5vw;
-  height: 1.5vw;
+  width: 1.7vw;
   cursor: pointer;
 }
 .chat-adjuntar > img {
@@ -223,6 +234,63 @@
   padding-top: 3px;
   padding-bottom: 3px;
 }
+.chat-mobile-noLeidos {
+  position: absolute;
+  left: 21px;
+  bottom: 1px;
+  font-family: OpenSans-Regular;
+  font-size: 11px;
+  background-color: #e94639;
+  color: #fff;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  z-index: 1000;
+  text-align: center;
+}
+.chat-opciones {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.chat-opciones-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.chat-opciones-container {
+  position: absolute;
+  bottom: 63px;
+  left: 17px;
+  background-color: #fff;
+  width: 56px;
+  height: auto;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  box-shadow: 0 1px 0.5px 0 rgb(0 0 0 / 13%);
+  display: grid;
+  grid-template-rows: auto auto;
+  row-gap: 15px;
+}
+.chat-opciones-img {
+  width: 30px;
+  display: block;
+  margin: auto;
+  cursor: pointer;
+  filter: brightness(0);
+}
+.chat-mensaje-estado {
+  position: absolute;
+  bottom: 7px;
+  right: 7px;
+  width: 10px;
+  height: auto;
+  opacity: 0.9;
+}
 
 /* PORTRAIT */
 @media screen and (max-width: 500px) and (max-aspect-ratio: 13/9) {
@@ -236,6 +304,7 @@
   }
   .chat-scroll {
     height: calc(100% - 40px);
+    padding-bottom: 35px;
   }
   .chat-top {
     height: 40px;
@@ -276,6 +345,14 @@
   .chat-adjuntar > svg {
     width: 20px;
     height: 20px;
+  }
+  .chat-opciones-container {
+    bottom: 41px;
+    left: 0px;
+    width: 56px;
+    height: 95px;
+    padding-top: 10px;
+    border-radius: 10px;
   }
 }
 
@@ -291,6 +368,7 @@
   }
   .chat-scroll {
     height: calc(100% - 40px);
+    padding-bottom: 35px;
   }
   .chat-top {
     height: 40px;
@@ -332,6 +410,14 @@
     width: 20px;
     height: 20px;
   }
+  .chat-opciones-container {
+    bottom: 41px;
+    left: 0px;
+    width: 56px;
+    height: 95px;
+    padding-top: 10px;
+    border-radius: 10px;
+  }
 }
 
 /*MOBILE LANDSCAPE*/
@@ -346,6 +432,7 @@
   }
   .chat-scroll {
     height: calc(100% - 40px);
+    padding-bottom: 35px;
   }
   .chat-top {
     height: 40px;
@@ -386,6 +473,14 @@
   .chat-adjuntar > svg {
     width: 20px;
     height: 20px;
+  }
+  .chat-opciones-container {
+    bottom: 41px;
+    left: 0px;
+    width: 56px;
+    height: 95px;
+    padding-top: 10px;
+    border-radius: 10px;
   }
 }
 
@@ -401,6 +496,7 @@
   }
   .chat-scroll {
     height: calc(100% - 40px);
+    padding-bottom: 35px;
   }
   .chat-top {
     height: 40px;
@@ -441,5 +537,13 @@
   .chat-adjuntar > svg {
     width: 20px;
     height: 20px;
+  }
+  .chat-opciones-container {
+    bottom: 41px;
+    left: 0px;
+    width: 56px;
+    height: 95px;
+    padding-top: 10px;
+    border-radius: 10px;
   }
 }

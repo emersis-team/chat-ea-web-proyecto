@@ -70,7 +70,16 @@
                 mensaje.message_type.substr(11, 100) == 'TextMessage'
             "
             :mensaje="mensaje"
+            :mensajePropio="mensaje.sender_id == userId"
           ></MensajeTexto>
+          <MensajePosicion
+            v-if="
+              mensaje.message_type != null &&
+                mensaje.message_type.substr(11, 100) == 'PositionMessage'
+            "
+            :mensaje="mensaje"
+            :mensajePropio="mensaje.sender_id == userId"
+          ></MensajePosicion>
           <MensajeArchivo
             v-if="
               mensaje.message_type != null &&
@@ -78,6 +87,7 @@
                 esArchivo(mensaje)
             "
             :mensaje="mensaje"
+            :mensajePropio="mensaje.sender_id == userId"
           ></MensajeArchivo>
           <MensajeImagen
             v-if="
@@ -86,6 +96,7 @@
                 esImagen(mensaje)
             "
             :mensaje="mensaje"
+            :mensajePropio="mensaje.sender_id == userId"
           ></MensajeImagen>
           <MensajeVideo
             v-if="
@@ -94,6 +105,7 @@
                 esVideo(mensaje)
             "
             :mensaje="mensaje"
+            :mensajePropio="mensaje.sender_id == userId"
           ></MensajeVideo>
           <MensajeAudio
             v-if="
@@ -102,19 +114,13 @@
                 esAudio(mensaje)
             "
             :mensaje="mensaje"
+            :mensajePropio="mensaje.sender_id == userId"
           ></MensajeAudio>
       </div>
       </div>
     </div>
     <div class="chat-bottom">
-      <div class="chat-adjuntar" title="Adjuntar" @click="adjuntar()">
-        <input
-          type="file"
-          class="app-hide"
-          @change="changeAdjunto()"
-          ref="adjuntoFiles"
-          multiple
-        />
+      <div class="chat-adjuntar" title="Adjuntar" @click="mostrarOpciones = true">
         <img src="../assets/img/adjuntar.png"/>
       </div>
       <input
@@ -124,17 +130,39 @@
         v-on:keyup.enter="enviar()"
         maxlength="140"
       />
-      <img class="chat-enviar" src="../assets/img/enviar.png" @click="enviar()"/>
+      <img v-show="!enviando" class="chat-enviar" src="../assets/img/enviar.png" @click="enviar()"/>
+      <img v-show="enviando" class="chat-enviar" style="opacity: 0.5;" src="../assets/img/enviar.png"/>
+    </div>
+    <Loading v-show="mostrarLoading"></Loading>
+    <div v-show="mostrarOpciones" class="chat-opciones">
+      <div class="chat-opciones-mask" @click="mostrarOpciones = false"></div>
+      <div class="chat-opciones-container">
+        <div>
+          <input
+            type="file"
+            class="app-hide"
+            @change="changeAdjunto()"
+            ref="adjuntoFiles"
+            multiple
+          />
+          <img class="chat-opciones-img" src="../assets/img/adjuntar.png" @click="adjuntar()"/>
+        </div>
+        <div>
+          <img class="chat-opciones-img" src="../assets/img/ubicacion.png" @click="enviarPosicion()"/>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import MensajeTexto from "@/components/MensajeTexto.vue";
+import MensajePosicion from "@/components/MensajePosicion.vue";
 import MensajeArchivo from "@/components/MensajeArchivo.vue";
 import MensajeImagen from "@/components/MensajeImagen.vue";
 import MensajeVideo from "@/components/MensajeVideo.vue";
 import MensajeAudio from "@/components/MensajeAudio.vue";
+import Loading from "@/components/Loading.vue";
 
 export default {
   name: "Chat",
@@ -143,7 +171,9 @@ export default {
     MensajeArchivo,
     MensajeImagen,
     MensajeVideo,
-    MensajeAudio
+    MensajeAudio,
+    MensajePosicion,
+    Loading
   },
   data() {
     return {
@@ -152,23 +182,29 @@ export default {
       primeraPagina: true,
       currentPage: 0,
       lastPage: 0,
-      mensajeOffset: null
+      mensajeOffset: null,
+      mostrarLoading: false,
+      mostrarOpciones: false,
+      enviando: false
     };
   },
   props: { conversacion: [Object] },
   computed: {},
   mounted() {
+    this.mostrarLoading = true;
     this.userId = localStorage.getItem("$userId");
-    this.getChat();
     this.mensajes = [];
+    this.getChat();
     this.$refs.chatScroll.addEventListener("touchmove", this.onScroll);
   },
   created() {
-    this.$eventHub.$on("chat-get", id => this.getChat(id));
+    this.$eventHub.$on("chat-get", id => this.onGetChat(id));
   },
   methods: {
     esImagen(mensaje) {
-      var extension = mensaje.message.files[0].file.split(".")[mensaje.message.files[0].file.split(".").length-1].toLowerCase();
+      var extension = mensaje.message.files[0].file
+        .split(".")
+        [mensaje.message.files[0].file.split(".").length - 1].toLowerCase();
       if (
         extension == "png" ||
         extension == "jpg" ||
@@ -181,7 +217,9 @@ export default {
       }
     },
     esVideo(mensaje) {
-      var extension = mensaje.message.files[0].file.split(".")[mensaje.message.files[0].file.split(".").length-1].toLowerCase();
+      var extension = mensaje.message.files[0].file
+        .split(".")
+        [mensaje.message.files[0].file.split(".").length - 1].toLowerCase();
       if (
         extension == "webm" ||
         extension == "mkv" ||
@@ -196,7 +234,9 @@ export default {
       }
     },
     esAudio(mensaje) {
-      var extension = mensaje.message.files[0].file.split(".")[mensaje.message.files[0].file.split(".").length-1].toLowerCase();
+      var extension = mensaje.message.files[0].file
+        .split(".")
+        [mensaje.message.files[0].file.split(".").length - 1].toLowerCase();
       if (extension == "m4a" || extension == "qt" || extension == "4mb") {
         return true;
       } else {
@@ -214,6 +254,12 @@ export default {
         return false;
       }
     },
+    onGetChat(id) {
+      if (id != null) {
+        this.mostrarLoading = true;
+      }
+      this.getChat(id);
+    },
     getChat(id) {
       if (id == null) {
         id = this.conversacion.id;
@@ -225,6 +271,7 @@ export default {
       this.$axios
         .get(this.$localurl + "/api/v1/messages/" + id)
         .then(function(response) {
+          that.mostrarLoading = false;
           if (
             that.primeraPagina == true &&
             !that.isOverflown(document.getElementById("chatScroll"))
@@ -250,10 +297,16 @@ export default {
           that.getSeparadores();
         })
         .catch(function(response) {
-          if (response != null && response.response != null && response.response.status == 401) {
+          that.mostrarLoading = false;
+          if (
+            response != null &&
+            response.response != null &&
+            response.response.status == 401
+          ) {
             that.$eventHub.$emit("home-desconectar-socket");
             localStorage.removeItem("$expire");
-            if(window.location.pathname.split("/").reverse()[0] != "login"){
+            localStorage.removeItem("$userId");
+            if (window.location.pathname.split("/").reverse()[0] != "login") {
               that.$router.push("/login");
             }
           }
@@ -261,7 +314,7 @@ export default {
     },
     getChatPage(pagina) {
       this.mensajeOffset = this.mensajes[0];
-      if(this.mensajeOffset != null && this.mensajeOffset.id == null){
+      if (this.mensajeOffset != null && this.mensajeOffset.id == null) {
         this.mensajeOffset = this.mensajes[1];
       }
       this.currentPage = pagina;
@@ -273,48 +326,66 @@ export default {
       this.$axios
         .get(this.$localurl + "/api/v1/messages/" + this.conversacion.id + pag)
         .then(function(response) {
+          that.mostrarLoading = false;
           response.data.messages.data.reverse();
           that.mensajes = response.data.messages.data.concat(that.mensajes);
           that.getSeparadores();
         })
         .catch(function(response) {
-          if (response != null && response.response != null && response.response.status == 401) {
+          that.mostrarLoading = false;
+          if (
+            response != null &&
+            response.response != null &&
+            response.response.status == 401
+          ) {
             that.$eventHub.$emit("home-desconectar-socket");
             localStorage.removeItem("$expire");
-            if(window.location.pathname.split("/").reverse()[0] != "login"){
+            localStorage.removeItem("$userId");
+            if (window.location.pathname.split("/").reverse()[0] != "login") {
               that.$router.push("/login");
             }
           }
         });
     },
-    getSeparadores(){
+    getSeparadores() {
       var fechas = [];
       this.mensajes = this.mensajes.filter(m => m.fecha == null);
       var cantidad = this.mensajes.length;
       for (var i = 0; i < cantidad; i++) {
         var m = this.mensajes[i];
-        if(m.created_at != null){
+        if (m.created_at != null) {
           var d = new Date(m.created_at);
-          d.setHours(d.getHours()+3);
+          d.setHours(d.getHours() + 3);
           let day = d.getDate();
-          let month = d.getMonth()+1;
+          let month = d.getMonth() + 1;
           let year = d.getFullYear();
-          let fecha = day+"/"+month+"/"+year;
+          let fecha = day + "/" + month + "/" + year;
           var today = new Date();
           let todayday = today.getDate();
-          let todaymonth = today.getMonth()+1;
+          let todaymonth = today.getMonth() + 1;
           let todayyear = today.getFullYear();
-          if(day != todayday || month != todaymonth || year != todayyear){
-            if(fechas.includes(fecha) == false){
-              var days = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+          if (day != todayday || month != todaymonth || year != todayyear) {
+            if (fechas.includes(fecha) == false) {
+              var days = [
+                "Domingo",
+                "Lunes",
+                "Martes",
+                "Miércoles",
+                "Jueves",
+                "Viernes",
+                "Sábado"
+              ];
               fecha = days[d.getDay()] + " " + fecha;
-              if(!this.mensajes.some(m => m.fecha == fecha)){
-                this.mensajes.splice(i, 0, {fecha: fecha});
-                }
+              fechas.push(fecha);
+              if (!this.mensajes.some(m => m.fecha == fecha)) {
+                this.mensajes.splice(i, 0, { fecha: fecha });
+                cantidad++;
+              }
             }
-          }else{
-            if(!this.mensajes.some(m => m.fecha == "HOY")){
-              this.mensajes.splice(i, 0, {fecha: "HOY"});
+          } else {
+            if (!this.mensajes.some(m => m.fecha == "HOY")) {
+              this.mensajes.splice(i, 0, { fecha: "HOY" });
+              cantidad++;
             }
           }
         }
@@ -338,14 +409,14 @@ export default {
       var that = this;
       this.$nextTick(() => {
         if (that.mensajeOffset != null) {
-          if(document.getElementById(that.mensajeOffset.id) != null){
+          if (document.getElementById(that.mensajeOffset.id) != null) {
             document.getElementById(
               "chatScroll"
             ).scrollTop = document.getElementById(
               that.mensajeOffset.id
             ).offsetTop;
-          }else{
-            setTimeout(function(){
+          } else {
+            setTimeout(function() {
               that.scrollToBottom();
             }, 200);
           }
@@ -353,34 +424,41 @@ export default {
       });
     },
     enviar() {
-      this.scrollToBottom();
-      var texto = this.$refs.inputTexto.value;
-      if (texto != "") {
-        // this.mensajes.push({
-        //   id: 0,
-        //   sender_id: this.userId,
-        //   message: texto
-        // });
-        this.$refs.inputTexto.value = "";
-        var data = new FormData();
-        data.append("message", texto);
-        data.append("receiver_id", this.conversacion.user_dest.id);
-        var that = this;
-        this.$axios
-          .post(this.$localurl + "/api/v1/messages/textMessage", data)
-          .then(function() {
-            that.getChat();
-          })
-          .catch(function(response) {
-            if (response != null && response.response != null && response.response.status == 401) {
-              that.$eventHub.$emit("home-desconectar-socket");
-              localStorage.removeItem("$expire");
-              if(window.location.pathname.split("/").reverse()[0] != "login"){
-              that.$router.push("/login");
-            }
-            }
-            alert("Se produjo un error, reintente");
-          });
+      if (this.enviando == false) {
+        this.enviando = true;
+        this.scrollToBottom();
+        var texto = this.$refs.inputTexto.value;
+        if (texto != "") {
+          this.$refs.inputTexto.value = "";
+          var data = new FormData();
+          data.append("message", texto);
+          data.append("receiver_id", this.conversacion.user_dest.id);
+          var that = this;
+          this.$axios
+            .post(this.$localurl + "/api/v1/messages/textMessage", data)
+            .then(function() {
+              that.enviando = false;
+              that.getChat();
+            })
+            .catch(function(response) {
+              that.enviando = false;
+              if (
+                response != null &&
+                response.response != null &&
+                response.response.status == 401
+              ) {
+                that.$eventHub.$emit("home-desconectar-socket");
+                localStorage.removeItem("$expire");
+                localStorage.removeItem("$userId");
+                if (
+                  window.location.pathname.split("/").reverse()[0] != "login"
+                ) {
+                  that.$router.push("/login");
+                }
+              }
+              alert("Se produjo un error, reintente");
+            });
+        }
       }
     },
     isOverflown(element) {
@@ -409,12 +487,17 @@ export default {
             that.getChat();
           })
           .catch(function(response) {
-            if (response != null && response.response != null && response.response.status == 401) {
+            if (
+              response != null &&
+              response.response != null &&
+              response.response.status == 401
+            ) {
               that.$eventHub.$emit("home-desconectar-socket");
               localStorage.removeItem("$expire");
-              if(window.location.pathname.split("/").reverse()[0] != "login"){
-              that.$router.push("/login");
-            }
+              localStorage.removeItem("$userId");
+              if (window.location.pathname.split("/").reverse()[0] != "login") {
+                that.$router.push("/login");
+              }
             }
             var string = "";
             response.response.data.errors["file.0"].forEach(
@@ -425,6 +508,36 @@ export default {
             alert(string);
           });
       }
+    },
+    enviarPosicion(){
+      var that = this;
+      this.mostrarOpciones = false;
+      navigator.geolocation.getCurrentPosition(function(position) {
+        that.enviando = true;
+        var data = new FormData();
+        data.append("lat", position.coords.latitude);
+        data.append("lon", position.coords.longitude);
+        data.append("alt", (position.coords.altitude != null ? position.coords.altitude : 0));
+        data.append("receiver_id", that.conversacion.user_dest.id);
+          that.$axios
+            .post(that.$localurl + "/api/v1/messages/positionMessage", data)
+            .then(function() {
+              that.enviando = false;
+              that.getChat();
+            })
+            .catch(function(response) {
+              that.enviando = false;
+              if (response != null && response.response != null && response.response.status == 401) {
+                that.$eventHub.$emit("home-desconectar-socket");
+                localStorage.removeItem("$expire");
+                localStorage.removeItem("$userId");
+                if(window.location.pathname.split("/").reverse()[0] != "login"){
+                that.$router.push("/login");
+              }
+              }
+              alert("Se produjo un error, reintente");
+            });
+      });
     }
   }
 };
