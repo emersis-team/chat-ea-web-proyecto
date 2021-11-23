@@ -24,15 +24,9 @@ export default {
     getUsuario() {
       var that = this;
       this.$axios
-        .post(this.$localurl + "/api/user/")
+        .get(this.$localurl + "/api/user/")
         .then(function(response) {
           localStorage.setItem("$userId", response.data.id);
-          localStorage.setItem(
-            "$expire",
-            Date.now() + response.data.expires_in
-          );
-          that.$axios.defaults.headers.common["Authorization"] =
-            "Bearer " + localStorage.getItem("$token");
           that.$eventHub.$emit("loged");
           that.$router.push("/");
         })
