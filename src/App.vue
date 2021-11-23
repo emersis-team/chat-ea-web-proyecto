@@ -24,9 +24,9 @@ export default {
     
     this.$axios.defaults.headers.common["Authorization"] =
       "Bearer " + localStorage.getItem("$token");
-    if (localStorage.getItem("$token") == null) {
-      this.$router.push("/login");
-    }
+    // if (localStorage.getItem("$token") == null) {
+    //   this.$router.push("/login");
+    // }
     Vue.prototype.$isMobile = this.isMobile();
 
     window.addEventListener("beforeinstallprompt", e => {
