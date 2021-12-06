@@ -303,6 +303,7 @@ export default {
             response.response != null &&
             response.response.status == 401
           ) {
+            console.log("desconecto socket");
             that.$eventHub.$emit("home-desconectar-socket");
             localStorage.removeItem("$expire");
             localStorage.removeItem("$userId");
@@ -338,6 +339,7 @@ export default {
             response.response != null &&
             response.response.status == 401
           ) {
+            console.log("desconecto socket");
             that.$eventHub.$emit("home-desconectar-socket");
             localStorage.removeItem("$expire");
             localStorage.removeItem("$userId");
@@ -447,6 +449,7 @@ export default {
                 response.response != null &&
                 response.response.status == 401
               ) {
+                console.log("desconecto socket");
                 that.$eventHub.$emit("home-desconectar-socket");
                 localStorage.removeItem("$expire");
                 localStorage.removeItem("$userId");
@@ -492,6 +495,7 @@ export default {
               response.response != null &&
               response.response.status == 401
             ) {
+              console.log("desconecto socket");
               that.$eventHub.$emit("home-desconectar-socket");
               localStorage.removeItem("$expire");
               localStorage.removeItem("$userId");
@@ -528,6 +532,7 @@ export default {
             .catch(function(response) {
               that.enviando = false;
               if (response != null && response.response != null && response.response.status == 401) {
+                console.log("desconecto socket");
                 that.$eventHub.$emit("home-desconectar-socket");
                 localStorage.removeItem("$expire");
                 localStorage.removeItem("$userId");

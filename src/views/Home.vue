@@ -58,39 +58,51 @@ export default {
       mensajes: []
     };
   },
+  created() {
+    this.$eventHub.$on("home-desconectar-socket", this.desconectarSocket());
+  },
   mounted() {
     if (this.$isMobile) {
       this.mostrarChat = false;
     }
     this.getConversaciones();
     this.conectarSocket();
-    this.$eventHub.$on("home-desconectar-socket", this.desconectarSocket());
+  },
+  beforeDestroy() {
+    this.$eventHub.$off("home-desconectar-socket");
   },
   methods: {
     conectarSocket(){
       if(localStorage.getItem("$userId") != null){
-        var that = this;
-        window.Echo = new Echo({
-          broadcaster: "pusher",
-          key: "ASDASD2121",
-          wsHost: "23.237.173.86",
-          wsPort: 6001,
-        // wssPort: 6001,
-          disableStats: true,
-          forceTLS: false,
-          enabledTransports: ["ws"]
-        });
-        console.log("Conectando al websocket canal: " + "user."+localStorage.getItem("$userId"));
-        window.Echo.channel("user."+localStorage.getItem("$userId")).listen("NewMessage", (e) => {
-          console.log("Recibo mensaje por websocket");
-          console.log(e);
-          that.$eventHub.$emit("chat-get");
-          that.getConversaciones();
-        });
+        try {
+          var that = this;
+          window.Echo = new Echo({
+            broadcaster: "pusher",
+            key: "ASDASD2121",
+            wsHost: "127.0.0.1",
+            wsPort: 6001,
+          // wssPort: 6001,
+            disableStats: true,
+            forceTLS: false,
+            enabledTransports: ["ws"]
+          });
+          console.log("Conectando al websocket canal: " + "user."+localStorage.getItem("$userId"));
+          window.Echo.channel("user."+localStorage.getItem("$userId")).listen("NewMessage", (e) => {
+            console.log("Recibo mensaje por websocket");
+            console.log(e);
+            that.$eventHub.$emit("chat-get");
+            that.getConversaciones();
+          });
+        } catch (error) {
+          console.log(error);
+        }
+        
       }
     },
     desconectarSocket(){
-      window.Echo.channel("user."+localStorage.getItem("$userId")).stopListening('NewMessage');
+      if(window.Echo != null){
+        window.Echo.channel("user."+localStorage.getItem("$userId")).stopListening('NewMessage');
+      }
     },
     getConversaciones() {
       var that = this;

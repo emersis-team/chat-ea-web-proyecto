@@ -20,7 +20,8 @@ export default {
     // Vue.prototype.$localurl = "https://emersis.casya.com.ar";
     // Vue.prototype.$localurl = "http://chat-ea-web-sockets-back.casya.com.ar";
     // Vue.prototype.$localurl = "http://127.0.0.1:8000";
-    Vue.prototype.$localurl = "http://23.237.173.86:8080/chat-ea-web-back/public";
+    Vue.prototype.$localurl = "http://localhost:80/chat-ea-web-back/public";
+    // Vue.prototype.$localurl = "http://23.237.173.86:8080/chat-ea-web-back/public";
     
     this.$axios.defaults.headers.common["Authorization"] =
       "Bearer " + localStorage.getItem("$token");
