@@ -24,7 +24,7 @@ export default {
     getUsuario() {
       var that = this;
       this.$axios
-        .get(this.$localurl + "/api/user/")
+        .get(this.$localurl + "/api/user")
         .then(function(response) {
           localStorage.setItem("$userId", response.data.id);
           that.$eventHub.$emit("loged");
