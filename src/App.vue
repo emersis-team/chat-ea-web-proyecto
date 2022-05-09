@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <Snackbar></Snackbar>
-    <router-view />
+    <router-view/>
   </div>
 </template>
 
@@ -17,9 +17,10 @@ export default {
   },
   components: { Snackbar },
   created() {
-    Vue.prototype.$localurl = "https://emersis.casya.com.ar";
-    // Vue.prototype.$localurl = "http://chat-ea-web-sockets-back.casya.com.ar";
-    // Vue.prototype.$localurl = "http://127.0.0.1:8000/";
+    // Vue.prototype.$localurl = "https://emersis.casya.com.ar";
+    Vue.prototype.$localurl = "http://10.120.17.157:8080";
+    // Vue.prototype.$localurl = "http://localhost:8184";
+
     this.$axios.defaults.headers.common["Authorization"] =
       "Bearer " + localStorage.getItem("$token");
     if (localStorage.getItem("$token") == null) {
@@ -50,9 +51,9 @@ export default {
           navigator.userAgent
         )
       ) {
-        if(screen.width > 500){
+        if (screen.width > 500) {
           return false;
-        }else{
+        } else {
           return true;
         }
       } else {

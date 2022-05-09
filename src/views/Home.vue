@@ -9,8 +9,8 @@
             placeholder="Buscar"
             @keyup="buscar()"
             ref="inputBuscar"
-          />
-          <img class="home-buscar-img" src="../assets/img/buscar.png" />
+          >
+          <img class="home-buscar-img" src="../assets/img/buscar.png">
         </div>
         <div class="home-left-conversaciones">
           <div
@@ -27,10 +27,8 @@
         <button class="home-logout" @click="logout()">Cerrar sesión</button>
       </div>
       <div class="home-right" v-show="!$isMobile">
-        <Chat
-          v-if="conversacionElegida != null"
-          :conversacion="conversacionElegida"
-        ></Chat>
+        <!-- <button @click="enviarMensaje()">enviarMensaje</button> -->
+        <Chat v-if="conversacionElegida != null" :conversacion="conversacionElegida"></Chat>
       </div>
     </div>
   </div>
@@ -40,9 +38,8 @@
 import Conversacion from "@/components/Conversacion.vue";
 import Chat from "@/components/Chat.vue";
 import Vue from "vue";
-// import Echo from "laravel-echo";
-
-// window.Pusher = require("pusher-js");
+import SockJS from "sockjs-client";
+import Stomp from "webstomp-client";
 
 export default {
   name: "Home",
@@ -55,7 +52,9 @@ export default {
       conversacionElegida: null,
       conversacionesFiltradas: [],
       conversaciones: [],
-      mensajes: []
+      mensajes: [],
+      stompClient: null,
+      count: 0
     };
   },
   mounted() {
@@ -64,18 +63,58 @@ export default {
     }
     this.getConversaciones();
 
-    // window.Echo = new Echo({
-    //   broadcaster: "pusher",
-    //   key: "ASDASD2121",
-    //   wsHost: "chat-ea-web-sockets-back.casya.com.ar",
-    //   wsPort: 6001,
-    //   disableStats: true
-    // });
-    // window.Echo.channel("home").listen("NewMessage", (e) => {
-    //   console.log(e);
-    // });
+    // this.connect();
   },
   methods: {
+    enviarMensaje() {
+      try {
+        var that = this;
+        that.count++;
+        that.sendMessage("javi", that.count);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    setConnected(connected) {
+      console.log("setConnected " + connected);
+      if (connected) {
+        this.enviarMensaje();
+      }
+    },
+    connect() {
+      var socket = new SockJS(this.$localurl + "/chat");
+      this.stompClient = Stomp.over(socket);
+      var that = this;
+      this.stompClient.connect({}, function(frame) {
+        that.setConnected(true);
+        console.log("Connected: " + frame);
+        that.stompClient.subscribe("/topic/messages", messageOutput => {
+          console.log("subscribe");
+          console.log(messageOutput);
+          that.showMessageOutput(JSON.parse(messageOutput.body));
+        });
+        that.stompClient.subscribe("/topic/messages2", messageOutput => {
+          console.log("subscribe2");
+          console.log(messageOutput);
+        });
+      });
+    },
+    disconnect() {
+      if (this.stompClient != null) {
+        this.stompClient.disconnect();
+      }
+      this.setConnected(false);
+      console.log("Disconnected");
+    },
+    sendMessage(from, text) {
+      console.log("sendMessage");
+      var json = { from: from, text: text.toString() };
+      this.stompClient.send("/app/chat", JSON.stringify(json), {});
+    },
+    showMessageOutput(messageOutput) {
+      console.log("showMessageOutput");
+      console.log(messageOutput);
+    },
     getConversaciones() {
       var that = this;
       this.$axios
@@ -85,9 +124,12 @@ export default {
           that.conversacionesFiltradas = that.conversaciones;
         })
         .catch(function(response) {
-          if (response != null && response.response.status == 401) {
+          if (
+            response != null &&
+            (response.response.status == 401 || response.response.status == 400)
+          ) {
             localStorage.removeItem("$expire");
-            if(window.location.pathname.split("/").reverse()[0] != "login"){
+            if (window.location.pathname.split("/").reverse()[0] != "login") {
               that.$router.push("/login");
             }
           }
@@ -121,9 +163,9 @@ export default {
           localStorage.removeItem("$token");
           localStorage.removeItem("$userId");
           localStorage.removeItem("$expire");
-          if(window.location.pathname.split("/").reverse()[0] != "login"){
-              that.$router.push("/login");
-            }
+          if (window.location.pathname.split("/").reverse()[0] != "login") {
+            that.$router.push("/login");
+          }
         })
         .catch(function(error) {
           // handle error
