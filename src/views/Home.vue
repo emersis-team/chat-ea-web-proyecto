@@ -27,7 +27,6 @@
         <button class="home-logout" @click="logout()">Cerrar sesión</button>
       </div>
       <div class="home-right" v-show="!$isMobile">
-        <!-- <button @click="enviarMensaje()">enviarMensaje</button> -->
         <Chat v-if="conversacionElegida != null" :conversacion="conversacionElegida"></Chat>
       </div>
     </div>
@@ -63,47 +62,31 @@ export default {
     }
     this.getConversaciones();
 
-    // this.connect();
+    this.conectarWebSocket();
   },
   methods: {
-    enviarMensaje() {
-      try {
-        var that = this;
-        that.count++;
-        that.sendMessage("javi", that.count);
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    setConnected(connected) {
-      console.log("setConnected " + connected);
-      if (connected) {
-        this.enviarMensaje();
-      }
-    },
-    connect() {
-      var socket = new SockJS(this.$localurl + "/chat");
+    conectarWebSocket() {
+      var socket = new SockJS(this.$localurl + "/websocket");
       this.stompClient = Stomp.over(socket);
+      this.stompClient.debug = () => {};
       var that = this;
       this.stompClient.connect({}, function(frame) {
-        that.setConnected(true);
         console.log("Connected: " + frame);
-        that.stompClient.subscribe("/topic/messages", messageOutput => {
-          console.log("subscribe");
-          console.log(messageOutput);
-          that.showMessageOutput(JSON.parse(messageOutput.body));
-        });
-        that.stompClient.subscribe("/topic/messages2", messageOutput => {
-          console.log("subscribe2");
-          console.log(messageOutput);
-        });
+        that.stompClient.subscribe(
+          "/notificacion/mensaje/" + localStorage.getItem("$userId"),
+          messageOutput => {
+            console.log("subscribe");
+            console.log(messageOutput);
+            that.getConversaciones();
+            that.$eventHub.$emit("chat-update");
+          }
+        );
       });
     },
-    disconnect() {
+    desconectarWebSocket() {
       if (this.stompClient != null) {
         this.stompClient.disconnect();
       }
-      this.setConnected(false);
       console.log("Disconnected");
     },
     sendMessage(from, text) {

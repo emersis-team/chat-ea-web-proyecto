@@ -3,18 +3,13 @@
     <div class="chat-top">
       <p>
         {{
-          $conversacionElegida != null
-            ? $conversacionElegida.user_dest.name
-            : ""
+        $conversacionElegida != null
+        ? $conversacionElegida.user_dest.name
+        : ""
         }}
       </p>
     </div>
-    <div
-      id="chatScroll"
-      class="chat-scroll"
-      ref="chatScroll"
-      @scroll="onScroll"
-    >
+    <div id="chatScroll" class="chat-scroll" ref="chatScroll" @scroll="onScroll">
       <div
         v-for="mensaje in mensajes"
         :key="mensaje.id"
@@ -22,10 +17,10 @@
         class="chat-container"
         v-bind:class="{ 'chat-mensaje-propio': mensaje.sender_id == userId }"
       >
-      <div v-if="mensaje.fecha != null" class="chat-separador">
-        <label>{{mensaje.fecha}}</label>
-      </div>
-      <div v-if="mensaje.fecha == null">
+        <div v-if="mensaje.fecha != null" class="chat-separador">
+          <label>{{mensaje.fecha}}</label>
+        </div>
+        <div v-if="mensaje.fecha == null">
           <span class="chat-tail" v-if="mensaje.sender_id != userId">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -38,11 +33,11 @@
                 opacity=".13"
                 fill="#0000000"
                 d="M1.533 3.568L8 12.193V1H2.812C1.042 1 .474 2.156 1.533 3.568z"
-              />
+              ></path>
               <path
                 fill="currentColor"
                 d="M1.533 2.568L8 11.193V0H2.812C1.042 0 .474 1.156 1.533 2.568z"
-              />
+              ></path>
             </svg>
           </span>
           <span class="chat-tail-out" v-if="mensaje.sender_id == userId">
@@ -54,14 +49,11 @@
               height="13"
               style="display: block;"
             >
-              <path
-                opacity=".13"
-                d="M5.188 1H0v11.193l6.467-8.625C7.526 2.156 6.958 1 5.188 1z"
-              />
+              <path opacity=".13" d="M5.188 1H0v11.193l6.467-8.625C7.526 2.156 6.958 1 5.188 1z"></path>
               <path
                 fill="currentColor"
                 d="M5.188 0H0v11.193l6.467-8.625C7.526 1.156 6.958 0 5.188 0z"
-              />
+              ></path>
             </svg>
           </span>
           <MensajeTexto
@@ -103,19 +95,13 @@
             "
             :mensaje="mensaje"
           ></MensajeAudio>
-      </div>
+        </div>
       </div>
     </div>
     <div class="chat-bottom">
       <div class="chat-adjuntar" title="Adjuntar" @click="adjuntar()">
-        <input
-          type="file"
-          class="app-hide"
-          @change="changeAdjunto()"
-          ref="adjuntoFiles"
-          multiple
-        />
-        <img src="../assets/img/adjuntar.png"/>
+        <input type="file" class="app-hide" @change="changeAdjunto()" ref="adjuntoFiles" multiple>
+        <img src="../assets/img/adjuntar.png">
       </div>
       <input
         type="text"
@@ -123,8 +109,8 @@
         ref="inputTexto"
         v-on:keyup.enter="enviar()"
         maxlength="140"
-      />
-      <img class="chat-enviar" src="../assets/img/enviar.png" @click="enviar()"/>
+      >
+      <img class="chat-enviar" src="../assets/img/enviar.png" @click="enviar()">
     </div>
   </div>
 </template>
@@ -159,9 +145,11 @@ export default {
   props: { conversacion: [Object] },
   computed: {},
   mounted() {
+    this.$eventHub.$on("chat-update", () => this.getChat(null, true));
+
     this.userId = localStorage.getItem("$userId");
     this.getChat(null, true);
-    this.actualizar();
+    // this.actualizar();
     this.mensajes = [];
     this.$refs.chatScroll.addEventListener("touchmove", this.onScroll);
   },
@@ -178,7 +166,9 @@ export default {
       }, 3000);
     },
     esImagen(mensaje) {
-      var extension = mensaje.message.files[0].file.split(".")[mensaje.message.files[0].file.split(".").length-1].toLowerCase();
+      var extension = mensaje.message.files[0].file
+        .split(".")
+        [mensaje.message.files[0].file.split(".").length - 1].toLowerCase();
       if (
         extension == "png" ||
         extension == "jpg" ||
@@ -191,7 +181,9 @@ export default {
       }
     },
     esVideo(mensaje) {
-      var extension = mensaje.message.files[0].file.split(".")[mensaje.message.files[0].file.split(".").length-1].toLowerCase();
+      var extension = mensaje.message.files[0].file
+        .split(".")
+        [mensaje.message.files[0].file.split(".").length - 1].toLowerCase();
       if (
         extension == "webm" ||
         extension == "mkv" ||
@@ -206,7 +198,9 @@ export default {
       }
     },
     esAudio(mensaje) {
-      var extension = mensaje.message.files[0].file.split(".")[mensaje.message.files[0].file.split(".").length-1].toLowerCase();
+      var extension = mensaje.message.files[0].file
+        .split(".")
+        [mensaje.message.files[0].file.split(".").length - 1].toLowerCase();
       if (extension == "m4a" || extension == "qt" || extension == "4mb") {
         return true;
       } else {
@@ -261,9 +255,13 @@ export default {
         })
         .catch(function(response) {
           clearTimeout(that.actualizarTimer);
-          if (response != null && response.response != null && response.response.status == 401) {
+          if (
+            response != null &&
+            response.response != null &&
+            response.response.status == 401
+          ) {
             localStorage.removeItem("$expire");
-            if(window.location.pathname.split("/").reverse()[0] != "login"){
+            if (window.location.pathname.split("/").reverse()[0] != "login") {
               that.$router.push("/login");
             }
           }
@@ -271,7 +269,7 @@ export default {
     },
     getChatPage(pagina) {
       this.mensajeOffset = this.mensajes[0];
-      if(this.mensajeOffset != null && this.mensajeOffset.id == null){
+      if (this.mensajeOffset != null && this.mensajeOffset.id == null) {
         this.mensajeOffset = this.mensajes[1];
       }
       this.currentPage = pagina;
@@ -288,49 +286,61 @@ export default {
           that.getSeparadores(true);
         })
         .catch(function(response) {
-          if (response != null && response.response != null && response.response.status == 401) {
+          if (
+            response != null &&
+            response.response != null &&
+            response.response.status == 401
+          ) {
             localStorage.removeItem("$expire");
-            if(window.location.pathname.split("/").reverse()[0] != "login"){
+            if (window.location.pathname.split("/").reverse()[0] != "login") {
               that.$router.push("/login");
             }
           }
         });
     },
-    getSeparadores(scrollear){
+    getSeparadores(scrollear) {
       var fechas = [];
       this.mensajes = this.mensajes.filter(m => m.fecha == null);
       var cantidad = this.mensajes.length;
       for (var i = 0; i < cantidad; i++) {
         var m = this.mensajes[i];
-        if(m.created_at != null){
+        if (m.created_at != null) {
           var d = new Date(m.created_at);
-          d.setHours(d.getHours()+3);
+          d.setHours(d.getHours() + 3);
           let day = d.getDate();
-          let month = d.getMonth()+1;
+          let month = d.getMonth() + 1;
           let year = d.getFullYear();
-          let fecha = day+"/"+month+"/"+year;
+          let fecha = day + "/" + month + "/" + year;
           var today = new Date();
           let todayday = today.getDate();
-          let todaymonth = today.getMonth()+1;
+          let todaymonth = today.getMonth() + 1;
           let todayyear = today.getFullYear();
-          if(day != todayday || month != todaymonth || year != todayyear){
-            if(fechas.includes(fecha) == false){
-              var days = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+          if (day != todayday || month != todaymonth || year != todayyear) {
+            if (fechas.includes(fecha) == false) {
+              var days = [
+                "Domingo",
+                "Lunes",
+                "Martes",
+                "Miércoles",
+                "Jueves",
+                "Viernes",
+                "Sábado"
+              ];
               fecha = days[d.getDay()] + " " + fecha;
-              if(!this.mensajes.some(m => m.fecha == fecha)){
-                this.mensajes.splice(i, 0, {fecha: fecha});
+              if (!this.mensajes.some(m => m.fecha == fecha)) {
+                this.mensajes.splice(i, 0, { fecha: fecha });
                 cantidad++;
-                }
+              }
             }
-          }else{
-            if(!this.mensajes.some(m => m.fecha == "HOY")){
-              this.mensajes.splice(i, 0, {fecha: "HOY"});
+          } else {
+            if (!this.mensajes.some(m => m.fecha == "HOY")) {
+              this.mensajes.splice(i, 0, { fecha: "HOY" });
               cantidad++;
             }
           }
         }
       }
-      if(scrollear == true){
+      if (scrollear == true) {
         var that = this;
         this.$nextTick(() => {
           that.scrollToBottom();
@@ -351,14 +361,14 @@ export default {
       var that = this;
       this.$nextTick(() => {
         if (that.mensajeOffset != null) {
-          if(document.getElementById(that.mensajeOffset.id) != null){
+          if (document.getElementById(that.mensajeOffset.id) != null) {
             document.getElementById(
               "chatScroll"
             ).scrollTop = document.getElementById(
               that.mensajeOffset.id
             ).offsetTop;
-          }else{
-             setTimeout(function(){
+          } else {
+            setTimeout(function() {
               that.scrollToBottom();
             }, 200);
           }
@@ -380,11 +390,15 @@ export default {
             that.getChat(null, true);
           })
           .catch(function(response) {
-            if (response != null && response.response != null && response.response.status == 401) {
+            if (
+              response != null &&
+              response.response != null &&
+              response.response.status == 401
+            ) {
               localStorage.removeItem("$expire");
-              if(window.location.pathname.split("/").reverse()[0] != "login"){
-              that.$router.push("/login");
-            }
+              if (window.location.pathname.split("/").reverse()[0] != "login") {
+                that.$router.push("/login");
+              }
             }
             alert("Se produjo un error, reintente");
           });
@@ -416,11 +430,15 @@ export default {
             that.getChat(null, true);
           })
           .catch(function(response) {
-            if (response != null && response.response != null && response.response.status == 401) {
+            if (
+              response != null &&
+              response.response != null &&
+              response.response.status == 401
+            ) {
               localStorage.removeItem("$expire");
-              if(window.location.pathname.split("/").reverse()[0] != "login"){
-              that.$router.push("/login");
-            }
+              if (window.location.pathname.split("/").reverse()[0] != "login") {
+                that.$router.push("/login");
+              }
             }
             var string = "";
             response.response.data.errors["file.0"].forEach(

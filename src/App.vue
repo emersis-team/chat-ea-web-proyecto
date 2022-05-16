@@ -17,7 +17,6 @@ export default {
   },
   components: { Snackbar },
   created() {
-    // Vue.prototype.$localurl = "https://emersis.casya.com.ar";
     Vue.prototype.$localurl = "http://10.120.17.157:8080";
     // Vue.prototype.$localurl = "http://localhost:8184";
 
