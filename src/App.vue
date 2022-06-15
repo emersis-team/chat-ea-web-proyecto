@@ -18,6 +18,7 @@ export default {
   components: { Snackbar },
   created() {
     Vue.prototype.$localurl = "http://10.120.17.157:8080";
+    // Vue.prototype.$localurl = "http://38.109.228.250:8444";
     // Vue.prototype.$localurl = "http://localhost:8184";
 
     this.$axios.defaults.headers.common["Authorization"] =

@@ -4,10 +4,14 @@
       <label>{{conversacion.ammount_no_read}}</label>
     </div>
     <div class="conversacion-imagen">
-      <img src="../assets/img/contacto.png" />
+      <img src="../assets/img/contacto.png">
     </div>
-    <p class="conversacion-nombre">{{ conversacion.user_dest.name }}</p>
-    <p class="conversacion-email">{{ conversacion.user_dest.email }}</p>
+    <p
+      class="conversacion-nombre"
+    >{{ (conversacion.conversation_name != null ? conversacion.conversation_name : conversacion.conversation_members[0].name) }}</p>
+    <p
+      class="conversacion-email"
+    >{{ conversacion.conversation_members.length > 1 ? (conversacion.conversation_members.length + ' miembros') : '' }}</p>
   </div>
 </template>
 

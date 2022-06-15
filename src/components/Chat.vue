@@ -1,100 +1,101 @@
 <template>
   <div class="chat">
     <div class="chat-top">
-      <p>
-        {{
-        $conversacionElegida != null
-        ? $conversacionElegida.user_dest.name
-        : ""
-        }}
-      </p>
+      <p>{{ (conversacion.conversation_name != null ? (conversacion.conversation_name + getMiembros()) : conversacion.conversation_members[0].name) }}</p>
     </div>
-    <div id="chatScroll" class="chat-scroll" ref="chatScroll" @scroll="onScroll">
-      <div
-        v-for="mensaje in mensajes"
-        :key="mensaje.id"
-        :id="mensaje.id"
-        class="chat-container"
-        v-bind:class="{ 'chat-mensaje-propio': mensaje.sender_id == userId }"
-      >
-        <div v-if="mensaje.fecha != null" class="chat-separador">
-          <label>{{mensaje.fecha}}</label>
-        </div>
-        <div v-if="mensaje.fecha == null">
-          <span class="chat-tail" v-if="mensaje.sender_id != userId">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 8 13"
-              width="8"
-              height="13"
-              style="display: block;"
-            >
-              <path
-                opacity=".13"
-                fill="#0000000"
-                d="M1.533 3.568L8 12.193V1H2.812C1.042 1 .474 2.156 1.533 3.568z"
-              ></path>
-              <path
-                fill="currentColor"
-                d="M1.533 2.568L8 11.193V0H2.812C1.042 0 .474 1.156 1.533 2.568z"
-              ></path>
-            </svg>
-          </span>
-          <span class="chat-tail-out" v-if="mensaje.sender_id == userId">
-            <svg
-              class="chat-tail-svg"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 8 13"
-              width="8"
-              height="13"
-              style="display: block;"
-            >
-              <path opacity=".13" d="M5.188 1H0v11.193l6.467-8.625C7.526 2.156 6.958 1 5.188 1z"></path>
-              <path
-                fill="currentColor"
-                d="M5.188 0H0v11.193l6.467-8.625C7.526 1.156 6.958 0 5.188 0z"
-              ></path>
-            </svg>
-          </span>
-          <MensajeTexto
-            v-if="
-              mensaje.message_type != null &&
-                mensaje.message_type.substr(11, 100) == 'TextMessage'
-            "
-            :mensaje="mensaje"
-          ></MensajeTexto>
-          <MensajeArchivo
-            v-if="
-              mensaje.message_type != null &&
-                mensaje.message_type.substr(11, 100) == 'FileMessage' &&
-                esArchivo(mensaje)
-            "
-            :mensaje="mensaje"
-          ></MensajeArchivo>
-          <MensajeImagen
-            v-if="
-              mensaje.message_type != null &&
-                mensaje.message_type.substr(11, 100) == 'FileMessage' &&
-                esImagen(mensaje)
-            "
-            :mensaje="mensaje"
-          ></MensajeImagen>
-          <MensajeVideo
-            v-if="
-              mensaje.message_type != null &&
-                mensaje.message_type.substr(11, 100) == 'FileMessage' &&
-                esVideo(mensaje)
-            "
-            :mensaje="mensaje"
-          ></MensajeVideo>
-          <MensajeAudio
-            v-if="
-              mensaje.message_type != null &&
-                mensaje.message_type.substr(11, 100) == 'FileMessage' &&
-                esAudio(mensaje)
-            "
-            :mensaje="mensaje"
-          ></MensajeAudio>
+    <div class="chat-scroll-container">
+      <div id="chatScroll" class="chat-scroll" ref="chatScroll" @scroll="onScroll">
+        <div
+          v-for="mensaje in mensajes"
+          :key="mensaje.message_id"
+          :id="mensaje.message_id"
+          class="chat-container"
+          v-bind:class="{ 'chat-mensaje-propio': mensaje.sender_id == userId }"
+        >
+          <div v-if="mensaje.fecha != null" class="chat-separador">
+            <label>{{mensaje.fecha}}</label>
+          </div>
+          <div v-if="mensaje.fecha == null">
+            <span class="chat-tail" v-if="mensaje.sender_id != userId">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 8 13"
+                width="8"
+                height="13"
+                style="display: block;"
+              >
+                <path
+                  opacity=".13"
+                  fill="#0000000"
+                  d="M1.533 3.568L8 12.193V1H2.812C1.042 1 .474 2.156 1.533 3.568z"
+                ></path>
+                <path
+                  fill="currentColor"
+                  d="M1.533 2.568L8 11.193V0H2.812C1.042 0 .474 1.156 1.533 2.568z"
+                ></path>
+              </svg>
+            </span>
+            <span class="chat-tail-out" v-if="mensaje.sender_id == userId">
+              <svg
+                class="chat-tail-svg"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 8 13"
+                width="8"
+                height="13"
+                style="display: block;"
+              >
+                <path opacity=".13" d="M5.188 1H0v11.193l6.467-8.625C7.526 2.156 6.958 1 5.188 1z"></path>
+                <path
+                  fill="currentColor"
+                  d="M5.188 0H0v11.193l6.467-8.625C7.526 1.156 6.958 0 5.188 0z"
+                ></path>
+              </svg>
+            </span>
+            <MensajeTexto
+              v-if="
+                mensaje.message_type != null &&
+                  mensaje.message_type.substr(11, 100) == 'TextMessage'
+              "
+              :mensaje="mensaje"
+              :sender="getSender(mensaje)"
+            ></MensajeTexto>
+            <MensajeArchivo
+              v-if="
+                mensaje.message_type != null &&
+                  mensaje.message_type.substr(11, 100) == 'FileMessage' &&
+                  esArchivo(mensaje)
+              "
+              :mensaje="mensaje"
+              :sender="getSender(mensaje)"
+            ></MensajeArchivo>
+            <MensajeImagen
+              v-if="
+                mensaje.message_type != null &&
+                  mensaje.message_type.substr(11, 100) == 'FileMessage' &&
+                  esImagen(mensaje)
+              "
+              :mensaje="mensaje"
+              :sender="getSender(mensaje)"
+            ></MensajeImagen>
+            <MensajeVideo
+              v-if="
+                mensaje.message_type != null &&
+                  mensaje.message_type.substr(11, 100) == 'FileMessage' &&
+                  esVideo(mensaje)
+              "
+              :mensaje="mensaje"
+              :sender="getSender(mensaje)"
+            ></MensajeVideo>
+            <MensajeAudio
+              v-if="
+                mensaje.message_type != null &&
+                  mensaje.message_type.substr(11, 100) == 'FileMessage' &&
+                  esAudio(mensaje)
+              "
+              :mensaje="mensaje"
+              :sender="getSender(mensaje)"
+            ></MensajeAudio>
+          </div>
         </div>
       </div>
     </div>
@@ -142,7 +143,7 @@ export default {
       actualizarTimer: null
     };
   },
-  props: { conversacion: [Object] },
+  props: { conversacion: [Object], contactos: [Array] },
   computed: {},
   mounted() {
     this.$eventHub.$on("chat-update", () => this.getChat(null, true));
@@ -165,10 +166,26 @@ export default {
         that.actualizar();
       }, 3000);
     },
+    getSender(mensaje) {
+      let userId = localStorage.getItem("$userId");
+
+      let senderId =
+        this.conversacion.conversation_name != null
+          ? this.conversacion.conversation_members[
+              this.conversacion.conversation_members.findIndex(
+                a => a.user_id == mensaje.sender_id
+              )
+            ].user_id
+          : null;
+
+      return senderId != null && senderId != userId
+        ? this.contactos.filter(c => c.id == senderId)[0].email
+        : null;
+    },
     esImagen(mensaje) {
-      var extension = mensaje.message.files[0].file
+      var extension = mensaje.message.file
         .split(".")
-        [mensaje.message.files[0].file.split(".").length - 1].toLowerCase();
+        [mensaje.message.file.split(".").length - 1].toLowerCase();
       if (
         extension == "png" ||
         extension == "jpg" ||
@@ -181,9 +198,9 @@ export default {
       }
     },
     esVideo(mensaje) {
-      var extension = mensaje.message.files[0].file
+      var extension = mensaje.message.file
         .split(".")
-        [mensaje.message.files[0].file.split(".").length - 1].toLowerCase();
+        [mensaje.message.file.split(".").length - 1].toLowerCase();
       if (
         extension == "webm" ||
         extension == "mkv" ||
@@ -198,9 +215,9 @@ export default {
       }
     },
     esAudio(mensaje) {
-      var extension = mensaje.message.files[0].file
+      var extension = mensaje.message.file
         .split(".")
-        [mensaje.message.files[0].file.split(".").length - 1].toLowerCase();
+        [mensaje.message.file.split(".").length - 1].toLowerCase();
       if (extension == "m4a" || extension == "qt" || extension == "4mb") {
         return true;
       } else {
@@ -220,14 +237,19 @@ export default {
     },
     getChat(id, scroll) {
       if (id == null) {
-        id = this.conversacion.id;
+        id = this.conversacion.conversation_id;
       } else {
         this.mensajes = [];
         this.primeraPagina = true;
       }
+
+      let userId = localStorage.getItem("$userId");
+
       var that = this;
       this.$axios
-        .get(this.$localurl + "/api/v1/messages/" + id)
+        .get(
+          this.$localurl + "/api/" + userId + "/conversations/" + id + "?page=0"
+        )
         .then(function(response) {
           if (
             that.primeraPagina == true &&
@@ -241,8 +263,11 @@ export default {
           response.data.messages.data.reverse();
           response.data.messages.data.forEach(m => {
             if (
-              !that.mensajes.some(mensaje => mensaje.id == m.id) &&
-              m.conversation_id == that.conversacion.id
+              !that.mensajes.some(
+                mensaje =>
+                  mensaje.message != null && mensaje.message_id == m.message_id
+              ) &&
+              m.conversation_id == that.conversacion.conversation_id
             ) {
               that.mensajes.push(m);
               scrollear = true;
@@ -269,9 +294,12 @@ export default {
     },
     getChatPage(pagina) {
       this.mensajeOffset = this.mensajes[0];
-      if (this.mensajeOffset != null && this.mensajeOffset.id == null) {
+      if (this.mensajeOffset != null && this.mensajeOffset.message_id == null) {
         this.mensajeOffset = this.mensajes[1];
       }
+
+      let userId = localStorage.getItem("$userId");
+
       this.currentPage = pagina;
       var pag = "";
       if (pagina != null) {
@@ -279,7 +307,14 @@ export default {
       }
       var that = this;
       this.$axios
-        .get(this.$localurl + "/api/v1/messages/" + this.conversacion.id + pag)
+        .get(
+          this.$localurl +
+            "/api/" +
+            userId +
+            "/conversations/" +
+            this.conversacion.conversation_id +
+            pag
+        )
         .then(function(response) {
           response.data.messages.data.reverse();
           that.mensajes = response.data.messages.data.concat(that.mensajes);
@@ -361,11 +396,11 @@ export default {
       var that = this;
       this.$nextTick(() => {
         if (that.mensajeOffset != null) {
-          if (document.getElementById(that.mensajeOffset.id) != null) {
+          if (document.getElementById(that.mensajeOffset.message_id) != null) {
             document.getElementById(
               "chatScroll"
             ).scrollTop = document.getElementById(
-              that.mensajeOffset.id
+              that.mensajeOffset.message_id
             ).offsetTop;
           } else {
             setTimeout(function() {
@@ -380,12 +415,16 @@ export default {
       var texto = this.$refs.inputTexto.value;
       if (texto != "") {
         this.$refs.inputTexto.value = "";
-        var data = new FormData();
-        data.append("message", texto);
-        data.append("receiver_id", this.conversacion.user_dest.id);
+        let userId = localStorage.getItem("$userId");
+        let data = {
+          user_id: userId,
+          message: texto,
+          conversation_id: this.conversacion.conversation_id,
+          conversation_members: this.conversacion.conversation_members
+        };
         var that = this;
         this.$axios
-          .post(this.$localurl + "/api/v1/messages/textMessage", data)
+          .post(this.$localurl + "/api/messages/textMessage", data)
           .then(function() {
             that.getChat(null, true);
           })
@@ -415,9 +454,12 @@ export default {
     },
     changeAdjunto() {
       if (this.$refs.adjuntoFiles.files.length > 0) {
+        let userId = localStorage.getItem("$userId");
+
         var data = new FormData();
         data.append("message", "archivos");
-        data.append("receiver_id", this.conversacion.user_dest.id);
+        data.append("user_id", userId);
+        data.append("conversation_id", this.conversacion.conversation_id);
 
         this.$refs.adjuntoFiles.files.forEach(function(value, i) {
           data.append("file[" + i + "]", value);
@@ -425,29 +467,63 @@ export default {
 
         var that = this;
         this.$axios
-          .post(this.$localurl + "/api/v1/messages/fileMessage", data)
-          .then(function() {
+          .post(this.$localurl + "/api/messages/fileMessage", data)
+          .then(function(response) {
             that.getChat(null, true);
-          })
-          .catch(function(response) {
             if (
               response != null &&
-              response.response != null &&
-              response.response.status == 401
+              response.data != null &&
+              response.data.messages_with_error != null
             ) {
+              that.mostrarErroresArchivos(response.data.messages_with_error);
+            }
+          })
+          .catch(function(response) {
+            if (response != null && response.status == 401) {
               localStorage.removeItem("$expire");
               if (window.location.pathname.split("/").reverse()[0] != "login") {
                 that.$router.push("/login");
               }
+            } else if (
+              response != null &&
+              response.data != null &&
+              response.status == 400
+            ) {
+              if (response.data.messages_with_error != null) {
+                that.mostrarErroresArchivos(response.data.messages_with_error);
+              }
             }
-            var string = "";
-            response.response.data.errors["file.0"].forEach(
-              e => (string = string + e + ", ")
-            );
-            string = string.substr(0, string.length - 3);
-            console.log(string);
-            alert(string);
           });
+      }
+    },
+    mostrarErroresArchivos(errores) {
+      var string = "";
+      errores.forEach(error => {
+        string =
+          string +
+          "archivo: " +
+          error.original_file +
+          " error: " +
+          error.text_error +
+          ", ";
+      });
+      string = string.substr(0, string.length - 2);
+      console.log(string);
+      alert(string);
+    },
+    getMiembros() {
+      let resultado = "";
+      let that = this;
+      if (this.conversacion.conversation_members.length > 1) {
+        resultado = " (";
+        this.conversacion.conversation_members.forEach(m => {
+          resultado =
+            resultado +
+            that.contactos.filter(c => c.id == m.user_id)[0].email +
+            ", ";
+        });
+        resultado = resultado.substr(0, resultado.length - 2) + ")";
+        return resultado;
       }
     }
   }

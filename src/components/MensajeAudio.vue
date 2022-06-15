@@ -1,21 +1,16 @@
 <template>
   <div class="chat-mensaje">
-    <div
-      class="chat-mensaje-audio"
-      v-for="file in mensaje.message.files"
-      :key="file.id"
-    >
-      <label class="chat-mensaje-audio-titulo">{{ file.original_file }}</label>
+    <div class="chat-mensaje-audio">
+      <label v-show="sender != null" class="chat-mensaje-sender">{{sender}}</label>
+      <label class="chat-mensaje-audio-titulo">{{ mensaje.message.original_file }}</label>
       <label class="chat-mensaje-hora">{{ getHora() }}</label>
       <audio controls name="media">
         <source
-          :src="$localurl + '/public/storage/' + file.file"
+          :src="'http://10.120.17.157:8081/storage/' + mensaje.message.file"
           type="audio/mpeg"
-        />
+        >
       </audio>
-      <a :href="$localurl + '/public/storage/' + file.file" download
-        >Descargar</a
-      >
+      <a :href="'http://10.120.17.157:8081/storage/' + mensaje.message.file" download>Descargar</a>
     </div>
   </div>
 </template>
@@ -27,12 +22,12 @@ export default {
   data() {
     return {};
   },
-  props: { mensaje: [Object] },
+  props: { mensaje: [Object], sender: [String] },
   computed: {},
   mounted() {},
   created() {},
   methods: {
-    getHora(){
+    getHora() {
       var hora = this.mensaje.created_at.split("T")[1].split(":");
       return hora[0] + ":" + hora[1];
     }

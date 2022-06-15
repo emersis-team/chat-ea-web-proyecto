@@ -13,6 +13,8 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  padding-left: 3vw;
+  padding-right: 3vw;
 }
 .home-left {
   width: 20%;
@@ -44,6 +46,10 @@
 .home-right {
   width: 80%;
   background-color: #e5ddd5;
+}
+.home-right-with-map {
+  display: grid;
+  grid-template-columns: 50% 50%;
 }
 .home-buscar {
   width: 92%;

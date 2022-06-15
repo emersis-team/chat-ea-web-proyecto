@@ -26,8 +26,13 @@
         </div>
         <button class="home-logout" @click="logout()">Cerrar sesión</button>
       </div>
-      <div class="home-right" v-show="!$isMobile">
-        <Chat v-if="conversacionElegida != null" :conversacion="conversacionElegida"></Chat>
+      <div class="home-right" :class="{ 'home-right-with-map': conversacionElegida != null }">
+        <Chat
+          v-if="conversacionElegida != null"
+          :conversacion="conversacionElegida"
+          :contactos="contactos"
+        ></Chat>
+        <Mapa :posiciones="posiciones" :contactos="contactos"></Mapa>
       </div>
     </div>
   </div>
@@ -36,6 +41,7 @@
 <script>
 import Conversacion from "@/components/Conversacion.vue";
 import Chat from "@/components/Chat.vue";
+import Mapa from "@/components/Mapa.vue";
 import Vue from "vue";
 import SockJS from "sockjs-client";
 import Stomp from "webstomp-client";
@@ -44,7 +50,8 @@ export default {
   name: "Home",
   components: {
     Conversacion,
-    Chat
+    Chat,
+    Mapa
   },
   data() {
     return {
@@ -52,8 +59,11 @@ export default {
       conversacionesFiltradas: [],
       conversaciones: [],
       mensajes: [],
+      contactos: [],
+      posiciones: [],
       stompClient: null,
-      count: 0
+      count: 0,
+      ultimaPosicion: null
     };
   },
   mounted() {
@@ -61,6 +71,8 @@ export default {
       this.mostrarChat = false;
     }
     this.getConversaciones();
+    this.getContactos();
+    this.getPosiciones();
 
     this.conectarWebSocket();
   },
@@ -75,10 +87,28 @@ export default {
         that.stompClient.subscribe(
           "/notificacion/mensaje/" + localStorage.getItem("$userId"),
           messageOutput => {
-            console.log("subscribe");
+            console.log("nuevo mensaje");
             console.log(messageOutput);
             that.getConversaciones();
             that.$eventHub.$emit("chat-update");
+          }
+        );
+        that.stompClient.subscribe(
+          "/notificacion/posicion/" + localStorage.getItem("$userId"),
+          messageOutput => {
+            console.log("nuevo mensaje posicion");
+            let body = JSON.parse(messageOutput.body);
+            console.log(body);
+            let array = that.posiciones.filter(
+              p => p[0].user_id == body.user_id
+            )[0];
+            if (array != null) {
+              array.unshift(body);
+            } else {
+              array = [body];
+              that.posiciones.push(array);
+            }
+            that.$forceUpdate();
           }
         );
       });
@@ -99,12 +129,33 @@ export default {
       console.log(messageOutput);
     },
     getConversaciones() {
+      let userId = localStorage.getItem("$userId");
+
       var that = this;
       this.$axios
-        .get(this.$localurl + "/api/v1/messages")
+        .get(this.$localurl + "/api/" + userId + "/conversations/")
         .then(function(response) {
           that.conversaciones = response.data.conversations;
           that.conversacionesFiltradas = that.conversaciones;
+        })
+        .catch(function(response) {
+          if (
+            response != null &&
+            (response.response.status == 401 || response.response.status == 400)
+          ) {
+            localStorage.removeItem("$expire");
+            if (window.location.pathname.split("/").reverse()[0] != "login") {
+              that.$router.push("/login");
+            }
+          }
+        });
+    },
+    getContactos() {
+      var that = this;
+      this.$axios
+        .get(this.$localurl + "/api/usuarios")
+        .then(function(response) {
+          that.contactos = response.data;
         })
         .catch(function(response) {
           if (
@@ -127,33 +178,142 @@ export default {
       );
     },
     elegirConversacion(conversacion) {
-      conversacion.ammount_no_read = 0;
-      if (this.$isMobile) {
-        this.$router.push(
-          "/chat/" + conversacion.id + "/" + conversacion.user_dest.id
-        );
-      }
-      this.conversacionElegida = conversacion;
-      Vue.prototype.$conversacionElegida = conversacion;
+      if (conversacion != this.conversacionElegida) {
+        conversacion.ammount_no_read = 0;
+        this.conversacionElegida = conversacion;
+        Vue.prototype.$conversacionElegida = conversacion;
 
-      this.$eventHub.$emit("chat-get", conversacion.id);
+        this.$eventHub.$emit("chat-get", conversacion.conversation_id);
+
+        let that = this;
+        let cantidad = 0;
+        let lat = 0;
+        let lon = 0;
+        conversacion.conversation_members.forEach(member => {
+          if (that.getLastPositon(member) != null) {
+            lat = lat + parseFloat(that.getLastPositon(member)[0].lat);
+            lon = lon + parseFloat(that.getLastPositon(member)[0].lon);
+            cantidad++;
+          }
+        });
+        if (cantidad != 0) {
+          lat = lat / cantidad;
+          lon = lon / cantidad;
+          this.$eventHub.$emit("map-center", [
+            parseFloat(lat),
+            parseFloat(lon)
+          ]);
+        } else {
+          this.$eventHub.$emit("map-center-propia");
+        }
+      } else {
+        Vue.prototype.$conversacionElegida = null;
+        this.conversacionElegida = null;
+        this.$eventHub.$emit("map-center-propia");
+      }
     },
     logout() {
+      localStorage.removeItem("$token");
+      localStorage.removeItem("$userId");
+      localStorage.removeItem("$expire");
+      if (window.location.pathname.split("/").reverse()[0] != "login") {
+        this.$router.push("/login");
+      }
+    },
+    getPosiciones() {
       var that = this;
       this.$axios
-        .post(this.$localurl + "/api/v1/auth/logout")
-        .then(function() {
-          localStorage.removeItem("$token");
-          localStorage.removeItem("$userId");
-          localStorage.removeItem("$expire");
-          if (window.location.pathname.split("/").reverse()[0] != "login") {
-            that.$router.push("/login");
+        .get(
+          this.$localurl +
+            "/api/position/" +
+            localStorage.getItem("$userId") +
+            "/user_contacts_positions"
+        )
+        .then(function(response) {
+          that.posiciones = response.data.user_contacts_positions;
+          if (
+            response.data.user_positions != null &&
+            response.data.user_positions.length > 0
+          ) {
+            that.ultimaPosicion = {
+              coords: {
+                latitude: response.data.user_positions[0].lat,
+                longitude: response.data.user_positions[0].lon,
+                altitude: response.data.user_positions[0].alt
+              }
+            };
           }
+          that.watchCurrentPosition();
+          console.log(response.data);
         })
-        .catch(function(error) {
-          // handle error
-          console.log(error);
+        .catch(function(response) {
+          if (
+            response != null &&
+            (response.response.status == 401 || response.response.status == 400)
+          ) {
+            localStorage.removeItem("$expire");
+            if (window.location.pathname.split("/").reverse()[0] != "login") {
+              that.$router.push("/login");
+            }
+          }
         });
+    },
+    getLastPositon(member) {
+      return this.posiciones.filter(p => p[0].user_id == member.user_id)[0];
+    },
+    watchCurrentPosition() {
+      var that = this;
+      navigator.geolocation.watchPosition(function(position) {
+        if (
+          that.ultimaPosicion == null ||
+          that.calcCrow(
+            that.ultimaPosicion.coords.latitude,
+            that.ultimaPosicion.coords.longitude,
+            position.coords.latitude,
+            position.coords.longitude
+          ) > 100
+        ) {
+          that.ultimaPosicion = position;
+          that.reportarUbicacion(position);
+        }
+      });
+    },
+    reportarUbicacion(position) {
+      console.log("reporto ubicacion: " + position);
+      let json = {
+        user_id: localStorage.getItem("$userId"),
+        lat: position.coords.latitude,
+        lon: position.coords.longitude,
+        alt: position.coords.altitude != null ? position.coords.altitude : 0
+      };
+      this.$axios
+        .post(this.$localurl + "/api/position/user_position", json)
+        .then(function(response) {
+          console.log(response);
+        })
+        .catch(function(response) {
+          console.log(response);
+        });
+    },
+    calcCrow(lat1, lon1, lat2, lon2) {
+      var R = 6371; // km
+      var dLat = this.toRad(lat2 - lat1);
+      var dLon = this.toRad(lon2 - lon1);
+      lat1 = this.toRad(lat1);
+      lat2 = this.toRad(lat2);
+
+      var a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.sin(dLon / 2) *
+          Math.sin(dLon / 2) *
+          Math.cos(lat1) *
+          Math.cos(lat2);
+      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      var d = R * c;
+      return d * 1000;
+    },
+    toRad(Value) {
+      return (Value * Math.PI) / 180;
     }
   }
 };

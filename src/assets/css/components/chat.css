@@ -1,13 +1,18 @@
 .chat {
-  height: 100%;
+  height: 95vh;
   box-sizing: border-box;
   position: relative;
+  overflow-y: auto;
+}
+.chat-scroll-container {
+  height: calc(100% - 102px);
 }
 .chat-scroll {
   overflow-y: scroll;
-  height: calc(100% - 6vw);
+  height: 100%;
   padding: 5%;
   box-sizing: border-box;
+  padding-bottom: 2vh;
 }
 .chat-container {
   display: block;
@@ -222,6 +227,11 @@
   font-family: "OpenSans-Regular";
   padding-top: 3px;
   padding-bottom: 3px;
+}
+.chat-mensaje-sender {
+  display: block;
+  font-size: 14px;
+  color: #000 !important;
 }
 
 /* PORTRAIT */

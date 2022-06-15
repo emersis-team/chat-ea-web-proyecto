@@ -8,7 +8,7 @@
         placeholder="Escribe tu usuario aquí"
         ref="loginUser"
         v-bind:class="{ 'error-input': errorUsuario }"
-      />
+      >
     </div>
     <div class="login-row">
       <label class="login-label">Contraseña</label>
@@ -18,19 +18,19 @@
         ref="loginPassword"
         v-on:keyup.enter="login()"
         v-bind:class="{ 'error-input': errorPassword }"
-      />
+      >
       <img
         class="login-input-ojo"
         src="../assets/img/ojo.png"
         v-show="!mostrarOjoActivo"
         @click="changePasswordType('text')"
-      />
+      >
       <img
         class="login-input-ojo"
         src="../assets/img/ojo-active.png"
         v-show="mostrarOjoActivo"
         @click="changePasswordType('password')"
-      />
+      >
     </div>
     <button class="login-btn" @click="login()">Ingresar</button>
   </div>
@@ -86,13 +86,13 @@ export default {
       if (guardar == true) {
         var that = this;
         this.$axios
-          .post(this.$localurl + "/api/v1/auth/login", {
+          .post(this.$localurl + "/api/auth/login", {
             email: username,
             password: password
           })
           .then(function(response) {
             localStorage.setItem("$token", response.data.token);
-            localStorage.setItem("$userId", response.data.user.id);
+            localStorage.setItem("$userId", response.data.id);
             localStorage.setItem(
               "$expire",
               Date.now() + response.data.expires_in
