@@ -21,6 +21,11 @@ const routes = [
     name: "chat",
     component: () => import(/* webpackChunkName: "chat" */ "../views/Chat.vue"),
   },
+	{
+		path: "/video",
+		name: "video",
+		component: () => import("../views/VideoCall.vue"),
+	}
 ];
 
 const router = new VueRouter({

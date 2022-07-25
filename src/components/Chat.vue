@@ -2,6 +2,7 @@
   <div class="chat">
     <div class="chat-top">
       <p>{{ (conversacion.conversation_name != null ? (conversacion.conversation_name + getMiembros()) : conversacion.conversation_members[0].name) }}</p>
+			<button @click="joinCall()">Join Call</button>
     </div>
     <div class="chat-scroll-container">
       <div id="chatScroll" class="chat-scroll" ref="chatScroll" @scroll="onScroll">
@@ -158,6 +159,10 @@ export default {
     this.$eventHub.$on("chat-get", id => this.getChat(id, true));
   },
   methods: {
+	  joinCall() {
+		  const videoComponentRedirect = this.$router.resolve({ name: 'video' });
+			window.open(videoComponentRedirect.href, '_blank');
+	  },
     actualizar() {
       var that = this;
       clearTimeout(this.actualizarTimer);
@@ -183,57 +188,40 @@ export default {
         : null;
     },
     esImagen(mensaje) {
-      var extension = mensaje.message.file
+      const extension = mensaje.message.file
         .split(".")
         [mensaje.message.file.split(".").length - 1].toLowerCase();
-      if (
-        extension == "png" ||
+
+			return extension == "png" ||
         extension == "jpg" ||
         extension == "svg" ||
-        extension == "jpeg"
-      ) {
-        return true;
-      } else {
-        return false;
-      }
+        extension == "jpeg";
     },
     esVideo(mensaje) {
-      var extension = mensaje.message.file
+      const extension = mensaje.message.file
         .split(".")
         [mensaje.message.file.split(".").length - 1].toLowerCase();
-      if (
-        extension == "webm" ||
+
+      return extension == "webm" ||
         extension == "mkv" ||
         extension == "flv" ||
         extension == "mp4" ||
         extension == "mov" ||
-        extension == "avi"
-      ) {
-        return true;
-      } else {
-        return false;
-      }
+        extension == "avi";
     },
     esAudio(mensaje) {
-      var extension = mensaje.message.file
+      const extension = mensaje.message.file
         .split(".")
         [mensaje.message.file.split(".").length - 1].toLowerCase();
-      if (extension == "m4a" || extension == "qt" || extension == "4mb") {
-        return true;
-      } else {
-        return false;
-      }
+
+      return extension == "m4a" ||
+				extension == "qt" ||
+				extension == "4mb";
     },
     esArchivo(mensaje) {
-      if (
-        this.esImagen(mensaje) == false &&
+      return this.esImagen(mensaje) == false &&
         this.esVideo(mensaje) == false &&
-        this.esAudio(mensaje) == false
-      ) {
-        return true;
-      } else {
-        return false;
-      }
+        this.esAudio(mensaje) == false;
     },
     getChat(id, scroll) {
       if (id == null) {
@@ -461,7 +449,7 @@ export default {
         data.append("user_id", userId);
         data.append("conversation_id", this.conversacion.conversation_id);
 
-        this.$refs.adjuntoFiles.files.forEach(function(value, i) {
+        this.$refs.adjuntoFiles.files.forEach(function (value, i) {
           data.append("file[" + i + "]", value);
         });
 
