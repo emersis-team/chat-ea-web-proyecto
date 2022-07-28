@@ -57,9 +57,7 @@ var CallHelper = /** @class */ (function () {
      * Pide uso del video y el audio al usuario y lo carga en un componente de video
      * lanza un error cuando no se define la fuente de video local
      * */
-    CallHelper.loadLocalVideo = function (audio, video) {
-        if (audio === void 0) { audio = true; }
-        if (video === void 0) { video = true; }
+    CallHelper.loadLocalVideo = function () {
         return __awaiter(this, void 0, void 0, function () {
             var streamLocal, e_1;
             return __generator(this, function (_a) {
@@ -67,12 +65,13 @@ var CallHelper = /** @class */ (function () {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
                         return [4 /*yield*/, navigator.mediaDevices.getUserMedia({
-                                video: video,
-                                audio: audio
+                                video: CallHelper.video,
+                                audio: CallHelper.audio
                             })];
                     case 1:
                         streamLocal = _a.sent();
                         if (CallHelper.localVideoSource) {
+                            CallHelper.permission = true;
                             CallHelper.localVideoSource.srcObject = streamLocal;
                             return [2 /*return*/, streamLocal];
                         }
@@ -106,9 +105,7 @@ var CallHelper = /** @class */ (function () {
      * Guarda fuentes de video en un array para que puedan ser renderizadas en vue
      * */
     CallHelper.loadRemoteVideo = function (username, streamRemote) {
-        console.log("adding streams", streamRemote);
         var totalSourcesLength = Object.values(this.remoteSources).length + 1;
-        console.log("length", totalSourcesLength);
         this.remoteSources[username] = streamRemote;
         CallHelper.addVideo(username, streamRemote, totalSourcesLength);
     };
@@ -152,45 +149,11 @@ var CallHelper = /** @class */ (function () {
         videoDiv.appendChild(videouser);
         divRemoteVideos.appendChild(videoDiv);
     };
-    /*
-     * Crea la conexion WebRTC
-     * */
-    CallHelper.enterCall = function (username, connection, audio, video) {
-        return __awaiter(this, void 0, void 0, function () {
-            var con, e_2;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        con = new connection(username);
-                        _a.label = 1;
-                    case 1:
-                        _a.trys.push([1, 3, , 4]);
-                        return [4 /*yield*/, con.connect(audio, video)];
-                    case 2:
-                        _a.sent();
-                        return [3 /*break*/, 4];
-                    case 3:
-                        e_2 = _a.sent();
-                        throw new Error(e_2.message);
-                    case 4: return [2 /*return*/, con];
-                }
-            });
-        });
-    };
-    /*
-     * Desconecta de una llamada
-     * */
-    CallHelper.leaveCall = function (connection) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                connection.disconnectCall();
-                connection.peer.destroy();
-                return [2 /*return*/];
-            });
-        });
-    };
     /*Fuente de video de los otros participantes*/
     CallHelper.remoteSources = {};
+    CallHelper.permission = false;
+    CallHelper.video = true;
+    CallHelper.audio = true;
     return CallHelper;
 }());
 export { CallHelper };

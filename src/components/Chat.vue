@@ -1,8 +1,14 @@
 <template>
   <div class="chat">
     <div class="chat-top">
-      <p>{{ (conversacion.conversation_name != null ? (conversacion.conversation_name + getMiembros()) : conversacion.conversation_members[0].name) }}</p>
-			<button @click="joinCall()">Join Call</button>
+      <p>
+				{{ (conversacion.conversation_name != null ? (conversacion.conversation_name + getMiembros()) : conversacion.conversation_members[0].name) }}
+			</p>
+				<button class="btn" @click="joinCall()">
+          <font-awesome-icon icon="fa-solid fa-video" />
+					Join Call
+				</button>
+
     </div>
     <div class="chat-scroll-container">
       <div id="chatScroll" class="chat-scroll" ref="chatScroll" @scroll="onScroll">
@@ -151,7 +157,7 @@ export default {
 
     this.userId = localStorage.getItem("$userId");
     this.getChat(null, true);
-    // this.actualizar();
+
     this.mensajes = [];
     this.$refs.chatScroll.addEventListener("touchmove", this.onScroll);
   },
@@ -160,17 +166,27 @@ export default {
   },
   methods: {
 	  joinCall() {
-		  const videoComponentRedirect = this.$router.resolve({ name: 'video' });
+		  const videoComponentRedirect = this.$router.resolve({
+				name: 'video',
+				query: {
+					username: this.userId,
+					room: this.conversacion.conversation_name
+				}
+			});
+
 			window.open(videoComponentRedirect.href, '_blank');
 	  },
+
     actualizar() {
       var that = this;
       clearTimeout(this.actualizarTimer);
+
       this.actualizarTimer = setTimeout(function() {
         that.getChat(null, false);
         that.actualizar();
       }, 3000);
     },
+
     getSender(mensaje) {
       let userId = localStorage.getItem("$userId");
 
@@ -187,6 +203,7 @@ export default {
         ? this.contactos.filter(c => c.id == senderId)[0].email
         : null;
     },
+
     esImagen(mensaje) {
       const extension = mensaje.message.file
         .split(".")
@@ -197,6 +214,7 @@ export default {
         extension == "svg" ||
         extension == "jpeg";
     },
+
     esVideo(mensaje) {
       const extension = mensaje.message.file
         .split(".")
@@ -209,6 +227,7 @@ export default {
         extension == "mov" ||
         extension == "avi";
     },
+
     esAudio(mensaje) {
       const extension = mensaje.message.file
         .split(".")
@@ -218,11 +237,13 @@ export default {
 				extension == "qt" ||
 				extension == "4mb";
     },
+
     esArchivo(mensaje) {
       return this.esImagen(mensaje) == false &&
         this.esVideo(mensaje) == false &&
         this.esAudio(mensaje) == false;
     },
+
     getChat(id, scroll) {
       if (id == null) {
         id = this.conversacion.conversation_id;
@@ -280,19 +301,20 @@ export default {
           }
         });
     },
+
     getChatPage(pagina) {
       this.mensajeOffset = this.mensajes[0];
-      if (this.mensajeOffset != null && this.mensajeOffset.message_id == null) {
+
+      if (this.mensajeOffset != null && this.mensajeOffset.message_id == null)
         this.mensajeOffset = this.mensajes[1];
-      }
 
       let userId = localStorage.getItem("$userId");
 
       this.currentPage = pagina;
       var pag = "";
-      if (pagina != null) {
+      if (pagina != null)
         pag = "?page=" + pagina;
-      }
+
       var that = this;
       this.$axios
         .get(
@@ -321,15 +343,18 @@ export default {
           }
         });
     },
+
     getSeparadores(scrollear) {
       var fechas = [];
       this.mensajes = this.mensajes.filter(m => m.fecha == null);
       var cantidad = this.mensajes.length;
+
       for (var i = 0; i < cantidad; i++) {
         var m = this.mensajes[i];
         if (m.created_at != null) {
           var d = new Date(m.created_at);
           d.setHours(d.getHours() + 3);
+
           let day = d.getDate();
           let month = d.getMonth() + 1;
           let year = d.getFullYear();
@@ -338,9 +363,10 @@ export default {
           let todayday = today.getDate();
           let todaymonth = today.getMonth() + 1;
           let todayyear = today.getFullYear();
+
           if (day != todayday || month != todaymonth || year != todayyear) {
             if (fechas.includes(fecha) == false) {
-              var days = [
+              const days = [
                 "Domingo",
                 "Lunes",
                 "Martes",
@@ -370,6 +396,7 @@ export default {
         });
       }
     },
+
     onScroll() {
       var target = this.$refs.chatScroll;
       if (target.scrollTop < target.clientHeight * 0.1) {
@@ -380,6 +407,7 @@ export default {
         }
       }
     },
+
     scrollToBottom() {
       var that = this;
       this.$nextTick(() => {
@@ -398,6 +426,7 @@ export default {
         }
       });
     },
+
     enviar() {
       this.scrollToBottom();
       var texto = this.$refs.inputTexto.value;
@@ -410,6 +439,7 @@ export default {
           conversation_id: this.conversacion.conversation_id,
           conversation_members: this.conversacion.conversation_members
         };
+
         var that = this;
         this.$axios
           .post(this.$localurl + "/api/messages/textMessage", data)
@@ -431,15 +461,18 @@ export default {
           });
       }
     },
+
     isOverflown(element) {
       return (
         element.scrollHeight > element.clientHeight ||
         element.scrollWidth > element.clientWidth
       );
     },
+
     adjuntar() {
       this.$refs.adjuntoFiles.click();
     },
+
     changeAdjunto() {
       if (this.$refs.adjuntoFiles.files.length > 0) {
         let userId = localStorage.getItem("$userId");
@@ -484,6 +517,7 @@ export default {
           });
       }
     },
+
     mostrarErroresArchivos(errores) {
       var string = "";
       errores.forEach(error => {
@@ -495,10 +529,12 @@ export default {
           error.text_error +
           ", ";
       });
+
       string = string.substr(0, string.length - 2);
       console.log(string);
       alert(string);
     },
+
     getMiembros() {
       let resultado = "";
       let that = this;

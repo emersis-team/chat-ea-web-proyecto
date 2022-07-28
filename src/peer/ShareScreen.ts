@@ -15,9 +15,9 @@ export class ShareScreen implements WebRtcConnection {
     this.usernameFrom = `${from}_screen`;
   }
 
-  async connect() {
+  async connect(roomId: string) {
     this.localVideo = await CallHelper.loadLocalScreen();
-		//this.peer = new Peer(this.usernameFrom);
+
 		this.peer = new Peer(this.usernameFrom, {
       host: EnvSignaling.PROD_HOST.valueOf(),
 			port: EnvSignaling.PROD_PORT.valueOf(),
@@ -25,7 +25,7 @@ export class ShareScreen implements WebRtcConnection {
 			secure: true // en local esta linea se comenta
 		});
 
-		const room = new Room(this);
+		const room = new Room(this, roomId);
     this.peer.on(EventsWebRtc.open, (clientId : string) => room.joinRoom(clientId));
     this.peer.on(EventsWebRtc.error, e => console.error("Intentando llamar", e));
     this.peer.on(EventsWebRtc.call, (call : any) => {

@@ -40,54 +40,55 @@ import { CallHelper } from "../helpers/CallHelper";
 import { EventsWebRtc } from "../types/WebRtcConnection";
 import { EnvSignaling } from "../types/Enviroment";
 var PeerConnection = /** @class */ (function () {
-    function PeerConnection(from) {
+    function PeerConnection(from, localVideo) {
         this.usernameFrom = from;
         this.leave = false;
+        this.localVideo = localVideo;
     }
-    PeerConnection.prototype.connect = function (audio, video) {
+    PeerConnection.prototype.connect = function (roomName) {
         return __awaiter(this, void 0, void 0, function () {
-            var room, _a;
+            var room;
             var _this = this;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        room = new Room(this);
-                        _a = this;
-                        return [4 /*yield*/, CallHelper.loadLocalVideo(audio, video)];
-                    case 1:
-                        _a.localVideo = _b.sent();
-                        this.peer = new Peer(this.usernameFrom, {
-                            host: EnvSignaling.LOCAL_HOST.valueOf(),
-                            port: EnvSignaling.LOCAL_PORT.valueOf(),
-                            path: '/satac'
-                        });
-                        this.peer.on(EventsWebRtc.open, function (clientId) {
-                            console.log("open");
-                            room.joinRoom(clientId);
-                        });
-                        this.peer.on(EventsWebRtc.error, function (e) {
-                            console.error("Intentando llamar", e.name, e.message);
-                            throw new Error("");
-                        });
-                        this.peer.on(EventsWebRtc.call, function (call) {
-                            call.answer(_this.localVideo);
-                            room.users[call.peer] = call;
-                            call.on(EventsWebRtc.stream, function (s) {
-                                CallHelper.loadRemoteVideo(call.peer, s);
-                            });
-                        });
-                        this.peer.on(EventsWebRtc.disconnected, function () {
-                            console.log(_this.leave, "error de red");
-                            if (!_this.leave) {
-                                console.log("reconectando...");
-                                _this.peer.reconnect();
-                            }
-                        });
-                        this.room = room;
-                        return [2 /*return*/];
-                }
+            return __generator(this, function (_a) {
+                room = new Room(this, roomName);
+                this.peer = new Peer(this.usernameFrom, {
+                    host: EnvSignaling.LOCAL_HOST.valueOf(),
+                    port: EnvSignaling.LOCAL_PORT.valueOf(),
+                    path: '/satac'
+                });
+                this.peer.on(EventsWebRtc.open, function (clientId) {
+                    console.log("open");
+                    room.joinRoom(clientId);
+                });
+                this.peer.on(EventsWebRtc.error, function (e) {
+                    console.error("Intentando llamar", e.name, e.message);
+                    throw new Error("");
+                });
+                this.peer.on(EventsWebRtc.call, function (call) {
+                    call.answer(_this.localVideo);
+                    room.users[call.peer] = call;
+                    call.on(EventsWebRtc.stream, function (s) {
+                        CallHelper.loadRemoteVideo(call.peer, s);
+                    });
+                });
+                this.peer.on(EventsWebRtc.disconnected, function () {
+                    console.log(_this.leave, "error de red");
+                    if (!_this.leave) {
+                        _this.peer.reconnect();
+                    }
+                });
+                this.room = room;
+                return [2 /*return*/];
             });
         });
+    };
+    PeerConnection.prototype.changeSourceVideo = function (newVideoSource) {
+        Object.values(this.room.users)
+            .map(function (call) { return (call.peerConnection.getSenders()[0]
+            .replaceTrack(newVideoSource.getAudioTracks()[0])); });
+        Object.values(this.room.users)
+            .map(function (call) { return (call.peerConnection.getSenders()[1]
+            .replaceTrack(newVideoSource.getVideoTracks()[0])); });
     };
     PeerConnection.prototype.toggleStatusCamAndMic = function (audio, video) {
         return __awaiter(this, void 0, void 0, function () {

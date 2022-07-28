@@ -5,7 +5,7 @@ import { EventsRoom } from "./types/Room";
 import { EnvRoom } from "./types/Enviroment";
 import { CallHelper } from "./helpers/CallHelper";
 
-const host = EnvRoom.LOCAL_HOST.valueOf();
+const host = EnvRoom.PROD_HOST.valueOf();
 
 const socket = io(host);
 
@@ -14,16 +14,11 @@ export class Room {
   roomId: string;
   peerConnection: WebRtcConnection;
 
-  constructor(peer: WebRtcConnection) {
+  constructor(peer: WebRtcConnection, roomId: string) {
     this.users = {};
-    this.roomId = this.getRoomId();
+    this.roomId = roomId
     this.peerConnection = peer;
     this.initEvents();
-  }
-
-  getRoomId(): string {
-    // TODO: Esto se va a obtener por api al server de java para saber el nombre del grupo
-    return "CIDESO";
   }
 
   /*
@@ -35,7 +30,6 @@ export class Room {
         console.log("Entrando", userId);
         this.users[userId] = this.peerConnection.call(userId);
       } catch (error) {
-				debugger;
         CallHelper.showError(error);
       }
     });
@@ -57,3 +51,4 @@ export class Room {
     );
   }
 }
+

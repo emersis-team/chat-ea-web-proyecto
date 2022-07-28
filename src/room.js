@@ -5,16 +5,12 @@ import { CallHelper } from "./helpers/CallHelper";
 var host = EnvRoom.LOCAL_HOST.valueOf();
 var socket = io(host);
 var Room = /** @class */ (function () {
-    function Room(peer) {
+    function Room(peer, roomId) {
         this.users = {};
-        this.roomId = this.getRoomId();
+        this.roomId = roomId;
         this.peerConnection = peer;
         this.initEvents();
     }
-    Room.prototype.getRoomId = function () {
-        // TODO: Esto se va a obtener por api al server de java para saber el nombre del grupo
-        return "CIDESO";
-    };
     /*
      * Eventos que le llegan a todos los usuarios de un room
      */
@@ -26,7 +22,6 @@ var Room = /** @class */ (function () {
                 _this.users[userId] = _this.peerConnection.call(userId);
             }
             catch (error) {
-                debugger;
                 CallHelper.showError(error);
             }
         });

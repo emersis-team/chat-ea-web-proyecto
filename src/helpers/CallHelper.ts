@@ -1,10 +1,12 @@
-import { WebRtcConnection } from "@/types/WebRtcConnection";
 
 export class CallHelper {
   static localVideoSource: HTMLVideoElement;
   /*Fuente de video de los otros participantes*/
   static remoteSources = {};
   static showError: (_: Error) => void;
+	static permission: boolean = false;
+	static video: boolean = true;
+	static audio: boolean = true;
 
   /**
    * Elimina un tag de video
@@ -28,17 +30,15 @@ export class CallHelper {
    * Pide uso del video y el audio al usuario y lo carga en un componente de video
    * lanza un error cuando no se define la fuente de video local
    * */
-  static async loadLocalVideo(
-    audio: boolean = true,
-    video: boolean = true
-  ): Promise<MediaStream> {
+  static async loadLocalVideo(): Promise<MediaStream> {
     try {
       const streamLocal = await navigator.mediaDevices.getUserMedia({
-        video: video,
-        audio: audio,
+        video: CallHelper.video,
+        audio: CallHelper.audio
       });
 
       if (CallHelper.localVideoSource) {
+				CallHelper.permission = true;
         CallHelper.localVideoSource.srcObject = streamLocal;
         return streamLocal;
       }
@@ -67,9 +67,7 @@ export class CallHelper {
    * Guarda fuentes de video en un array para que puedan ser renderizadas en vue
    * */
   static loadRemoteVideo(username: string, streamRemote: MediaStream) {
-    console.log("adding streams", streamRemote);
     const totalSourcesLength = Object.values(this.remoteSources).length + 1;
-    console.log("length", totalSourcesLength);
     this.remoteSources[username] = streamRemote;
 
     CallHelper.addVideo(username, streamRemote, totalSourcesLength);
@@ -123,30 +121,5 @@ export class CallHelper {
 
     divRemoteVideos.appendChild(videoDiv);
   }
-
-  /*
-   * Crea la conexion WebRTC
-   * */
-  static async enterCall(
-    username: string,
-    connection: any,
-    audio: boolean,
-    video: boolean
-  ) {
-    const con = new connection(username);
-    try {
-      await con.connect(audio, video);
-    } catch (e) {
-      throw new Error(e.message);
-    }
-    return con;
-  }
-
-  /*
-   * Desconecta de una llamada
-   * */
-  static async leaveCall(connection: WebRtcConnection) {
-    connection.disconnectCall();
-    connection.peer.destroy();
-  }
 }
+

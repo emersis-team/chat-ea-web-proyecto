@@ -10,15 +10,24 @@
     </div>
 
     <div v-if="!joined" id="loginPage" class="text-center">
-      <form @submit="login">
-        <input
-          type="text"
-          id="usernameInput"
-          v-model="usernameFrom"
-          placeholder="username"
-          required="required!!!"
-          autofocus=""
-        />
+      <form @submit="join">
+
+        <button type="button" v-if="microphone" @click="toggleMic" class="btn-on">
+          <font-awesome-icon icon="fa-solid fa-microphone" />
+        </button>
+
+        <button type="button" v-if="!microphone" @click="toggleMic" class="btn-off">
+          <font-awesome-icon icon="fa-solid fa-microphone-slash" />
+        </button>
+
+        <button type="button" v-if="camera" @click="toggleCam" class="btn-on">
+          <font-awesome-icon icon="fa-solid fa-video" />
+        </button>
+
+        <button type="button" v-if="!camera" @click="toggleCam" class="btn-off">
+          <font-awesome-icon icon="fa-solid fa-video-slash" />
+        </button>
+
         <button id="loginBtn" type="submit" :disabled="!!!usernameFrom">
           Join
         </button>
@@ -108,6 +117,7 @@ export default {
     return {
       connection: null,
       screen: null,
+			localVideoPermission: null,
       usernameTo: "",
       usernameFrom: "",
       joined: false,
@@ -116,65 +126,87 @@ export default {
       camera: true,
     };
   },
+	mounted() {
+    this.usernameFrom = this.$route.query.username;
+    this.room = this.$route.query.room;
+
+    CallHelper.video = this.camera;
+    CallHelper.audio = this.microphone;
+    CallHelper.showError = this.clearError;
+	},
   methods: {
     clearError(e) {
 			console.log(e);
       this.reasonError = e;
-      console.log("limpiando error");
     },
-    async login(e) {
+
+    async join(e) {
       e.preventDefault();
 
       try {
-        CallHelper.localVideoSource = this.$refs.localVideo;
-
-        CallHelper.showError = this.clearError;
-
-        this.connection = await CallHelper.enterCall(
-          this.usernameFrom,
-          PeerConnection,
-          this.microphone,
-          this.camera
-        );
         this.joined = true;
+
+				CallHelper.localVideoSource = this.$refs.localVideo;
+				this.localVideoPermission = await CallHelper.loadLocalVideo();
+
+        this.connection = new PeerConnection(this.usernameFrom, this.localVideoPermission);
+				await this.connection.connect();
       } catch (error) {
         CallHelper.showError(error);
       }
     },
+
     async shareScreen() {
       try {
-        if (!this.screen) {
-          this.screen = await CallHelper.enterCall(
-            this.usernameFrom,
-            ShareScreen,
-            this.microphone,
-            this.camera
-          );
-        } else {
-          CallHelper.leaveCall(this.screen);
+
+        if (this.screen) {
+					this.screen.disconnectCall();
+					this.screen.peer.destroy();
           this.screen = null;
+					return;
         }
+
+				this.screen = new ShareScreen(this.usernameFrom);
+				await this.screen.connect(this.room);
       } catch (error) {
         console.log(error);
         this.reasonError = error.message;
       }
     },
+
     hangUp() {
       CallHelper.removeAllSources();
 
-      if (this.screen) CallHelper.leaveCall(this.screen);
+			if (this.screen) {
+				this.connection.disconnectCall();
+				this.connection.peer.destroy();
+			}
 
-      CallHelper.leaveCall(this.connection);
       this.joined = false;
     },
+
     async toggleCam() {
+
       this.camera = !this.camera;
-      console.log(this.camera, this.microphone);
-      await this.connection.toggleStatusCamAndMic(this.microphone, this.camera);
+			CallHelper.video = this.camera;
+
+			if(CallHelper.permission) {
+				this.localVideoPermission = await CallHelper.loadLocalVideo();
+				this.connection.changeSourceVideo(this.localVideoPermission);
+			}
+
+			await this.connection.toggleStatusCamAndMic(this.microphone, this.camera);
     },
+
     async toggleMic() {
       this.microphone = !this.microphone;
-      console.log(this.camera, this.microphone);
+			CallHelper.audio = this.microphone;
+
+			if(CallHelper.permission) {
+				this.localVideoPermission = await CallHelper.loadLocalVideo();
+				this.connection.changeSourceVideo(this.localVideoPermission);
+			}
+
       await this.connection.toggleStatusCamAndMic(this.microphone, this.camera);
     },
   },

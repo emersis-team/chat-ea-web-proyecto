@@ -13,6 +13,7 @@
           <img class="home-buscar-img" src="../assets/img/buscar.png">
         </div>
         <div class="home-left-conversaciones">
+
           <div
             v-for="(conversacion, index) in conversacionesFiltradas"
             :key="index"
@@ -77,6 +78,18 @@ export default {
     this.conectarWebSocket();
   },
   methods: {
+	  joinCall() {
+		  const videoComponentRedirect = this.$router.resolve({
+				name: 'video',
+				query: {
+					username: "name",//this.userId,
+					room: "cideso"//this.conversacion.conversation_name
+				}
+			});
+
+			window.open(videoComponentRedirect.href, '_blank');
+	  },
+
     conectarWebSocket() {
       var socket = new SockJS(this.$localurl + "/websocket");
       this.stompClient = Stomp.over(socket);

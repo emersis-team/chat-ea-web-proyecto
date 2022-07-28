@@ -11,21 +11,20 @@ export class PeerConnection implements WebRtcConnection {
   room: Room;
   leave: boolean;
 
-  constructor(from: string) {
+  constructor(from: string, localVideo: MediaStream) {
     this.usernameFrom = from;
     this.leave = false;
+		this.localVideo = localVideo;
   }
 
-  async connect(audio: boolean, video: boolean) {
-    //this.peer = new Peer(this.usernameFrom);
-    let room: Room = new Room(this);
-    this.localVideo = await CallHelper.loadLocalVideo(audio, video);
+  async connect(roomName: string) {
+    let room: Room = new Room(this, roomName);
 
 		this.peer = new Peer(this.usernameFrom, {
-      host: EnvSignaling.LOCAL_HOST.valueOf(),
-			port: EnvSignaling.LOCAL_PORT.valueOf(),
+      host: EnvSignaling.PROD_HOST.valueOf(),
+			port: EnvSignaling.PROD_PORT.valueOf(),
 			path: '/satac',
-			//secure: true // en local esta linea se comenta
+			secure: true // en local esta linea se comenta
 		});
 
     this.peer.on(EventsWebRtc.open, (clientId) => { 
@@ -50,13 +49,26 @@ export class PeerConnection implements WebRtcConnection {
 		this.peer.on(EventsWebRtc.disconnected, () => {
 			console.log(this.leave, "error de red");
 			if(!this.leave) {
-				console.log("reconectando...");
 				this.peer.reconnect();
 			}
 		});
 
     this.room = room;
   }
+
+	changeSourceVideo(newVideoSource: MediaStream) {
+		Object.values(this.room.users)
+		  .map(call => (
+				call.peerConnection.getSenders()[0]
+					.replaceTrack(newVideoSource.getAudioTracks()[0])
+			));
+
+		Object.values(this.room.users)
+			.map(call => (
+				call.peerConnection.getSenders()[1]
+					.replaceTrack(newVideoSource.getVideoTracks()[0])
+			));
+	}
 
   async toggleStatusCamAndMic(audio: boolean, video: boolean) {
     this.localVideo
@@ -81,9 +93,11 @@ export class PeerConnection implements WebRtcConnection {
   call(usernameTo: string): MediaConnection {
     try {
       const calling = this.peer.call(usernameTo, this.localVideo);
+
       calling.on(EventsWebRtc.stream, (s: MediaStream) =>
         CallHelper.loadRemoteVideo(usernameTo, s)
       );
+
       return calling;
     } catch (e) {
       console.error("Fallo en la llamada a ", usernameTo, e);
