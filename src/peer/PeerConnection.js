@@ -45,16 +45,17 @@ var PeerConnection = /** @class */ (function () {
         this.leave = false;
         this.localVideo = localVideo;
     }
-    PeerConnection.prototype.connect = function (roomName) {
+    PeerConnection.prototype.connect = function () {
         return __awaiter(this, void 0, void 0, function () {
             var room;
             var _this = this;
             return __generator(this, function (_a) {
-                room = new Room(this, roomName);
+                room = new Room(this);
                 this.peer = new Peer(this.usernameFrom, {
-                    host: EnvSignaling.LOCAL_HOST.valueOf(),
-                    port: EnvSignaling.LOCAL_PORT.valueOf(),
-                    path: '/satac'
+                    host: EnvSignaling.PROD_HOST.valueOf(),
+                    port: EnvSignaling.PROD_PORT.valueOf(),
+                    path: '/satac',
+                    secure: true // en local esta linea se comenta
                 });
                 this.peer.on(EventsWebRtc.open, function (clientId) {
                     console.log("open");
@@ -72,8 +73,8 @@ var PeerConnection = /** @class */ (function () {
                     });
                 });
                 this.peer.on(EventsWebRtc.disconnected, function () {
-                    console.log(_this.leave, "error de red");
                     if (!_this.leave) {
+                        console.log("reconectando...");
                         _this.peer.reconnect();
                     }
                 });
@@ -81,14 +82,6 @@ var PeerConnection = /** @class */ (function () {
                 return [2 /*return*/];
             });
         });
-    };
-    PeerConnection.prototype.changeSourceVideo = function (newVideoSource) {
-        Object.values(this.room.users)
-            .map(function (call) { return (call.peerConnection.getSenders()[0]
-            .replaceTrack(newVideoSource.getAudioTracks()[0])); });
-        Object.values(this.room.users)
-            .map(function (call) { return (call.peerConnection.getSenders()[1]
-            .replaceTrack(newVideoSource.getVideoTracks()[0])); });
     };
     PeerConnection.prototype.toggleStatusCamAndMic = function (audio, video) {
         return __awaiter(this, void 0, void 0, function () {
@@ -108,7 +101,6 @@ var PeerConnection = /** @class */ (function () {
         this.room.leaveRoom(this.usernameFrom);
         this.peer.destroy();
         CallHelper.localVideoSource.srcObject = null;
-        CallHelper.localVideoSource = null;
         delete CallHelper.remoteSources[this.usernameFrom];
     };
     PeerConnection.prototype.call = function (usernameTo) {

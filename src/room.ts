@@ -14,11 +14,16 @@ export class Room {
   roomId: string;
   peerConnection: WebRtcConnection;
 
-  constructor(peer: WebRtcConnection, roomId: string) {
+  constructor(peer: WebRtcConnection) {
     this.users = {};
-    this.roomId = roomId
+    this.roomId = this.getRoomId();
     this.peerConnection = peer;
     this.initEvents();
+  }
+
+  getRoomId(): string {
+    // TODO: Esto se va a obtener por api al server de java para saber el nombre del grupo
+    return "CIDESO";
   }
 
   /*
@@ -51,4 +56,3 @@ export class Room {
     );
   }
 }
-

@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <Snackbar></Snackbar>
-    <router-view/>
+    <router-view />
   </div>
 </template>
 
@@ -12,14 +12,14 @@ import Snackbar from "@/components/Snackbar.vue";
 export default {
   data() {
     return {
-      deferredPrompt: null
+      deferredPrompt: null,
     };
   },
   components: { Snackbar },
   created() {
-    //Vue.prototype.$localurl = "http://10.120.17.157:8080";
+    // Vue.prototype.$localurl = "http://10.120.17.157:8080";
     // Vue.prototype.$localurl = "http://38.109.228.250:8444";
-     Vue.prototype.$localurl = "http://localhost:8184";
+    Vue.prototype.$localurl = "http://localhost:8184";
 
     this.$axios.defaults.headers.common["Authorization"] =
       "Bearer " + localStorage.getItem("$token");
@@ -28,7 +28,7 @@ export default {
     }
     Vue.prototype.$isMobile = this.isMobile();
 
-    window.addEventListener("beforeinstallprompt", e => {
+    window.addEventListener("beforeinstallprompt", (e) => {
       e.preventDefault();
       // Stash the event so it can be triggered later.
       this.deferredPrompt = e;
@@ -59,8 +59,8 @@ export default {
       } else {
         return false;
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

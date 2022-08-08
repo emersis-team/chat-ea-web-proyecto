@@ -1,12 +1,13 @@
+import { WebRtcConnection } from "@/types/WebRtcConnection";
 
 export class CallHelper {
   static localVideoSource: HTMLVideoElement;
   /*Fuente de video de los otros participantes*/
   static remoteSources = {};
   static showError: (_: Error) => void;
-	static permission: boolean = false;
-	static video: boolean = true;
-	static audio: boolean = true;
+	static video: boolean;
+	static audio: boolean;
+	static permissionCamaraOrMic: boolean = false;
 
   /**
    * Elimina un tag de video
@@ -33,13 +34,13 @@ export class CallHelper {
   static async loadLocalVideo(): Promise<MediaStream> {
     try {
       const streamLocal = await navigator.mediaDevices.getUserMedia({
-        video: CallHelper.video,
-        audio: CallHelper.audio
+				video: { width: { ideal: 256 }, height: { ideal: 144 } },
+        audio: CallHelper.audio,
       });
 
-      if (CallHelper.localVideoSource) {
-				CallHelper.permission = true;
+      if(CallHelper.localVideoSource) {
         CallHelper.localVideoSource.srcObject = streamLocal;
+				CallHelper.permissionCamaraOrMic = true;
         return streamLocal;
       }
     } catch (e) {
@@ -67,7 +68,9 @@ export class CallHelper {
    * Guarda fuentes de video en un array para que puedan ser renderizadas en vue
    * */
   static loadRemoteVideo(username: string, streamRemote: MediaStream) {
+    console.log("adding streams", streamRemote);
     const totalSourcesLength = Object.values(this.remoteSources).length + 1;
+    console.log("length", totalSourcesLength);
     this.remoteSources[username] = streamRemote;
 
     CallHelper.addVideo(username, streamRemote, totalSourcesLength);
@@ -121,5 +124,12 @@ export class CallHelper {
 
     divRemoteVideos.appendChild(videoDiv);
   }
-}
 
+  /*
+   * Desconecta de una llamada
+   * */
+  static async leaveCall(connection: WebRtcConnection) {
+    connection.disconnectCall();
+    connection.peer.destroy();
+  }
+}

@@ -17,8 +17,9 @@ export class PeerConnection implements WebRtcConnection {
 		this.localVideo = localVideo;
   }
 
-  async connect(roomName: string) {
-    let room: Room = new Room(this, roomName);
+  async connect() {
+    //this.peer = new Peer(this.usernameFrom);
+    let room: Room = new Room(this);
 
 		this.peer = new Peer(this.usernameFrom, {
       host: EnvSignaling.PROD_HOST.valueOf(),
@@ -47,28 +48,14 @@ export class PeerConnection implements WebRtcConnection {
     });
 
 		this.peer.on(EventsWebRtc.disconnected, () => {
-			console.log(this.leave, "error de red");
 			if(!this.leave) {
+				console.log("reconectando...");
 				this.peer.reconnect();
 			}
 		});
 
     this.room = room;
   }
-
-	changeSourceVideo(newVideoSource: MediaStream) {
-		Object.values(this.room.users)
-		  .map(call => (
-				call.peerConnection.getSenders()[0]
-					.replaceTrack(newVideoSource.getAudioTracks()[0])
-			));
-
-		Object.values(this.room.users)
-			.map(call => (
-				call.peerConnection.getSenders()[1]
-					.replaceTrack(newVideoSource.getVideoTracks()[0])
-			));
-	}
 
   async toggleStatusCamAndMic(audio: boolean, video: boolean) {
     this.localVideo
@@ -86,18 +73,15 @@ export class PeerConnection implements WebRtcConnection {
 		this.peer.destroy();
 
     CallHelper.localVideoSource.srcObject = null;
-    CallHelper.localVideoSource = null;
     delete CallHelper.remoteSources[this.usernameFrom];
   }
 
   call(usernameTo: string): MediaConnection {
     try {
       const calling = this.peer.call(usernameTo, this.localVideo);
-
       calling.on(EventsWebRtc.stream, (s: MediaStream) =>
         CallHelper.loadRemoteVideo(usernameTo, s)
       );
-
       return calling;
     } catch (e) {
       console.error("Fallo en la llamada a ", usernameTo, e);

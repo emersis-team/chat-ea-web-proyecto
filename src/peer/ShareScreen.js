@@ -43,7 +43,7 @@ var ShareScreen = /** @class */ (function () {
     function ShareScreen(from) {
         this.usernameFrom = "".concat(from, "_screen");
     }
-    ShareScreen.prototype.connect = function (roomId) {
+    ShareScreen.prototype.connect = function () {
         return __awaiter(this, void 0, void 0, function () {
             var _a, room;
             var _this = this;
@@ -54,13 +54,14 @@ var ShareScreen = /** @class */ (function () {
                         return [4 /*yield*/, CallHelper.loadLocalScreen()];
                     case 1:
                         _a.localVideo = _b.sent();
+                        //this.peer = new Peer(this.usernameFrom);
                         this.peer = new Peer(this.usernameFrom, {
                             host: EnvSignaling.PROD_HOST.valueOf(),
                             port: EnvSignaling.PROD_PORT.valueOf(),
                             path: '/satac',
                             secure: true // en local esta linea se comenta
                         });
-                        room = new Room(this, roomId);
+                        room = new Room(this);
                         this.peer.on(EventsWebRtc.open, function (clientId) { return room.joinRoom(clientId); });
                         this.peer.on(EventsWebRtc.error, function (e) { return console.error("Intentando llamar", e); });
                         this.peer.on(EventsWebRtc.call, function (call) {

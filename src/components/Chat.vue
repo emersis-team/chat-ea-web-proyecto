@@ -170,7 +170,7 @@ export default {
 				name: 'video',
 				query: {
 					username: this.userId,
-					room: this.conversacion.conversation_name
+					room: this.conversacion.conversation_name || this.conversacion.conversation_members[0].name + this.userId + ""
 				}
 			});
 

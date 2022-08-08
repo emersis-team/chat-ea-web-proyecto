@@ -8,23 +8,21 @@
         v-if="!!reasonError"
       />
     </div>
-
     <div v-if="!joined" id="loginPage" class="text-center">
-      <form @submit="join">
-
-        <button type="button" v-if="microphone" @click="toggleMic" class="btn-on">
+      <form @submit="login">
+        <button type="button" v-if="microphone" @click="getNewPermissionAudio" class="btn-on">
           <font-awesome-icon icon="fa-solid fa-microphone" />
         </button>
 
-        <button type="button" v-if="!microphone" @click="toggleMic" class="btn-off">
+        <button type="button" v-if="!microphone" @click="getNewPermissionAudio" class="btn-off">
           <font-awesome-icon icon="fa-solid fa-microphone-slash" />
         </button>
 
-        <button type="button" v-if="camera" @click="toggleCam" class="btn-on">
+        <button type="button" v-if="camera" @click="getNewPermissionVideo" class="btn-on">
           <font-awesome-icon icon="fa-solid fa-video" />
         </button>
 
-        <button type="button" v-if="!camera" @click="toggleCam" class="btn-off">
+        <button type="button" v-if="!camera" @click="getNewPermissionVideo" class="btn-off">
           <font-awesome-icon icon="fa-solid fa-video-slash" />
         </button>
 
@@ -33,7 +31,6 @@
         </button>
       </form>
     </div>
-
     <div
       id="callPage"
       class="call-page"
@@ -53,17 +50,14 @@
           <span class="username local">{{ usernameFrom }}</span>
         </div>
       </div>
-
       <div class="footer-mc">
         <h6 v-if="screen" class="text-center warning">
           Estas compartiendo tu pantalla!!!
         </h6>
-
         <div class="panel">
           <button @click="hangUp" class="btn-off">
             <img src="../assets/call_end_black_24dp.svg" alt="imagen" />
           </button>
-
           <button
             v-if="screen"
             ref="screen"
@@ -72,7 +66,6 @@
           >
             <font-awesome-icon icon="fa-solid fa-display" />
           </button>
-
           <button
             v-if="!screen"
             ref="screen"
@@ -81,19 +74,15 @@
           >
             <font-awesome-icon icon="fa-solid fa-display" />
           </button>
-
           <button v-if="microphone" @click="toggleMic" class="btn-on">
             <font-awesome-icon icon="fa-solid fa-microphone" />
           </button>
-
           <button v-if="!microphone" @click="toggleMic" class="btn-off">
             <font-awesome-icon icon="fa-solid fa-microphone-slash" />
           </button>
-
           <button v-if="camera" @click="toggleCam" class="btn-on">
             <font-awesome-icon icon="fa-solid fa-video" />
           </button>
-
           <button v-if="!camera" @click="toggleCam" class="btn-off">
             <font-awesome-icon icon="fa-solid fa-video-slash" />
           </button>
@@ -104,7 +93,7 @@
 </template>
 
 <script lang="ts">
-import ModalError from "../components/ModalError.vue";
+import ModalError from "@/components/ModalError.vue";
 import { CallHelper } from "../helpers/CallHelper";
 import { PeerConnection } from "../peer/PeerConnection";
 import { ShareScreen } from "../peer/ShareScreen";
@@ -120,6 +109,7 @@ export default {
 			localVideoPermission: null,
       usernameTo: "",
       usernameFrom: "",
+			room: "",
       joined: false,
       reasonError: "",
       microphone: true,
@@ -136,89 +126,74 @@ export default {
 	},
   methods: {
     clearError(e) {
-			console.log(e);
+			console.log("Showing error: ", e);
       this.reasonError = e;
     },
-
-    async join(e) {
+    async login(e) {
       e.preventDefault();
 
       try {
-        this.joined = true;
-
 				CallHelper.localVideoSource = this.$refs.localVideo;
 				this.localVideoPermission = await CallHelper.loadLocalVideo();
 
-        this.connection = new PeerConnection(this.usernameFrom, this.localVideoPermission);
+				this.connection = new PeerConnection(this.usernameFrom, this.localVideoPermission);
 				await this.connection.connect();
+
+				if(!this.camara || !this.microphone)
+					await this.connection.toggleStatusCamAndMic(this.microphone, this.camera);
+
+        this.joined = true;
       } catch (error) {
         CallHelper.showError(error);
       }
     },
-
     async shareScreen() {
       try {
-
-        if (this.screen) {
-					this.screen.disconnectCall();
-					this.screen.peer.destroy();
+        if (!this.screen) {
+					this.screen = new ShareScreen(this.usernameFrom);
+					await this.screen.connect();
+        } else {
+          CallHelper.leaveCall(this.screen);
           this.screen = null;
-					return;
         }
-
-				this.screen = new ShareScreen(this.usernameFrom);
-				await this.screen.connect(this.room);
       } catch (error) {
         console.log(error);
         this.reasonError = error.message;
       }
     },
-
     hangUp() {
       CallHelper.removeAllSources();
+      CallHelper.leaveCall(this.connection);
 
-			if (this.screen) {
-				this.connection.disconnectCall();
-				this.connection.peer.destroy();
-			}
-
+      if (this.screen) CallHelper.leaveCall(this.screen);
       this.joined = false;
     },
-
+		async getNewPermissionVideo() {
+      CallHelper.video = this.camera = !this.camera;
+		},
+		async getNewPermissionAudio() {
+      CallHelper.audio = this.microphone = !this.microphone;
+		},
     async toggleCam() {
-
       this.camera = !this.camera;
-			CallHelper.video = this.camera;
 
-			if(CallHelper.permission) {
-				this.localVideoPermission = await CallHelper.loadLocalVideo();
-				this.connection.changeSourceVideo(this.localVideoPermission);
+			if(this.connection && this.connection.peer.open) {
+				await this.connection.toggleStatusCamAndMic(this.microphone, this.camera);
 			}
-
-			await this.connection.toggleStatusCamAndMic(this.microphone, this.camera);
     },
-
     async toggleMic() {
       this.microphone = !this.microphone;
 			CallHelper.audio = this.microphone;
 
-			if(CallHelper.permission) {
-				this.localVideoPermission = await CallHelper.loadLocalVideo();
-				this.connection.changeSourceVideo(this.localVideoPermission);
+			if(this.connection && this.connection.peer.open) {
+				await this.connection.toggleStatusCamAndMic(this.microphone, this.camera);
 			}
-
-      await this.connection.toggleStatusCamAndMic(this.microphone, this.camera);
     },
   },
 };
 </script>
 
 <style>
-/* :root {
-  --videoWidth: 700px;
-  --videoHeight: auto;
-} */
-
 body {
   box-sizing: border-box;
   margin: 0;

@@ -243,6 +243,7 @@ export default {
             "/user_contacts_positions"
         )
         .then(function(response) {
+				debugger;
           that.posiciones = response.data.user_contacts_positions;
           if (
             response.data.user_positions != null &&
