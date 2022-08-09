@@ -2,7 +2,7 @@ import { io } from "socket.io-client";
 import { EventsRoom } from "./types/Room";
 import { EnvRoom } from "./types/Enviroment";
 import { CallHelper } from "./helpers/CallHelper";
-var host = EnvRoom.LOCAL_HOST.valueOf();
+var host = EnvRoom.PROD_HOST.valueOf();
 var socket = io(host);
 var Room = /** @class */ (function () {
     function Room(peer, roomId) {

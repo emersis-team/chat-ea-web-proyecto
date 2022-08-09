@@ -52,9 +52,10 @@ var PeerConnection = /** @class */ (function () {
             return __generator(this, function (_a) {
                 room = new Room(this, roomName);
                 this.peer = new Peer(this.usernameFrom, {
-                    host: EnvSignaling.LOCAL_HOST.valueOf(),
-                    port: EnvSignaling.LOCAL_PORT.valueOf(),
-                    path: '/satac'
+                    host: EnvSignaling.PROD_HOST.valueOf(),
+                    port: EnvSignaling.PROD_PORT.valueOf(),
+                    path: '/satac',
+                    secure: true // en local esta linea se comenta
                 });
                 this.peer.on(EventsWebRtc.open, function (clientId) {
                     console.log("open");

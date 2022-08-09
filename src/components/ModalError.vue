@@ -1,7 +1,7 @@
 <template>
-  <div ref="alerta" class="alert alert-danger text-message">
+  <div ref="alerta" class="text-message">
     <p>{{ reason }}</p>
-    <button class="btn btn-md btn-secondary" @click="close">Aceptar</button>
+    <button class="btn" @click="close">Aceptar</button>
   </div>
 </template>
 
@@ -21,8 +21,21 @@ export default {
   z-index: 9;
   position: absolute;
   top: 50%;
-  left: 40%;
-  transition: translate(-50%, -50%);
+  left: 50%;
+  transform: translate(-50%, 50%);
   width: 20vw;
+  background-color: rgb(171, 48, 48);
+  color: whitesmoke;
+  padding: 0 10px 10px 10px;
+  border-radius: 20px;
+  font-family: OpenSans-SemiBold;
+}
+
+.btn {
+  background-color: rgb(239, 10, 10);
+  color: whitesmoke;
+  border: 2px solid whitesmoke;
+  border-radius: 20px;
+  padding: 5px;
 }
 </style>

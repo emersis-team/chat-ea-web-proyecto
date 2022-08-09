@@ -9,17 +9,16 @@
             placeholder="Buscar"
             @keyup="buscar()"
             ref="inputBuscar"
-          >
-          <img class="home-buscar-img" src="../assets/img/buscar.png">
+          />
+          <img class="home-buscar-img" src="../assets/img/search-26.png" />
         </div>
         <div class="home-left-conversaciones">
-
           <div
             v-for="(conversacion, index) in conversacionesFiltradas"
             :key="index"
             @click="elegirConversacion(conversacion)"
             v-bind:class="{
-              'home-conversacion-elegida': conversacion == conversacionElegida
+              'home-conversacion-elegida': conversacion == conversacionElegida,
             }"
           >
             <Conversacion :conversacion="conversacion"></Conversacion>
@@ -27,7 +26,10 @@
         </div>
         <button class="home-logout" @click="logout()">Cerrar sesión</button>
       </div>
-      <div class="home-right" :class="{ 'home-right-with-map': conversacionElegida != null }">
+      <div
+        class="home-right"
+        :class="{ 'home-right-with-map': conversacionElegida != null }"
+      >
         <Chat
           v-if="conversacionElegida != null"
           :conversacion="conversacionElegida"
@@ -52,7 +54,7 @@ export default {
   components: {
     Conversacion,
     Chat,
-    Mapa
+    Mapa,
   },
   data() {
     return {
@@ -64,7 +66,7 @@ export default {
       posiciones: [],
       stompClient: null,
       count: 0,
-      ultimaPosicion: null
+      ultimaPosicion: null,
     };
   },
   mounted() {
@@ -78,28 +80,28 @@ export default {
     this.conectarWebSocket();
   },
   methods: {
-	  joinCall() {
-		  const videoComponentRedirect = this.$router.resolve({
-				name: 'video',
-				query: {
-					username: "name",//this.userId,
-					room: "cideso"//this.conversacion.conversation_name
-				}
-			});
+    joinCall() {
+      const videoComponentRedirect = this.$router.resolve({
+        name: "video",
+        query: {
+          username: "name", //this.userId,
+          room: "cideso", //this.conversacion.conversation_name
+        },
+      });
 
-			window.open(videoComponentRedirect.href, '_blank');
-	  },
+      window.open(videoComponentRedirect.href, "_blank");
+    },
 
     conectarWebSocket() {
       var socket = new SockJS(this.$localurl + "/websocket");
       this.stompClient = Stomp.over(socket);
       this.stompClient.debug = () => {};
       var that = this;
-      this.stompClient.connect({}, function(frame) {
+      this.stompClient.connect({}, function (frame) {
         console.log("Connected: " + frame);
         that.stompClient.subscribe(
           "/notificacion/mensaje/" + localStorage.getItem("$userId"),
-          messageOutput => {
+          (messageOutput) => {
             console.log("nuevo mensaje");
             console.log(messageOutput);
             that.getConversaciones();
@@ -108,12 +110,12 @@ export default {
         );
         that.stompClient.subscribe(
           "/notificacion/posicion/" + localStorage.getItem("$userId"),
-          messageOutput => {
+          (messageOutput) => {
             console.log("nuevo mensaje posicion");
             let body = JSON.parse(messageOutput.body);
             console.log(body);
             let array = that.posiciones.filter(
-              p => p[0].user_id == body.user_id
+              (p) => p[0].user_id == body.user_id
             )[0];
             if (array != null) {
               array.unshift(body);
@@ -147,11 +149,11 @@ export default {
       var that = this;
       this.$axios
         .get(this.$localurl + "/api/" + userId + "/conversations/")
-        .then(function(response) {
+        .then(function (response) {
           that.conversaciones = response.data.conversations;
           that.conversacionesFiltradas = that.conversaciones;
         })
-        .catch(function(response) {
+        .catch(function (response) {
           if (
             response != null &&
             (response.response.status == 401 || response.response.status == 400)
@@ -167,10 +169,10 @@ export default {
       var that = this;
       this.$axios
         .get(this.$localurl + "/api/usuarios")
-        .then(function(response) {
+        .then(function (response) {
           that.contactos = response.data;
         })
-        .catch(function(response) {
+        .catch(function (response) {
           if (
             response != null &&
             (response.response.status == 401 || response.response.status == 400)
@@ -185,7 +187,7 @@ export default {
     buscar() {
       var inputBuscar = this.$refs.inputBuscar.value.toUpperCase();
       this.conversacionesFiltradas = this.conversaciones.filter(
-        c =>
+        (c) =>
           c.user_dest.name.toUpperCase().indexOf(inputBuscar) > -1 ||
           c.user_dest.email.toUpperCase().indexOf(inputBuscar) > -1
       );
@@ -193,6 +195,7 @@ export default {
     elegirConversacion(conversacion) {
       if (conversacion != this.conversacionElegida) {
         conversacion.ammount_no_read = 0;
+        conversacion.conversacionElegida = true;
         this.conversacionElegida = conversacion;
         Vue.prototype.$conversacionElegida = conversacion;
 
@@ -202,7 +205,7 @@ export default {
         let cantidad = 0;
         let lat = 0;
         let lon = 0;
-        conversacion.conversation_members.forEach(member => {
+        conversacion.conversation_members.forEach((member) => {
           if (that.getLastPositon(member) != null) {
             lat = lat + parseFloat(that.getLastPositon(member)[0].lat);
             lon = lon + parseFloat(that.getLastPositon(member)[0].lon);
@@ -214,7 +217,7 @@ export default {
           lon = lon / cantidad;
           this.$eventHub.$emit("map-center", [
             parseFloat(lat),
-            parseFloat(lon)
+            parseFloat(lon),
           ]);
         } else {
           this.$eventHub.$emit("map-center-propia");
@@ -242,7 +245,7 @@ export default {
             localStorage.getItem("$userId") +
             "/user_contacts_positions"
         )
-        .then(function(response) {
+        .then(function (response) {
           that.posiciones = response.data.user_contacts_positions;
           if (
             response.data.user_positions != null &&
@@ -252,14 +255,14 @@ export default {
               coords: {
                 latitude: response.data.user_positions[0].lat,
                 longitude: response.data.user_positions[0].lon,
-                altitude: response.data.user_positions[0].alt
-              }
+                altitude: response.data.user_positions[0].alt,
+              },
             };
           }
           that.watchCurrentPosition();
           console.log(response.data);
         })
-        .catch(function(response) {
+        .catch(function (response) {
           if (
             response != null &&
             (response.response.status == 401 || response.response.status == 400)
@@ -272,11 +275,11 @@ export default {
         });
     },
     getLastPositon(member) {
-      return this.posiciones.filter(p => p[0].user_id == member.user_id)[0];
+      return this.posiciones.filter((p) => p[0].user_id == member.user_id)[0];
     },
     watchCurrentPosition() {
       var that = this;
-      navigator.geolocation.watchPosition(function(position) {
+      navigator.geolocation.watchPosition(function (position) {
         if (
           that.ultimaPosicion == null ||
           that.calcCrow(
@@ -297,14 +300,14 @@ export default {
         user_id: localStorage.getItem("$userId"),
         lat: position.coords.latitude,
         lon: position.coords.longitude,
-        alt: position.coords.altitude != null ? position.coords.altitude : 0
+        alt: position.coords.altitude != null ? position.coords.altitude : 0,
       };
       this.$axios
         .post(this.$localurl + "/api/position/user_position", json)
-        .then(function(response) {
+        .then(function (response) {
           console.log(response);
         })
-        .catch(function(response) {
+        .catch(function (response) {
           console.log(response);
         });
     },
@@ -327,8 +330,8 @@ export default {
     },
     toRad(Value) {
       return (Value * Math.PI) / 180;
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -2,7 +2,7 @@
   position: fixed;
   width: 100vw;
   height: 100vh;
-  background-color: #ececeb;
+  background: no-repeat center/100% url("../../img/fondowp.png");
   z-index: 10000;
   padding-top: 21vh;
 }
@@ -29,7 +29,7 @@
 .login-input {
   font-family: OpenSans-Light;
   font-size: 1.1vw;
-  color: #4082c4;
+  color: #3ea06c;
   background-color: transparent;
   border: 1px solid #707070;
   border-radius: 0.25vw;
@@ -50,7 +50,7 @@
   font-family: Poppins-Regular;
   font-size: 1.15vw;
   color: #ffffff;
-  background-color: #4082c4;
+  background-color: #3ea06c;
   width: 24.8vw;
   margin: auto;
   display: block;

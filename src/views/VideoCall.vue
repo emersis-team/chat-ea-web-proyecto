@@ -1,9 +1,9 @@
 <template>
-  <div class="text-center">
+  <div class="container text-center">
     <div class="container-message">
       <ModalError
         :reason.sync="reasonError"
-				:message.sync="messageError"
+        :message.sync="messageError"
         @clear-error="clearError"
         v-if="!!reasonError"
       />
@@ -11,12 +11,21 @@
 
     <div v-if="!joined" id="loginPage" class="text-center">
       <form @submit="join">
-
-        <button type="button" v-if="microphone" @click="toggleMic" class="btn-on">
+        <button
+          type="button"
+          v-if="microphone"
+          @click="toggleMic"
+          class="btn-on"
+        >
           <font-awesome-icon icon="fa-solid fa-microphone" />
         </button>
 
-        <button type="button" v-if="!microphone" @click="toggleMic" class="btn-off">
+        <button
+          type="button"
+          v-if="!microphone"
+          @click="toggleMic"
+          class="btn-off"
+        >
           <font-awesome-icon icon="fa-solid fa-microphone-slash" />
         </button>
 
@@ -117,7 +126,7 @@ export default {
     return {
       connection: null,
       screen: null,
-			localVideoPermission: null,
+      localVideoPermission: null,
       usernameTo: "",
       usernameFrom: "",
       joined: false,
@@ -126,17 +135,17 @@ export default {
       camera: true,
     };
   },
-	mounted() {
+  mounted() {
     this.usernameFrom = this.$route.query.username;
     this.room = this.$route.query.room;
 
     CallHelper.video = this.camera;
     CallHelper.audio = this.microphone;
     CallHelper.showError = this.clearError;
-	},
+  },
   methods: {
     clearError(e) {
-			console.log(e);
+      console.log(e);
       this.reasonError = e;
     },
 
@@ -146,11 +155,14 @@ export default {
       try {
         this.joined = true;
 
-				CallHelper.localVideoSource = this.$refs.localVideo;
-				this.localVideoPermission = await CallHelper.loadLocalVideo();
+        CallHelper.localVideoSource = this.$refs.localVideo;
+        this.localVideoPermission = await CallHelper.loadLocalVideo();
 
-        this.connection = new PeerConnection(this.usernameFrom, this.localVideoPermission);
-				await this.connection.connect();
+        this.connection = new PeerConnection(
+          this.usernameFrom,
+          this.localVideoPermission
+        );
+        await this.connection.connect();
       } catch (error) {
         CallHelper.showError(error);
       }
@@ -158,16 +170,15 @@ export default {
 
     async shareScreen() {
       try {
-
         if (this.screen) {
-					this.screen.disconnectCall();
-					this.screen.peer.destroy();
+          this.screen.disconnectCall();
+          this.screen.peer.destroy();
           this.screen = null;
-					return;
+          return;
         }
 
-				this.screen = new ShareScreen(this.usernameFrom);
-				await this.screen.connect(this.room);
+        this.screen = new ShareScreen(this.usernameFrom);
+        await this.screen.connect(this.room);
       } catch (error) {
         console.log(error);
         this.reasonError = error.message;
@@ -177,35 +188,34 @@ export default {
     hangUp() {
       CallHelper.removeAllSources();
 
-			if (this.screen) {
-				this.connection.disconnectCall();
-				this.connection.peer.destroy();
-			}
+      if (this.screen) {
+        this.connection.disconnectCall();
+        this.connection.peer.destroy();
+      }
 
       this.joined = false;
     },
 
     async toggleCam() {
-
       this.camera = !this.camera;
-			CallHelper.video = this.camera;
+      CallHelper.video = this.camera;
 
-			if(CallHelper.permission) {
-				this.localVideoPermission = await CallHelper.loadLocalVideo();
-				this.connection.changeSourceVideo(this.localVideoPermission);
-			}
+      if (CallHelper.permission) {
+        this.localVideoPermission = await CallHelper.loadLocalVideo();
+        this.connection.changeSourceVideo(this.localVideoPermission);
+      }
 
-			await this.connection.toggleStatusCamAndMic(this.microphone, this.camera);
+      await this.connection.toggleStatusCamAndMic(this.microphone, this.camera);
     },
 
     async toggleMic() {
       this.microphone = !this.microphone;
-			CallHelper.audio = this.microphone;
+      CallHelper.audio = this.microphone;
 
-			if(CallHelper.permission) {
-				this.localVideoPermission = await CallHelper.loadLocalVideo();
-				this.connection.changeSourceVideo(this.localVideoPermission);
-			}
+      if (CallHelper.permission) {
+        this.localVideoPermission = await CallHelper.loadLocalVideo();
+        this.connection.changeSourceVideo(this.localVideoPermission);
+      }
 
       await this.connection.toggleStatusCamAndMic(this.microphone, this.camera);
     },
@@ -219,11 +229,11 @@ export default {
   --videoHeight: auto;
 } */
 
-body {
+.container {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  background: rgb(32, 32, 34);
+  background: no-repeat center/100% url("../assets/img/fondowp.png");
   width: 100vw;
   height: 100vh;
 }
@@ -250,16 +260,16 @@ form button {
   font-size: 20px;
   color: aliceblue;
   padding: 0 20px;
-  background-color: rgb(19, 19, 146);
+  background-color: #3ea06c;
   margin-left: 10px;
   border-radius: 15px;
-  border-color: rgb(19, 19, 146);
+  border-color: #3ea06c;
 }
 
 form button:hover {
   color: white;
-  background-color: rgb(3, 3, 136);
-  border-color: rgb(3, 3, 136);
+  background-color: #09c561;
+  border-color: #09c561;
   cursor: pointer;
 }
 
