@@ -1,7 +1,7 @@
 .home {
   width: 100vw;
   height: 100vh;
-  background-color: #ececec;
+  background: no-repeat center/100% url("../../img/fondowp.png");
 }
 .home-body {
   width: 90%;
@@ -31,7 +31,7 @@
   width: 100%;
   height: 55px;
   border: none;
-  border-top: 2px solid #4082c4;
+  border-top: 2px solid #3ea06c;
   font-family: "OpenSans-SemiBold";
   font-size: 14px;
   box-sizing: border-box;
@@ -41,11 +41,12 @@
   bottom: 0;
   background-color: #fff;
   cursor: pointer;
-  color: #4082c4;
+  color: #3ea06c;
 }
 .home-right {
   width: 80%;
-  background-color: #e5ddd5;
+  /* background-color: #e5ddd5; */
+  background: no-repeat center/100% url("../../img/fondowp.png");
 }
 .home-right-with-map {
   display: grid;
@@ -63,7 +64,7 @@
   position: absolute;
   top: 0;
   background-color: #fff;
-  color: #4082c4;
+  color: #3ea06c;
 }
 .home-buscar-img {
   position: absolute;

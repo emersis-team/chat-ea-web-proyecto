@@ -2,16 +2,27 @@
   <div class="chat">
     <div class="chat-top">
       <p>
-				{{ (conversacion.conversation_name != null ? (conversacion.conversation_name + getMiembros()) : conversacion.conversation_members[0].name) }}
-			</p>
-				<button class="btn" @click="joinCall()">
-          <font-awesome-icon icon="fa-solid fa-video" />
-					Join Call
-				</button>
-
+        {{
+          conversacion.conversation_name != null
+            ? conversacion.conversation_name + getMiembros().resultadoRecortado
+            : conversacion.conversation_members[0].name
+        }}
+      </p>
+      <span>{{
+        conversacion.conversation_name != null ? getMiembros().resultado : ""
+      }}</span>
+      <button class="btn" @click="joinCall()">
+        <img src="../assets/img/camera-icon.png" alt="" />
+        Join Call
+      </button>
     </div>
     <div class="chat-scroll-container">
-      <div id="chatScroll" class="chat-scroll" ref="chatScroll" @scroll="onScroll">
+      <div
+        id="chatScroll"
+        class="chat-scroll"
+        ref="chatScroll"
+        @scroll="onScroll"
+      >
         <div
           v-for="mensaje in mensajes"
           :key="mensaje.message_id"
@@ -20,7 +31,7 @@
           v-bind:class="{ 'chat-mensaje-propio': mensaje.sender_id == userId }"
         >
           <div v-if="mensaje.fecha != null" class="chat-separador">
-            <label>{{mensaje.fecha}}</label>
+            <label>{{ mensaje.fecha }}</label>
           </div>
           <div v-if="mensaje.fecha == null">
             <span class="chat-tail" v-if="mensaje.sender_id != userId">
@@ -29,7 +40,7 @@
                 viewBox="0 0 8 13"
                 width="8"
                 height="13"
-                style="display: block;"
+                style="display: block"
               >
                 <path
                   opacity=".13"
@@ -49,9 +60,12 @@
                 viewBox="0 0 8 13"
                 width="8"
                 height="13"
-                style="display: block;"
+                style="display: block"
               >
-                <path opacity=".13" d="M5.188 1H0v11.193l6.467-8.625C7.526 2.156 6.958 1 5.188 1z"></path>
+                <path
+                  opacity=".13"
+                  d="M5.188 1H0v11.193l6.467-8.625C7.526 2.156 6.958 1 5.188 1z"
+                ></path>
                 <path
                   fill="currentColor"
                   d="M5.188 0H0v11.193l6.467-8.625C7.526 1.156 6.958 0 5.188 0z"
@@ -61,7 +75,7 @@
             <MensajeTexto
               v-if="
                 mensaje.message_type != null &&
-                  mensaje.message_type.substr(11, 100) == 'TextMessage'
+                mensaje.message_type.substr(11, 100) == 'TextMessage'
               "
               :mensaje="mensaje"
               :sender="getSender(mensaje)"
@@ -69,8 +83,8 @@
             <MensajeArchivo
               v-if="
                 mensaje.message_type != null &&
-                  mensaje.message_type.substr(11, 100) == 'FileMessage' &&
-                  esArchivo(mensaje)
+                mensaje.message_type.substr(11, 100) == 'FileMessage' &&
+                esArchivo(mensaje)
               "
               :mensaje="mensaje"
               :sender="getSender(mensaje)"
@@ -78,8 +92,8 @@
             <MensajeImagen
               v-if="
                 mensaje.message_type != null &&
-                  mensaje.message_type.substr(11, 100) == 'FileMessage' &&
-                  esImagen(mensaje)
+                mensaje.message_type.substr(11, 100) == 'FileMessage' &&
+                esImagen(mensaje)
               "
               :mensaje="mensaje"
               :sender="getSender(mensaje)"
@@ -87,8 +101,8 @@
             <MensajeVideo
               v-if="
                 mensaje.message_type != null &&
-                  mensaje.message_type.substr(11, 100) == 'FileMessage' &&
-                  esVideo(mensaje)
+                mensaje.message_type.substr(11, 100) == 'FileMessage' &&
+                esVideo(mensaje)
               "
               :mensaje="mensaje"
               :sender="getSender(mensaje)"
@@ -96,8 +110,8 @@
             <MensajeAudio
               v-if="
                 mensaje.message_type != null &&
-                  mensaje.message_type.substr(11, 100) == 'FileMessage' &&
-                  esAudio(mensaje)
+                mensaje.message_type.substr(11, 100) == 'FileMessage' &&
+                esAudio(mensaje)
               "
               :mensaje="mensaje"
               :sender="getSender(mensaje)"
@@ -108,8 +122,14 @@
     </div>
     <div class="chat-bottom">
       <div class="chat-adjuntar" title="Adjuntar" @click="adjuntar()">
-        <input type="file" class="app-hide" @change="changeAdjunto()" ref="adjuntoFiles" multiple>
-        <img src="../assets/img/adjuntar.png">
+        <input
+          type="file"
+          class="app-hide"
+          @change="changeAdjunto()"
+          ref="adjuntoFiles"
+          multiple
+        />
+        <img src="../assets/img/adjuntar_negro.png" />
       </div>
       <input
         type="text"
@@ -117,8 +137,12 @@
         ref="inputTexto"
         v-on:keyup.enter="enviar()"
         maxlength="140"
-      >
-      <img class="chat-enviar" src="../assets/img/enviar.png" @click="enviar()">
+      />
+      <img
+        class="chat-enviar"
+        src="../assets/img/enviar_negro_32x32.png"
+        @click="enviar()"
+      />
     </div>
   </div>
 </template>
@@ -137,7 +161,7 @@ export default {
     MensajeArchivo,
     MensajeImagen,
     MensajeVideo,
-    MensajeAudio
+    MensajeAudio,
   },
   data() {
     return {
@@ -147,7 +171,7 @@ export default {
       currentPage: 0,
       lastPage: 0,
       mensajeOffset: null,
-      actualizarTimer: null
+      actualizarTimer: null,
     };
   },
   props: { conversacion: [Object], contactos: [Array] },
@@ -162,7 +186,7 @@ export default {
     this.$refs.chatScroll.addEventListener("touchmove", this.onScroll);
   },
   created() {
-    this.$eventHub.$on("chat-get", id => this.getChat(id, true));
+    this.$eventHub.$on("chat-get", (id) => this.getChat(id, true));
   },
   methods: {
 	  joinCall() {
@@ -174,14 +198,14 @@ export default {
 				}
 			});
 
-			window.open(videoComponentRedirect.href, '_blank');
-	  },
+      window.open(videoComponentRedirect.href, "_blank");
+    },
 
     actualizar() {
       var that = this;
       clearTimeout(this.actualizarTimer);
 
-      this.actualizarTimer = setTimeout(function() {
+      this.actualizarTimer = setTimeout(function () {
         that.getChat(null, false);
         that.actualizar();
       }, 3000);
@@ -194,13 +218,13 @@ export default {
         this.conversacion.conversation_name != null
           ? this.conversacion.conversation_members[
               this.conversacion.conversation_members.findIndex(
-                a => a.user_id == mensaje.sender_id
+                (a) => a.user_id == mensaje.sender_id
               )
             ].user_id
           : null;
 
       return senderId != null && senderId != userId
-        ? this.contactos.filter(c => c.id == senderId)[0].email
+        ? this.contactos.filter((c) => c.id == senderId)[0].email
         : null;
     },
 
@@ -209,10 +233,12 @@ export default {
         .split(".")
         [mensaje.message.file.split(".").length - 1].toLowerCase();
 
-			return extension == "png" ||
+      return (
+        extension == "png" ||
         extension == "jpg" ||
         extension == "svg" ||
-        extension == "jpeg";
+        extension == "jpeg"
+      );
     },
 
     esVideo(mensaje) {
@@ -220,12 +246,14 @@ export default {
         .split(".")
         [mensaje.message.file.split(".").length - 1].toLowerCase();
 
-      return extension == "webm" ||
+      return (
+        extension == "webm" ||
         extension == "mkv" ||
         extension == "flv" ||
         extension == "mp4" ||
         extension == "mov" ||
-        extension == "avi";
+        extension == "avi"
+      );
     },
 
     esAudio(mensaje) {
@@ -233,15 +261,15 @@ export default {
         .split(".")
         [mensaje.message.file.split(".").length - 1].toLowerCase();
 
-      return extension == "m4a" ||
-				extension == "qt" ||
-				extension == "4mb";
+      return extension == "m4a" || extension == "qt" || extension == "4mb";
     },
 
     esArchivo(mensaje) {
-      return this.esImagen(mensaje) == false &&
+      return (
+        this.esImagen(mensaje) == false &&
         this.esVideo(mensaje) == false &&
-        this.esAudio(mensaje) == false;
+        this.esAudio(mensaje) == false
+      );
     },
 
     getChat(id, scroll) {
@@ -259,7 +287,7 @@ export default {
         .get(
           this.$localurl + "/api/" + userId + "/conversations/" + id + "?page=0"
         )
-        .then(function(response) {
+        .then(function (response) {
           if (
             that.primeraPagina == true &&
             !that.isOverflown(document.getElementById("chatScroll"))
@@ -270,10 +298,10 @@ export default {
           var scrollear = false;
           that.lastPage = response.data.messages.last_page;
           response.data.messages.data.reverse();
-          response.data.messages.data.forEach(m => {
+          response.data.messages.data.forEach((m) => {
             if (
               !that.mensajes.some(
-                mensaje =>
+                (mensaje) =>
                   mensaje.message != null && mensaje.message_id == m.message_id
               ) &&
               m.conversation_id == that.conversacion.conversation_id
@@ -287,7 +315,7 @@ export default {
           }
           that.getSeparadores(scroll);
         })
-        .catch(function(response) {
+        .catch(function (response) {
           clearTimeout(that.actualizarTimer);
           if (
             response != null &&
@@ -312,8 +340,7 @@ export default {
 
       this.currentPage = pagina;
       var pag = "";
-      if (pagina != null)
-        pag = "?page=" + pagina;
+      if (pagina != null) pag = "?page=" + pagina;
 
       var that = this;
       this.$axios
@@ -325,12 +352,12 @@ export default {
             this.conversacion.conversation_id +
             pag
         )
-        .then(function(response) {
+        .then(function (response) {
           response.data.messages.data.reverse();
           that.mensajes = response.data.messages.data.concat(that.mensajes);
           that.getSeparadores(true);
         })
-        .catch(function(response) {
+        .catch(function (response) {
           if (
             response != null &&
             response.response != null &&
@@ -346,7 +373,7 @@ export default {
 
     getSeparadores(scrollear) {
       var fechas = [];
-      this.mensajes = this.mensajes.filter(m => m.fecha == null);
+      this.mensajes = this.mensajes.filter((m) => m.fecha == null);
       var cantidad = this.mensajes.length;
 
       for (var i = 0; i < cantidad; i++) {
@@ -373,16 +400,16 @@ export default {
                 "Miércoles",
                 "Jueves",
                 "Viernes",
-                "Sábado"
+                "Sábado",
               ];
               fecha = days[d.getDay()] + " " + fecha;
-              if (!this.mensajes.some(m => m.fecha == fecha)) {
+              if (!this.mensajes.some((m) => m.fecha == fecha)) {
                 this.mensajes.splice(i, 0, { fecha: fecha });
                 cantidad++;
               }
             }
           } else {
-            if (!this.mensajes.some(m => m.fecha == "HOY")) {
+            if (!this.mensajes.some((m) => m.fecha == "HOY")) {
               this.mensajes.splice(i, 0, { fecha: "HOY" });
               cantidad++;
             }
@@ -413,13 +440,10 @@ export default {
       this.$nextTick(() => {
         if (that.mensajeOffset != null) {
           if (document.getElementById(that.mensajeOffset.message_id) != null) {
-            document.getElementById(
-              "chatScroll"
-            ).scrollTop = document.getElementById(
-              that.mensajeOffset.message_id
-            ).offsetTop;
+            document.getElementById("chatScroll").scrollTop =
+              document.getElementById(that.mensajeOffset.message_id).offsetTop;
           } else {
-            setTimeout(function() {
+            setTimeout(function () {
               that.scrollToBottom();
             }, 200);
           }
@@ -437,16 +461,16 @@ export default {
           user_id: userId,
           message: texto,
           conversation_id: this.conversacion.conversation_id,
-          conversation_members: this.conversacion.conversation_members
+          conversation_members: this.conversacion.conversation_members,
         };
 
         var that = this;
         this.$axios
           .post(this.$localurl + "/api/messages/textMessage", data)
-          .then(function() {
+          .then(function () {
             that.getChat(null, true);
           })
-          .catch(function(response) {
+          .catch(function (response) {
             if (
               response != null &&
               response.response != null &&
@@ -489,7 +513,7 @@ export default {
         var that = this;
         this.$axios
           .post(this.$localurl + "/api/messages/fileMessage", data)
-          .then(function(response) {
+          .then(function (response) {
             that.getChat(null, true);
             if (
               response != null &&
@@ -499,7 +523,7 @@ export default {
               that.mostrarErroresArchivos(response.data.messages_with_error);
             }
           })
-          .catch(function(response) {
+          .catch(function (response) {
             if (response != null && response.status == 401) {
               localStorage.removeItem("$expire");
               if (window.location.pathname.split("/").reverse()[0] != "login") {
@@ -520,7 +544,7 @@ export default {
 
     mostrarErroresArchivos(errores) {
       var string = "";
-      errores.forEach(error => {
+      errores.forEach((error) => {
         string =
           string +
           "archivo: " +
@@ -540,17 +564,21 @@ export default {
       let that = this;
       if (this.conversacion.conversation_members.length > 1) {
         resultado = " (";
-        this.conversacion.conversation_members.forEach(m => {
+        this.conversacion.conversation_members.forEach((m) => {
           resultado =
             resultado +
-            that.contactos.filter(c => c.id == m.user_id)[0].email +
+            that.contactos.filter((c) => c.id == m.user_id)[0].email +
             ", ";
         });
         resultado = resultado.substr(0, resultado.length - 2) + ")";
-        return resultado;
+        const resultadoRecortado =
+          resultado.length > 27
+            ? resultado.split("").splice(0, 27, "...").join("").concat("...)")
+            : resultado;
+        return { resultado, resultadoRecortado };
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
