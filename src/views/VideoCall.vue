@@ -36,7 +36,7 @@
           <font-awesome-icon icon="fa-solid fa-video-slash" />
         </button>
 
-        <button id="loginBtn" type="submit" :disabled="!!!usernameFrom">
+        <button id="loginBtn" type="submit">
           Join
         </button>
       </form>
@@ -139,7 +139,7 @@ export default {
       console.log(e);
       this.reasonError = e;
     },
-    async login(e) {
+    async join(e) {
       e.preventDefault();
 
       try {
