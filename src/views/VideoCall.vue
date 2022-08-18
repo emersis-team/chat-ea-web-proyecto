@@ -17,7 +17,7 @@
           @click="toggleMic"
           class="btn-on"
         >
-          <font-awesome-icon icon="fa-solid fa-microphone" />
+          <img src="../assets/img/mic.png" alt="" />
         </button>
 
         <button
@@ -26,15 +26,15 @@
           @click="toggleMic"
           class="btn-off"
         >
-          <font-awesome-icon icon="fa-solid fa-microphone-slash" />
+          <img src="../assets/img/mic_slash.png" alt="" />
         </button>
 
         <button type="button" v-if="camera" @click="toggleCam" class="btn-on">
-          <font-awesome-icon icon="fa-solid fa-video" />
+          <img src="../assets/img/cam.png" alt="" />
         </button>
 
         <button type="button" v-if="!camera" @click="toggleCam" class="btn-off">
-          <font-awesome-icon icon="fa-solid fa-video-slash" />
+          <img src="../assets/img/cam_slash.png" alt="" />
         </button>
 
         <button id="loginBtn" type="submit" :disabled="!!!usernameFrom">
@@ -70,7 +70,7 @@
 
         <div class="panel">
           <button @click="hangUp" class="btn-off">
-            <img src="../assets/call_end_black_24dp.svg" alt="imagen" />
+            <img src="../assets/img/hangup.png" alt="cortar" />
           </button>
 
           <button
@@ -79,7 +79,7 @@
             @click="shareScreen"
             class="btn-on"
           >
-            <font-awesome-icon icon="fa-solid fa-display" />
+            <img src="../assets/img/screen.png" alt="compatir" />
           </button>
 
           <button
@@ -88,23 +88,23 @@
             @click="shareScreen"
             class="btn-off"
           >
-            <font-awesome-icon icon="fa-solid fa-display" />
+            <img src="../assets/img/screen.png" alt="dejar de compartir" />
           </button>
 
           <button v-if="microphone" @click="toggleMic" class="btn-on">
-            <font-awesome-icon icon="fa-solid fa-microphone" />
+            <img src="../assets/img/mic.png" alt="" />
           </button>
 
           <button v-if="!microphone" @click="toggleMic" class="btn-off">
-            <font-awesome-icon icon="fa-solid fa-microphone-slash" />
+            <img src="../assets/img/mic_slash.png" alt="" />
           </button>
 
           <button v-if="camera" @click="toggleCam" class="btn-on">
-            <font-awesome-icon icon="fa-solid fa-video" />
+            <img src="../assets/img/cam.png" alt="" />
           </button>
 
           <button v-if="!camera" @click="toggleCam" class="btn-off">
-            <font-awesome-icon icon="fa-solid fa-video-slash" />
+            <img src="../assets/img/cam_slash.png" alt="" />
           </button>
         </div>
       </div>
@@ -257,13 +257,18 @@ form input {
 }
 
 form button {
-  font-size: 20px;
+  line-height: 32px;
+  font-size: 32px;
   color: aliceblue;
   padding: 0 20px;
   background-color: #3ea06c;
   margin-left: 10px;
   border-radius: 15px;
   border-color: #3ea06c;
+}
+
+form button img {
+  margin: auto;
 }
 
 form button:hover {
@@ -352,8 +357,8 @@ form {
 }
 
 .warning {
-  font-size: 15px;
-  color: rgb(255, 255, 1);
+  font-size: 20px;
+  color: rgb(255, 107, 1);
   margin: 0;
 }
 
@@ -375,6 +380,11 @@ form {
   align-items: center;
 }
 
+.panel button img {
+  width: 32px;
+  height: auto;
+}
+
 .btn-on {
   background-color: rgb(125, 123, 123);
   color: whitesmoke;
@@ -385,8 +395,8 @@ form {
   color: whitesmoke;
 }
 
-.btn-off img {
+/* .btn-off img {
   width: 20px;
   height: auto;
-}
+} */
 </style>

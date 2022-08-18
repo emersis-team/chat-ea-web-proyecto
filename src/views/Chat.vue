@@ -4,28 +4,33 @@
       <div class="home-right">
         <div class="chat">
           <div class="chat-top">
-            <img @click="$router.back()" src="../assets/img/left_black.png">
+            <img @click="$router.back()" src="../assets/img/left_black.png" />
             <p @click="$router.back()">
               {{
-              $conversacionElegida != null
-              ? $conversacionElegida.user_dest.name
-              : ""
+                $conversacionElegida != null
+                  ? $conversacionElegida.user_dest.name
+                  : ""
               }}
             </p>
-						<button @click="joinCall()">Join Call</button>
+            <button @click="joinCall()">Join Call</button>
           </div>
-          <div id="chatScroll" class="chat-scroll" ref="chatScroll" @scroll="onScroll">
+          <div
+            id="chatScroll"
+            class="chat-scroll"
+            ref="chatScroll"
+            @scroll="onScroll"
+          >
             <div
               v-for="mensaje in mensajes"
               :key="mensaje.id"
               :id="mensaje.id"
               class="chat-container"
               v-bind:class="{
-                'chat-mensaje-propio': mensaje.sender_id == userId
+                'chat-mensaje-propio': mensaje.sender_id == userId,
               }"
             >
               <div v-if="mensaje.fecha != null" class="chat-separador">
-                <label>{{mensaje.fecha}}</label>
+                <label>{{ mensaje.fecha }}</label>
               </div>
               <div v-if="mensaje.fecha == null">
                 <span class="chat-tail" v-if="mensaje.sender_id != userId">
@@ -34,7 +39,7 @@
                     viewBox="0 0 8 13"
                     width="8"
                     height="13"
-                    style="display: block;"
+                    style="display: block"
                   >
                     <path
                       opacity=".13"
@@ -54,7 +59,7 @@
                     viewBox="0 0 8 13"
                     width="8"
                     height="13"
-                    style="display: block;"
+                    style="display: block"
                   >
                     <path
                       opacity=".13"
@@ -69,39 +74,39 @@
                 <MensajeTexto
                   v-if="
                     mensaje.message_type != null &&
-                      mensaje.message_type.substr(11, 100) == 'TextMessage'
+                    mensaje.message_type.substr(11, 100) == 'TextMessage'
                   "
                   :mensaje="mensaje"
                 ></MensajeTexto>
                 <MensajeArchivo
                   v-if="
                     mensaje.message_type != null &&
-                      mensaje.message_type.substr(11, 100) == 'FileMessage' &&
-                      esArchivo(mensaje)
+                    mensaje.message_type.substr(11, 100) == 'FileMessage' &&
+                    esArchivo(mensaje)
                   "
                   :mensaje="mensaje"
                 ></MensajeArchivo>
                 <MensajeImagen
                   v-if="
                     mensaje.message_type != null &&
-                      mensaje.message_type.substr(11, 100) == 'FileMessage' &&
-                      esImagen(mensaje)
+                    mensaje.message_type.substr(11, 100) == 'FileMessage' &&
+                    esImagen(mensaje)
                   "
                   :mensaje="mensaje"
                 ></MensajeImagen>
                 <MensajeVideo
                   v-if="
                     mensaje.message_type != null &&
-                      mensaje.message_type.substr(11, 100) == 'FileMessage' &&
-                      esVideo(mensaje)
+                    mensaje.message_type.substr(11, 100) == 'FileMessage' &&
+                    esVideo(mensaje)
                   "
                   :mensaje="mensaje"
                 ></MensajeVideo>
                 <MensajeAudio
                   v-if="
                     mensaje.message_type != null &&
-                      mensaje.message_type.substr(11, 100) == 'FileMessage' &&
-                      esAudio(mensaje)
+                    mensaje.message_type.substr(11, 100) == 'FileMessage' &&
+                    esAudio(mensaje)
                   "
                   :mensaje="mensaje"
                 ></MensajeAudio>
@@ -117,8 +122,8 @@
                 @change="changeAdjunto()"
                 ref="adjuntoFiles"
                 multiple
-              >
-              <img src="../assets/img/adjuntar.png">
+              />
+              <img src="../assets/img/adjuntar.png" />
             </div>
             <input
               type="text"
@@ -126,8 +131,12 @@
               ref="inputTexto"
               v-on:keyup.enter="enviar()"
               maxlength="140"
-            >
-            <img class="chat-enviar" src="../assets/img/enviar.png" @click="enviar()">
+            />
+            <img
+              class="chat-enviar"
+              src="../assets/img/enviar.png"
+              @click="enviar()"
+            />
           </div>
         </div>
       </div>
@@ -149,7 +158,7 @@ export default {
     MensajeArchivo,
     MensajeImagen,
     MensajeVideo,
-    MensajeAudio
+    MensajeAudio,
   },
   data() {
     return {
@@ -159,7 +168,7 @@ export default {
       currentPage: 0,
       lastPage: 0,
       mensajeOffset: null,
-      actualizarTimer: null
+      actualizarTimer: null,
     };
   },
   props: {},
@@ -172,18 +181,18 @@ export default {
     this.$refs.chatScroll.addEventListener("touchmove", this.onScroll);
   },
   created() {
-    this.$eventHub.$on("chat-get", id => this.getChat(id, true));
+    this.$eventHub.$on("chat-get", (id) => this.getChat(id, true));
   },
   methods: {
-	  joinCall() {
-		  const videoComponentRedirect = this.$router.resolve({ name: 'video' });
-			window.open(videoComponentRedirect.href, '_blank');
-	  },
+    joinCall() {
+      const videoComponentRedirect = this.$router.resolve({ name: "video" });
+      window.open(videoComponentRedirect.href, "_blank");
+    },
     actualizar() {
       var that = this;
       clearTimeout(this.actualizarTimer);
 
-      this.actualizarTimer = setTimeout(function() {
+      this.actualizarTimer = setTimeout(function () {
         that.getChat(null, false);
         that.actualizar();
       }, 3000);
@@ -193,35 +202,40 @@ export default {
         .split(".")
         [mensaje.message.files[0].file.split(".").length - 1].toLowerCase();
 
-			return extension == "png" ||
-				extension == "jpg" ||
-				extension == "svg" ||
-				extension == "jpeg";
+      return (
+        extension == "png" ||
+        extension == "jpg" ||
+        extension == "svg" ||
+        extension == "jpeg"
+      );
     },
     esVideo(mensaje) {
-      var extension = mensaje.message.files[0]
-				.file
-        .split(".")[mensaje.message.files[0].file.split(".").length - 1]
-				.toLowerCase();
-
-			return extension == "webm" ||
-				extension == "mkv" ||
-				extension == "flv" ||
-				extension == "mp4" ||
-				extension == "mov" ||
-				extension == "avi";
-		},
-		esAudio(mensaje) {
       var extension = mensaje.message.files[0].file
         .split(".")
         [mensaje.message.files[0].file.split(".").length - 1].toLowerCase();
 
-      return (extension == "m4a" || extension == "qt" || extension == "4mb");
+      return (
+        extension == "webm" ||
+        extension == "mkv" ||
+        extension == "flv" ||
+        extension == "mp4" ||
+        extension == "mov" ||
+        extension == "avi"
+      );
+    },
+    esAudio(mensaje) {
+      var extension = mensaje.message.files[0].file
+        .split(".")
+        [mensaje.message.files[0].file.split(".").length - 1].toLowerCase();
+
+      return extension == "m4a" || extension == "qt" || extension == "4mb";
     },
     esArchivo(mensaje) {
-        return this.esImagen(mensaje) === false &&
-					this.esVideo(mensaje) === false &&
-					this.esAudio(mensaje) === false;
+      return (
+        this.esImagen(mensaje) === false &&
+        this.esVideo(mensaje) === false &&
+        this.esAudio(mensaje) === false
+      );
     },
     getChat(id, scroll) {
       if (id == null) {
@@ -234,7 +248,7 @@ export default {
         var that = this;
         this.$axios
           .get(this.$localurl + "/api/messages/" + id)
-          .then(function(response) {
+          .then(function (response) {
             if (
               that.primeraPagina == true &&
               !that.isOverflown(document.getElementById("chatScroll"))
@@ -248,19 +262,22 @@ export default {
             response.data.messages.data.reverse();
 
             response.data.messages.data
-						.filter(m => !that.mensajes.some(mensaje => mensaje.id == m.id) &&
-                m.conversation_id == that.$route.params.id
-						).forEach(m => {
-              that.mensajes.push(m);
-              scrollear = true;
-            });
+              .filter(
+                (m) =>
+                  !that.mensajes.some((mensaje) => mensaje.id == m.id) &&
+                  m.conversation_id == that.$route.params.id
+              )
+              .forEach((m) => {
+                that.mensajes.push(m);
+                scrollear = true;
+              });
 
             if (scrollear == true)
               that.mensajeOffset = that.mensajes[that.mensajes.length - 1];
 
             that.getSeparadores(scroll);
           })
-          .catch(function(response) {
+          .catch(function (response) {
             clearTimeout(that.actualizarTimer);
             if (
               response != null &&
@@ -284,18 +301,17 @@ export default {
       this.currentPage = pagina;
       var pag = "";
 
-      if (pagina != null)
-        pag = "?page=" + pagina;
+      if (pagina != null) pag = "?page=" + pagina;
 
       var that = this;
       this.$axios
         .get(this.$localurl + "/api/messages/" + this.$route.params.id + pag)
-        .then(function(response) {
+        .then(function (response) {
           response.data.messages.data.reverse();
           that.mensajes = response.data.messages.data.concat(that.mensajes);
           that.getSeparadores(true);
         })
-        .catch(function(response) {
+        .catch(function (response) {
           if (
             response != null &&
             response.response != null &&
@@ -310,7 +326,7 @@ export default {
     },
     getSeparadores(scrollear) {
       var fechas = [];
-      this.mensajes = this.mensajes.filter(m => m.fecha == null); // .filter(Boolean);
+      this.mensajes = this.mensajes.filter((m) => m.fecha == null); // .filter(Boolean);
       var cantidad = this.mensajes.length;
       for (var i = 0; i < cantidad; i++) {
         var m = this.mensajes[i];
@@ -336,16 +352,16 @@ export default {
                 "Miércoles",
                 "Jueves",
                 "Viernes",
-                "Sábado"
+                "Sábado",
               ];
               fecha = days[d.getDay()] + " " + fecha;
-              if (!this.mensajes.some(m => m.fecha === fecha)) {
+              if (!this.mensajes.some((m) => m.fecha === fecha)) {
                 this.mensajes.splice(i, 0, { fecha: fecha });
                 cantidad++;
               }
             }
           } else {
-            if (!this.mensajes.some(m => m.fecha === "HOY")) {
+            if (!this.mensajes.some((m) => m.fecha === "HOY")) {
               this.mensajes.splice(i, 0, { fecha: "HOY" });
               cantidad++;
             }
@@ -361,27 +377,24 @@ export default {
     },
     onScroll() {
       var target = this.$refs.chatScroll;
-			if (
-			  target.scrollTop < target.clientHeight * 0.1 &&
-			  this.currentPage < this.lastPage
-			) {
-				this.offset = this.offset + this.limit;
-				this.currentPage++;
-				this.getChatPage(this.currentPage);
-			}
+      if (
+        target.scrollTop < target.clientHeight * 0.1 &&
+        this.currentPage < this.lastPage
+      ) {
+        this.offset = this.offset + this.limit;
+        this.currentPage++;
+        this.getChatPage(this.currentPage);
+      }
     },
     scrollToBottom() {
       var that = this;
       this.$nextTick(() => {
         if (that.mensajeOffset != null) {
           if (document.getElementById(that.mensajeOffset.id) != null) {
-            document.getElementById(
-              "chatScroll"
-            ).scrollTop = document.getElementById(
-              that.mensajeOffset.id
-            ).offsetTop;
+            document.getElementById("chatScroll").scrollTop =
+              document.getElementById(that.mensajeOffset.id).offsetTop;
           } else {
-            setTimeout(function() {
+            setTimeout(function () {
               that.scrollToBottom();
             }, 200);
           }
@@ -399,10 +412,10 @@ export default {
         var that = this;
         this.$axios
           .post(this.$localurl + "/api/messages/textMessage", data)
-          .then(function() {
+          .then(function () {
             that.getChat(null, true);
           })
-          .catch(function(response) {
+          .catch(function (response) {
             if (
               response != null &&
               response.response != null &&
@@ -438,10 +451,10 @@ export default {
         var that = this;
         this.$axios
           .post(this.$localurl + "/api/messages/fileMessage", data)
-          .then(function() {
+          .then(function () {
             that.getChat(null, true);
           })
-          .catch(function(response) {
+          .catch(function (response) {
             if (
               response != null &&
               response.response != null &&
@@ -455,8 +468,8 @@ export default {
             alert("Se produjo un error, reintente");
           });
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

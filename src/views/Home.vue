@@ -16,7 +16,7 @@
           <div
             v-for="(conversacion, index) in conversacionesFiltradas"
             :key="index"
-            @click="elegirConversacion(conversacion)"
+            @click="elegirConversacion(conversacion, index)"
             v-bind:class="{
               'home-conversacion-elegida': conversacion == conversacionElegida,
             }"
@@ -58,6 +58,7 @@ export default {
   },
   data() {
     return {
+      indexConversacion: undefined,
       conversacionElegida: null,
       conversacionesFiltradas: [],
       conversaciones: [],
@@ -192,10 +193,18 @@ export default {
           c.user_dest.email.toUpperCase().indexOf(inputBuscar) > -1
       );
     },
-    elegirConversacion(conversacion) {
+    elegirConversacion(conversacion, index) {
       if (conversacion != this.conversacionElegida) {
         conversacion.ammount_no_read = 0;
-        conversacion.conversacionElegida = true;
+
+        this.conversacionesFiltradas.forEach((conv, i) => {
+          conv.index = i;
+          i === index
+            ? (conv.seleccionada = true)
+            : (conv.seleccionada = false);
+          console.log("çonversacion ", i, " seleccionada: ", conv.seleccionada);
+        });
+
         this.conversacionElegida = conversacion;
         Vue.prototype.$conversacionElegida = conversacion;
 
