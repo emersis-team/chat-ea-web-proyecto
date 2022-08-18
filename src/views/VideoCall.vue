@@ -101,7 +101,7 @@
 </template>
 
 <script lang="ts">
-import ModalError from "@/components/ModalError.vue";
+import ModalError from "../components/ModalError.vue";
 import { CallHelper } from "../helpers/CallHelper";
 import { PeerConnection } from "../peer/PeerConnection";
 import { ShareScreen } from "../peer/ShareScreen";
@@ -198,7 +198,7 @@ export default {
       this.camera = !this.camera;
       CallHelper.video = this.camera;
 
-      if (CallHelper.permission) {
+      if (CallHelper.permissionCamaraOrMic) {
         this.localVideoPermission = await CallHelper.loadLocalVideo();
         this.connection.changeSourceVideo(this.localVideoPermission);
       }
@@ -209,7 +209,7 @@ export default {
       this.microphone = !this.microphone;
       CallHelper.audio = this.microphone;
 
-      if (CallHelper.permission) {
+      if (CallHelper.permissionCamaraOrMic) {
         this.localVideoPermission = await CallHelper.loadLocalVideo();
         this.connection.changeSourceVideo(this.localVideoPermission);
       }
@@ -238,6 +238,8 @@ form {
   display: flex;
   justify-content: center;
   margin: 0 auto;
+  align-items: center;
+  height: 100vh;
 }
 
 form input {
@@ -332,10 +334,10 @@ video::-webkit-media-controls-current-time-display {
   color: chartreuse;
 }
 
-form {
+/* form {
   margin: 40vh;
 }
-
+ */
 .container-message {
   position: relative;
 }

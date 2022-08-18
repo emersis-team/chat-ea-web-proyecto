@@ -24,7 +24,9 @@
             <Conversacion :conversacion="conversacion"></Conversacion>
           </div>
         </div>
-        <button class="home-logout" @click="logout()">Cerrar sesión</button>
+        <button class="home-logout" @click="logout()">
+          Cerrar sesión ({{ userName }})
+        </button>
       </div>
       <div
         class="home-right"
@@ -68,6 +70,7 @@ export default {
       stompClient: null,
       count: 0,
       ultimaPosicion: null,
+      userName: localStorage.getItem("$userName"),
     };
   },
   mounted() {
@@ -77,7 +80,6 @@ export default {
     this.getConversaciones();
     this.getContactos();
     this.getPosiciones();
-
     this.conectarWebSocket();
   },
   methods: {
@@ -240,6 +242,7 @@ export default {
     logout() {
       localStorage.removeItem("$token");
       localStorage.removeItem("$userId");
+      localStorage.removeItem("$userName");
       localStorage.removeItem("$expire");
       if (window.location.pathname.split("/").reverse()[0] != "login") {
         this.$router.push("/login");
