@@ -8,7 +8,6 @@
         v-if="!!reasonError"
       />
     </div>
-
     <div v-if="!joined" id="loginPage" class="text-center">
       <form @submit="join">
         <button
@@ -30,19 +29,16 @@
         </button>
 
         <button type="button" v-if="camera" @click="toggleCam" class="btn-on">
-          <img src="../assets/img/cam.png" alt="" />
+          <font-awesome-icon icon="fa-solid fa-video" />
         </button>
 
         <button type="button" v-if="!camera" @click="toggleCam" class="btn-off">
-          <img src="../assets/img/cam_slash.png" alt="" />
+          <font-awesome-icon icon="fa-solid fa-video-slash" />
         </button>
 
-        <button id="loginBtn" type="submit" :disabled="!!!usernameFrom">
-          Join
-        </button>
+        <button id="loginBtn" type="submit">Join</button>
       </form>
     </div>
-
     <div
       id="callPage"
       class="call-page"
@@ -62,17 +58,14 @@
           <span class="username local">{{ usernameFrom }}</span>
         </div>
       </div>
-
       <div class="footer-mc">
         <h6 v-if="screen" class="text-center warning">
           Estas compartiendo tu pantalla!!!
         </h6>
-
         <div class="panel">
           <button @click="hangUp" class="btn-off">
             <img src="../assets/img/hangup.png" alt="cortar" />
           </button>
-
           <button
             v-if="screen"
             ref="screen"
@@ -81,7 +74,6 @@
           >
             <img src="../assets/img/screen.png" alt="compatir" />
           </button>
-
           <button
             v-if="!screen"
             ref="screen"
@@ -90,19 +82,15 @@
           >
             <img src="../assets/img/screen.png" alt="dejar de compartir" />
           </button>
-
           <button v-if="microphone" @click="toggleMic" class="btn-on">
             <img src="../assets/img/mic.png" alt="" />
           </button>
-
           <button v-if="!microphone" @click="toggleMic" class="btn-off">
             <img src="../assets/img/mic_slash.png" alt="" />
           </button>
-
           <button v-if="camera" @click="toggleCam" class="btn-on">
             <img src="../assets/img/cam.png" alt="" />
           </button>
-
           <button v-if="!camera" @click="toggleCam" class="btn-off">
             <img src="../assets/img/cam_slash.png" alt="" />
           </button>
@@ -113,7 +101,7 @@
 </template>
 
 <script lang="ts">
-import ModalError from "../components/ModalError.vue";
+import ModalError from "@/components/ModalError.vue";
 import { CallHelper } from "../helpers/CallHelper";
 import { PeerConnection } from "../peer/PeerConnection";
 import { ShareScreen } from "../peer/ShareScreen";
@@ -129,6 +117,7 @@ export default {
       localVideoPermission: null,
       usernameTo: "",
       usernameFrom: "",
+      room: "",
       joined: false,
       reasonError: "",
       microphone: true,
@@ -148,13 +137,10 @@ export default {
       console.log(e);
       this.reasonError = e;
     },
-
     async join(e) {
       e.preventDefault();
 
       try {
-        this.joined = true;
-
         CallHelper.localVideoSource = this.$refs.localVideo;
         this.localVideoPermission = await CallHelper.loadLocalVideo();
 
@@ -163,11 +149,18 @@ export default {
           this.localVideoPermission
         );
         await this.connection.connect();
+
+        if (!this.camara || !this.microphone)
+          await this.connection.toggleStatusCamAndMic(
+            this.microphone,
+            this.camera
+          );
+
+        this.joined = true;
       } catch (error) {
         CallHelper.showError(error);
       }
     },
-
     async shareScreen() {
       try {
         if (this.screen) {
@@ -184,9 +177,9 @@ export default {
         this.reasonError = error.message;
       }
     },
-
     hangUp() {
       CallHelper.removeAllSources();
+      CallHelper.leaveCall(this.connection);
 
       if (this.screen) {
         this.connection.disconnectCall();
@@ -195,7 +188,12 @@ export default {
 
       this.joined = false;
     },
-
+    async getNewPermissionVideo() {
+      CallHelper.video = this.camera = !this.camera;
+    },
+    async getNewPermissionAudio() {
+      CallHelper.audio = this.microphone = !this.microphone;
+    },
     async toggleCam() {
       this.camera = !this.camera;
       CallHelper.video = this.camera;
@@ -207,7 +205,6 @@ export default {
 
       await this.connection.toggleStatusCamAndMic(this.microphone, this.camera);
     },
-
     async toggleMic() {
       this.microphone = !this.microphone;
       CallHelper.audio = this.microphone;
@@ -224,11 +221,6 @@ export default {
 </script>
 
 <style>
-/* :root {
-  --videoWidth: 700px;
-  --videoHeight: auto;
-} */
-
 .container {
   box-sizing: border-box;
   margin: 0;

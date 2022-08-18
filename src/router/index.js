@@ -17,11 +17,6 @@ const routes = [
       import(/* webpackChunkName: "login" */ "../views/Login.vue"),
   },
   {
-    path: "/chat/:id/:user_dest_id",
-    name: "chat",
-    component: () => import(/* webpackChunkName: "chat" */ "../views/Chat.vue"),
-  },
-	{
 		path: "/video",
 		name: "video",
 		component: () => import("../views/VideoCall.vue"),
