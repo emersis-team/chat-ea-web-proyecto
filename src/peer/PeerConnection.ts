@@ -1,8 +1,7 @@
-import { Peer, MediaConnection } from "peerjs";
-import { Room } from "../room";
 import { CallHelper } from "../helpers/CallHelper";
 import { WebRtcConnection, EventsWebRtc } from "../types/WebRtcConnection";
 import { EnvSignaling } from "../types/Enviroment";
+import mediaSoup from "mediasoup-client";
 
 export class PeerConnection implements WebRtcConnection {
   usernameFrom: string;
@@ -12,6 +11,8 @@ export class PeerConnection implements WebRtcConnection {
   leave: boolean;
 
   constructor(from: string, localVideo: MediaStream) {
+		mediaSoup.Room();
+
     this.usernameFrom = from;
     this.leave = false;
 		this.localVideo = localVideo;
