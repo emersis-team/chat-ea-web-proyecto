@@ -22,7 +22,6 @@ export default {
 	  // Vue.prototype.$localurl = "http://localhost:8080"; // localhost
 	  Vue.prototype.$localurl = "https://38.109.228.250:8000"; // production
 
-
     this.$axios.defaults.headers.common["Authorization"] =
       "Bearer " + localStorage.getItem("$token");
     if (localStorage.getItem("$token") == null) {

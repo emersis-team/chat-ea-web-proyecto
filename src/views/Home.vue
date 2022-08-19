@@ -16,7 +16,7 @@
           <div
             v-for="(conversacion, index) in conversacionesFiltradas"
             :key="index"
-            @click="elegirConversacion(conversacion)"
+            @click="elegirConversacion(conversacion, index)"
             v-bind:class="{
               'home-conversacion-elegida': conversacion == conversacionElegida,
             }"
@@ -24,7 +24,9 @@
             <Conversacion :conversacion="conversacion"></Conversacion>
           </div>
         </div>
-        <button class="home-logout" @click="logout()">Cerrar sesión</button>
+        <button class="home-logout" @click="logout()">
+          Cerrar sesión ({{ userName }})
+        </button>
       </div>
       <div
         class="home-right"
@@ -58,6 +60,7 @@ export default {
   },
   data() {
     return {
+      indexConversacion: undefined,
       conversacionElegida: null,
       conversacionesFiltradas: [],
       conversaciones: [],
@@ -67,6 +70,7 @@ export default {
       stompClient: null,
       count: 0,
       ultimaPosicion: null,
+      userName: localStorage.getItem("$userName"),
     };
   },
   mounted() {
@@ -76,7 +80,6 @@ export default {
     this.getConversaciones();
     this.getContactos();
     this.getPosiciones();
-
     this.conectarWebSocket();
   },
   methods: {
@@ -192,10 +195,18 @@ export default {
           c.user_dest.email.toUpperCase().indexOf(inputBuscar) > -1
       );
     },
-    elegirConversacion(conversacion) {
+    elegirConversacion(conversacion, index) {
       if (conversacion != this.conversacionElegida) {
         conversacion.ammount_no_read = 0;
-        conversacion.conversacionElegida = true;
+
+        this.conversacionesFiltradas.forEach((conv, i) => {
+          conv.index = i;
+          i === index
+            ? (conv.seleccionada = true)
+            : (conv.seleccionada = false);
+          console.log("çonversacion ", i, " seleccionada: ", conv.seleccionada);
+        });
+
         this.conversacionElegida = conversacion;
         Vue.prototype.$conversacionElegida = conversacion;
 
@@ -231,6 +242,7 @@ export default {
     logout() {
       localStorage.removeItem("$token");
       localStorage.removeItem("$userId");
+      localStorage.removeItem("$userName");
       localStorage.removeItem("$expire");
       if (window.location.pathname.split("/").reverse()[0] != "login") {
         this.$router.push("/login");

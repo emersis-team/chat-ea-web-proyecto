@@ -4,15 +4,7 @@
       <label>{{ conversacion.ammount_no_read }}</label>
     </div>
     <div class="conversacion-imagen">
-      <!-- <img src="../assets/img/contacto-otro.png" /> -->
-      <img
-        v-if="conversacion.conversacionElegida === true"
-        src="../assets/img/contacto-actual.png"
-      />
-      <img
-        v-if="conversacion.conversacionElegida !== true"
-        src="../assets/img/contacto-otro.png"
-      />
+      <img src="../assets/img/contacto-otro.png" />
     </div>
     <p class="conversacion-nombre">
       {{
@@ -34,7 +26,9 @@
 <script>
 export default {
   data() {
-    return {};
+    return {
+      isSelected: "../assets/img/contacto-otro.png",
+    };
   },
   props: { conversacion: [Object] },
   computed: {},
@@ -42,7 +36,7 @@ export default {
   created() {},
   methods: {},
   setup(props) {
-    console.log("conversacion", props.conversacion);
+    console.log("conversacion desde conversacion", props.conversacion);
   },
 };
 </script>

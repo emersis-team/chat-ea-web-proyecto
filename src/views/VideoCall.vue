@@ -16,7 +16,7 @@
           @click="toggleMic"
           class="btn-on"
         >
-          <font-awesome-icon icon="fa-solid fa-microphone" />
+          <img src="../assets/img/mic.png" alt="" />
         </button>
 
         <button
@@ -25,20 +25,18 @@
           @click="toggleMic"
           class="btn-off"
         >
-          <font-awesome-icon icon="fa-solid fa-microphone-slash" />
+          <img src="../assets/img/mic_slash.png" alt="" />
         </button>
 
-        <button type="button" v-if="camera" @click="getNewPermissionVideo" class="btn-on">
+        <button type="button" v-if="camera" @click="toggleCam" class="btn-on">
           <font-awesome-icon icon="fa-solid fa-video" />
         </button>
 
-        <button type="button" v-if="!camera" @click="getNewPermissionVideo" class="btn-off">
+        <button type="button" v-if="!camera" @click="toggleCam" class="btn-off">
           <font-awesome-icon icon="fa-solid fa-video-slash" />
         </button>
 
-        <button id="loginBtn" type="submit">
-          Join
-        </button>
+        <button id="loginBtn" type="submit">Join</button>
       </form>
     </div>
     <div
@@ -66,7 +64,7 @@
         </h6>
         <div class="panel">
           <button @click="hangUp" class="btn-off">
-            <img src="../assets/call_end_black_24dp.svg" alt="imagen" />
+            <img src="../assets/img/hangup.png" alt="cortar" />
           </button>
           <button
             v-if="screen"
@@ -74,7 +72,7 @@
             @click="shareScreen"
             class="btn-on"
           >
-            <font-awesome-icon icon="fa-solid fa-display" />
+            <img src="../assets/img/screen.png" alt="compatir" />
           </button>
           <button
             v-if="!screen"
@@ -82,19 +80,19 @@
             @click="shareScreen"
             class="btn-off"
           >
-            <font-awesome-icon icon="fa-solid fa-display" />
+            <img src="../assets/img/screen.png" alt="dejar de compartir" />
           </button>
           <button v-if="microphone" @click="toggleMic" class="btn-on">
-            <font-awesome-icon icon="fa-solid fa-microphone" />
+            <img src="../assets/img/mic.png" alt="" />
           </button>
           <button v-if="!microphone" @click="toggleMic" class="btn-off">
-            <font-awesome-icon icon="fa-solid fa-microphone-slash" />
+            <img src="../assets/img/mic_slash.png" alt="" />
           </button>
           <button v-if="camera" @click="toggleCam" class="btn-on">
-            <font-awesome-icon icon="fa-solid fa-video" />
+            <img src="../assets/img/cam.png" alt="" />
           </button>
           <button v-if="!camera" @click="toggleCam" class="btn-off">
-            <font-awesome-icon icon="fa-solid fa-video-slash" />
+            <img src="../assets/img/cam_slash.png" alt="" />
           </button>
         </div>
       </div>
@@ -103,7 +101,7 @@
 </template>
 
 <script lang="ts">
-import ModalError from "@/components/ModalError.vue";
+import ModalError from "../components/ModalError.vue";
 import { CallHelper } from "../helpers/CallHelper";
 import { PeerConnection } from "../peer/PeerConnection";
 import { ShareScreen } from "../peer/ShareScreen";
@@ -119,7 +117,7 @@ export default {
       localVideoPermission: null,
       usernameTo: "",
       usernameFrom: "",
-			room: "",
+      room: "",
       joined: false,
       reasonError: "",
       microphone: true,
@@ -143,14 +141,20 @@ export default {
       e.preventDefault();
 
       try {
-				CallHelper.localVideoSource = this.$refs.localVideo;
-				this.localVideoPermission = await CallHelper.loadLocalVideo();
+        CallHelper.localVideoSource = this.$refs.localVideo;
+        this.localVideoPermission = await CallHelper.loadLocalVideo();
 
-				this.connection = new PeerConnection(this.usernameFrom, this.localVideoPermission);
-				await this.connection.connect();
+        this.connection = new PeerConnection(
+          this.usernameFrom,
+          this.localVideoPermission
+        );
+        await this.connection.connect();
 
-				if(!this.camara || !this.microphone)
-					await this.connection.toggleStatusCamAndMic(this.microphone, this.camera);
+        if (!this.camara || !this.microphone)
+          await this.connection.toggleStatusCamAndMic(
+            this.microphone,
+            this.camera
+          );
 
         this.joined = true;
       } catch (error) {
@@ -184,17 +188,17 @@ export default {
 
       this.joined = false;
     },
-		async getNewPermissionVideo() {
+    async getNewPermissionVideo() {
       CallHelper.video = this.camera = !this.camera;
-		},
-		async getNewPermissionAudio() {
+    },
+    async getNewPermissionAudio() {
       CallHelper.audio = this.microphone = !this.microphone;
-		},
+    },
     async toggleCam() {
       this.camera = !this.camera;
       CallHelper.video = this.camera;
 
-      if (CallHelper.permission) {
+      if (CallHelper.permissionCamaraOrMic) {
         this.localVideoPermission = await CallHelper.loadLocalVideo();
         this.connection.changeSourceVideo(this.localVideoPermission);
       }
@@ -205,7 +209,7 @@ export default {
       this.microphone = !this.microphone;
       CallHelper.audio = this.microphone;
 
-      if (CallHelper.permission) {
+      if (CallHelper.permissionCamaraOrMic) {
         this.localVideoPermission = await CallHelper.loadLocalVideo();
         this.connection.changeSourceVideo(this.localVideoPermission);
       }
@@ -234,6 +238,8 @@ form {
   display: flex;
   justify-content: center;
   margin: 0 auto;
+  align-items: center;
+  height: 100vh;
 }
 
 form input {
@@ -245,13 +251,18 @@ form input {
 }
 
 form button {
-  font-size: 20px;
+  line-height: 32px;
+  font-size: 32px;
   color: aliceblue;
   padding: 0 20px;
   background-color: #3ea06c;
   margin-left: 10px;
   border-radius: 15px;
   border-color: #3ea06c;
+}
+
+form button img {
+  margin: auto;
 }
 
 form button:hover {
@@ -323,10 +334,10 @@ video::-webkit-media-controls-current-time-display {
   color: chartreuse;
 }
 
-form {
+/* form {
   margin: 40vh;
 }
-
+ */
 .container-message {
   position: relative;
 }
@@ -340,8 +351,8 @@ form {
 }
 
 .warning {
-  font-size: 15px;
-  color: rgb(255, 255, 1);
+  font-size: 20px;
+  color: rgb(255, 107, 1);
   margin: 0;
 }
 
@@ -363,6 +374,11 @@ form {
   align-items: center;
 }
 
+.panel button img {
+  width: 32px;
+  height: auto;
+}
+
 .btn-on {
   background-color: rgb(125, 123, 123);
   color: whitesmoke;
@@ -373,8 +389,8 @@ form {
   color: whitesmoke;
 }
 
-.btn-off img {
+/* .btn-off img {
   width: 20px;
   height: auto;
-}
+} */
 </style>
