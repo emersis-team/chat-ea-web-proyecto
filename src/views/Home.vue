@@ -21,7 +21,10 @@
               'home-conversacion-elegida': conversacion == conversacionElegida,
             }"
           >
-            <Conversacion :conversacion="conversacion"></Conversacion>
+            <Conversacion
+              :conversacion="conversacion"
+              :conversacionElegida="conversacion === conversacionElegida"
+            ></Conversacion>
           </div>
         </div>
         <button class="home-logout" @click="logout()">
