@@ -1,121 +1,126 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-import { Peer } from "peerjs";
-import { Room } from "../room";
+import { __awaiter } from "tslib";
 import { CallHelper } from "../helpers/CallHelper";
-import { EventsWebRtc } from "../types/WebRtcConnection";
-import { EnvSignaling } from "../types/Enviroment";
-var PeerConnection = /** @class */ (function () {
-    function PeerConnection(from, localVideo) {
-        this.usernameFrom = from;
-        this.leave = false;
-        this.localVideo = localVideo;
+import { io } from "socket.io-client";
+import { Device } from "mediasoup-client";
+const promise = function (socket) {
+    return function request(type, data = {}) {
+        return new Promise((resolve) => {
+            socket.emit(type, data, resolve);
+        });
+    };
+};
+export class PeerConnection {
+    constructor(roomName, username) {
+        this.username = username;
+        this.room = io(`http://localhost:5000?room=${roomName}&client=${username}`);
+        this.room.request = promise(this.room);
+        this.room.on("connect", () => __awaiter(this, void 0, void 0, function* () {
+            const RtpCapabilities = yield this.room.request("getRouterRtpCapabilities");
+            this.device = new Device();
+            yield this.device.load({ routerRtpCapabilities: RtpCapabilities });
+            yield this.join();
+        }));
+        this.room.on("new", () => __awaiter(this, void 0, void 0, function* () {
+            yield this.initPeers();
+        }));
+        this.room.on("removePeer", ({ username }) => {
+            console.log("leaving room " + username);
+            CallHelper.removeSource(username);
+        });
     }
-    PeerConnection.prototype.connect = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var room;
-            var _this = this;
-            return __generator(this, function (_a) {
-                room = new Room(this);
-                this.peer = new Peer(this.usernameFrom, {
-                    host: EnvSignaling.PROD_HOST.valueOf(),
-                    port: EnvSignaling.PROD_PORT.valueOf(),
-                    path: '/satac',
-                    secure: true // en local esta linea se comenta
+    /*
+        * Un `Producer` es el objeto para emitir video/audio a otros
+    */
+    join() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.device)
+                throw new Error("device not initialized");
+            if (!this.transportProducerData)
+                this.transportProducerData = yield this.room.request("createProducerTransport", {
+                    rtpcapabilities: this.device.rtpCapabilities
                 });
-                this.peer.on(EventsWebRtc.open, function (clientId) {
-                    console.log("open");
-                    room.joinRoom(clientId);
-                });
-                this.peer.on(EventsWebRtc.error, function (e) {
-                    console.error("Intentando llamar", e.name, e.message);
-                    throw new Error("");
-                });
-                this.peer.on(EventsWebRtc.call, function (call) {
-                    call.answer(_this.localVideo);
-                    room.users[call.peer] = call;
-                    call.on(EventsWebRtc.stream, function (s) {
-                        CallHelper.loadRemoteVideo(call.peer, s);
-                    });
-                });
-                this.peer.on(EventsWebRtc.disconnected, function () {
-                    if (!_this.leave) {
-                        console.log("reconectando...");
-                        _this.peer.reconnect();
-                    }
-                });
-                this.room = room;
-                return [2 /*return*/];
-            });
+            if (!this.transportProducer)
+                this.transportProducer = this.device.createSendTransport(this.transportProducerData);
+            this.transportProducer.on("connect", ({ dtlsParameters }, resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+                const data = yield this.room.request("connectProducerTransport", { transportId: this.transportProducer.id, dtlsParameters });
+                resolve(data);
+            }));
+            this.transportProducer.on("produce", ({ kind, rtpParameters }, resolve, _reject) => __awaiter(this, void 0, void 0, function* () {
+                const data = yield this.room.request("produce", { transportId: this.transportProducer.id, kind, rtpParameters });
+                resolve(data);
+            }));
+            this.localVideoStream = yield CallHelper.loadLocalVideo();
+            const videoTrack = this.localVideoStream.getVideoTracks()[0];
+            yield this.transportProducer.produce({ track: videoTrack });
+            yield this.initPeers();
         });
-    };
-    PeerConnection.prototype.toggleStatusCamAndMic = function (audio, video) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                this.localVideo
-                    .getVideoTracks()
-                    .forEach(function (track) { return (track.enabled = video); });
-                this.localVideo
-                    .getAudioTracks()
-                    .forEach(function (track) { return (track.enabled = audio); });
-                return [2 /*return*/];
-            });
+    }
+    /*
+        * Carga los videos remotos
+    */
+    initPeers() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.device)
+                return;
+            this.transportConsumerData = yield this.room.request("createConsumerTransport");
+            this.transportConsumer = this.device.createRecvTransport(this.transportConsumerData);
+            this.transportConsumer.on("connect", ({ dtlsParameters }, resolve, _reject) => __awaiter(this, void 0, void 0, function* () {
+                const data = yield this.room.request("connectConsumerTransport", { transportId: this.transportConsumer.id, dtlsParameters });
+                resolve(data);
+            }));
+            this.transportConsumer.on("connectionstatechange", (state) => __awaiter(this, void 0, void 0, function* () {
+                switch (state) {
+                    case "connected":
+                        console.log(state);
+                        const streams = yield remoteStream;
+                        if (streams)
+                            Object.keys(streams).map((username) => CallHelper.loadRemoteVideo(username, streams[username]));
+                        break;
+                    case "failed":
+                        this.transportConsumer.close();
+                        console.error("error");
+                        location.reload();
+                        break;
+                    default:
+                        console.log(state);
+                        break;
+                }
+            }));
+            const remoteStream = this.consumeAllRoom();
         });
-    };
-    PeerConnection.prototype.disconnectCall = function () {
-        this.leave = true;
-        this.room.leaveRoom(this.usernameFrom);
-        this.peer.destroy();
-        CallHelper.localVideoSource.srcObject = null;
-        delete CallHelper.remoteSources[this.usernameFrom];
-    };
-    PeerConnection.prototype.call = function (usernameTo) {
-        try {
-            var calling = this.peer.call(usernameTo, this.localVideo);
-            calling.on(EventsWebRtc.stream, function (s) {
-                return CallHelper.loadRemoteVideo(usernameTo, s);
+    }
+    consumeAllRoom() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.device)
+                return;
+            const { rtpCapabilities } = this.device;
+            const { id: transportId } = this.transportConsumer;
+            const consumers = yield this.room.request("consume", { transportId, rtpCapabilities });
+            const streams = {};
+            yield Promise.all(consumers.map(({ id, producerId, kind, rtpParameters, name }) => __awaiter(this, void 0, void 0, function* () {
+                if (name === this.username)
+                    return;
+                const consumer = yield this.transportConsumer.consume({ id, producerId, kind, rtpParameters });
+                const stream = new MediaStream();
+                stream.addTrack(consumer.track);
+                streams[name] = stream;
+            })));
+            console.log(consumers, Object.keys(streams));
+            return streams;
+        });
+    }
+    disconnect() {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.room.request("close", {
+                username: this.username,
+                producerTransportId: this.transportProducer.id,
+                consumerTransportId: this.transportConsumer.id
             });
-            return calling;
-        }
-        catch (e) {
-            console.error("Fallo en la llamada a ", usernameTo, e);
-            throw new Error("Error en la llamada, verifique la conexion a internet");
-        }
-    };
-    return PeerConnection;
-}());
-export { PeerConnection };
+            if (this.transportConsumer)
+                this.transportConsumer.close();
+            if (this.transportProducer)
+                this.transportProducer.close();
+        });
+    }
+}
+//# sourceMappingURL=PeerConnection.js.map

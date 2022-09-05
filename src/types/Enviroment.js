@@ -13,3 +13,4 @@ var EnvRoom;
 })(EnvRoom || (EnvRoom = {}));
 ;
 export { EnvSignaling, EnvRoom };
+//# sourceMappingURL=Enviroment.js.map

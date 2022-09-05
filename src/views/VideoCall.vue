@@ -106,7 +106,6 @@
 import ModalError from "@/components/ModalError.vue";
 import { CallHelper } from "../helpers/CallHelper";
 import { PeerConnection } from "../peer/PeerConnection";
-import { ShareScreen } from "../peer/ShareScreen";
 
 export default {
   components: {
@@ -144,13 +143,8 @@ export default {
 
       try {
 				CallHelper.localVideoSource = this.$refs.localVideo;
-				this.localVideoPermission = await CallHelper.loadLocalVideo();
 
-				this.connection = new PeerConnection(this.usernameFrom, this.localVideoPermission);
-				await this.connection.connect();
-
-				if(!this.camara || !this.microphone)
-					await this.connection.toggleStatusCamAndMic(this.microphone, this.camera);
+				this.connection = new PeerConnection(this.room, this.usernameFrom);
 
         this.joined = true;
       } catch (error) {
@@ -166,24 +160,21 @@ export default {
           return;
         }
 
-        this.screen = new ShareScreen(this.usernameFrom);
+        this.screen = null;
         await this.screen.connect(this.room);
       } catch (error) {
         console.log(error);
         this.reasonError = error.message;
       }
     },
-    hangUp() {
-      CallHelper.removeAllSources();
-      CallHelper.leaveCall(this.connection);
+		hangUp() {
+			this.connection.disconnect();
 
-      if (this.screen) {
-        this.connection.disconnectCall();
-        this.connection.peer.destroy();
-      }
+			CallHelper.removeAllSources();
+			this.joined = false;
 
-      this.joined = false;
-    },
+			location.reload();
+		},
 		async getNewPermissionVideo() {
       CallHelper.video = this.camera = !this.camera;
 		},

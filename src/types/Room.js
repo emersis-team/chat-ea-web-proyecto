@@ -6,3 +6,4 @@ var EventsRoom;
     EventsRoom["leaveRoom"] = "leave-room";
 })(EventsRoom || (EventsRoom = {}));
 export { EventsRoom };
+//# sourceMappingURL=Room.js.map

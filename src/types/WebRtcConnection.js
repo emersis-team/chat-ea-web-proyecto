@@ -7,3 +7,4 @@ var EventsWebRtc;
     EventsWebRtc["disconnected"] = "disconnected";
 })(EventsWebRtc || (EventsWebRtc = {}));
 export { EventsWebRtc };
+//# sourceMappingURL=WebRtcConnection.js.map

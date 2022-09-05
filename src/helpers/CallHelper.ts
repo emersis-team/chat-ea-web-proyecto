@@ -3,7 +3,7 @@ import { WebRtcConnection } from "@/types/WebRtcConnection";
 export class CallHelper {
   static localVideoSource: HTMLVideoElement;
   /*Fuente de video de los otros participantes*/
-  static remoteSources = {};
+  static remoteSources: Record<string, MediaStream> = {};
   static showError: (_: Error) => void;
 	static video: boolean;
 	static audio: boolean;
@@ -13,8 +13,9 @@ export class CallHelper {
    * Elimina un tag de video
    */
   static removeSource(userId: string): void {
-    if (document.getElementById("video-" + userId))
-      document.getElementById("video-" + userId).remove();
+		const video = document.getElementById("video-" + userId);
+    if (video)
+      video.remove();
   }
 
   /**
@@ -67,13 +68,15 @@ export class CallHelper {
   /*
    * Guarda fuentes de video en un array para que puedan ser renderizadas en vue
    * */
-  static loadRemoteVideo(username: string, streamRemote: MediaStream) {
+  static loadRemoteVideo(username: string, streamRemote: MediaStream | undefined) {
     console.log("adding streams", streamRemote);
     const totalSourcesLength = Object.values(this.remoteSources).length + 1;
     console.log("length", totalSourcesLength);
-    this.remoteSources[username] = streamRemote;
 
-    CallHelper.addVideo(username, streamRemote, totalSourcesLength);
+		if(streamRemote) {
+			this.remoteSources[username] = streamRemote;
+			CallHelper.addVideo(username, streamRemote, totalSourcesLength);
+		}
   }
 
   static addVideo(
@@ -84,7 +87,11 @@ export class CallHelper {
     if (document.querySelector(`#video-${userId}`)) return;
 
     const divRemoteVideos = document.getElementById("remoteVideo");
-    divRemoteVideos.classList.add("divRemoteVideos");
+
+		if(!divRemoteVideos)
+			throw new Error("no remotes video container found");
+
+		divRemoteVideos.classList.add("divRemoteVideos");
 
     const stream = document.getElementById(userId);
     if (stream || !source.active) return;
