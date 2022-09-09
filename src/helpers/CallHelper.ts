@@ -6,20 +6,17 @@ export class CallHelper {
   /*Fuente de video de los otros participantes*/
   static remoteSources: Record<string, MediaStream> = {};
   static showError: (_: Error) => void;
-	static video: boolean;
-	static audio: boolean;
-	static permissionCamaraOrMic: boolean = false;
+  static video: boolean;
+  static audio: boolean;
+  static permissionCamaraOrMic: boolean = false;
 
   /**
    * Elimina un tag de video
    */
   static removeSource(userId: string): void {
 		const video = document.getElementById("video-" + userId);
-		const audio = document.getElementById("audio-" + userId);
     if (video)
       video.remove();
-		if(audio)
-			audio.remove();
   }
 
   /**
@@ -39,13 +36,13 @@ export class CallHelper {
   static async loadLocalVideo(): Promise<MediaStream> {
     try {
       const streamLocal = await navigator.mediaDevices.getUserMedia({
-				video: { width: { ideal: 256 }, height: { ideal: 144 } },
+        video: { width: { ideal: 1280 }, height: { ideal: 720 } }, //minimas 256 y 144
         audio: CallHelper.audio,
       });
 
-      if(CallHelper.localVideoSource) {
+      if (CallHelper.localVideoSource) {
         CallHelper.localVideoSource.srcObject = streamLocal;
-				CallHelper.permissionCamaraOrMic = true;
+        CallHelper.permissionCamaraOrMic = true;
         return streamLocal;
       }
     } catch (e) {
@@ -100,10 +97,9 @@ export class CallHelper {
 
     const divRemoteVideos = document.getElementById("remoteVideo");
 
-		if(!divRemoteVideos)
-			throw new Error("no remotes video container found");
+    if (!divRemoteVideos) throw new Error("no remotes video container found");
 
-		divRemoteVideos.classList.add("divRemoteVideos");
+    divRemoteVideos.classList.add("divRemoteVideos");
 
     const stream = document.getElementById(userId);
     if (stream || !source.active) return;
