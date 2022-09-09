@@ -5,17 +5,16 @@ export class CallHelper {
   /*Fuente de video de los otros participantes*/
   static remoteSources: Record<string, MediaStream> = {};
   static showError: (_: Error) => void;
-	static video: boolean;
-	static audio: boolean;
-	static permissionCamaraOrMic: boolean = false;
+  static video: boolean;
+  static audio: boolean;
+  static permissionCamaraOrMic: boolean = false;
 
   /**
    * Elimina un tag de video
    */
   static removeSource(userId: string): void {
-		const video = document.getElementById("video-" + userId);
-    if (video)
-      video.remove();
+    const video = document.getElementById("video-" + userId);
+    if (video) video.remove();
   }
 
   /**
@@ -35,13 +34,13 @@ export class CallHelper {
   static async loadLocalVideo(): Promise<MediaStream> {
     try {
       const streamLocal = await navigator.mediaDevices.getUserMedia({
-				video: { width: { ideal: 256 }, height: { ideal: 144 } },
+        video: { width: { ideal: 1280 }, height: { ideal: 720 } }, //minimas 256 y 144
         audio: CallHelper.audio,
       });
 
-      if(CallHelper.localVideoSource) {
+      if (CallHelper.localVideoSource) {
         CallHelper.localVideoSource.srcObject = streamLocal;
-				CallHelper.permissionCamaraOrMic = true;
+        CallHelper.permissionCamaraOrMic = true;
         return streamLocal;
       }
     } catch (e) {
@@ -68,15 +67,18 @@ export class CallHelper {
   /*
    * Guarda fuentes de video en un array para que puedan ser renderizadas en vue
    * */
-  static loadRemoteVideo(username: string, streamRemote: MediaStream | undefined) {
+  static loadRemoteVideo(
+    username: string,
+    streamRemote: MediaStream | undefined
+  ) {
     console.log("adding streams", streamRemote);
     const totalSourcesLength = Object.values(this.remoteSources).length + 1;
     console.log("length", totalSourcesLength);
 
-		if(streamRemote) {
-			this.remoteSources[username] = streamRemote;
-			CallHelper.addVideo(username, streamRemote, totalSourcesLength);
-		}
+    if (streamRemote) {
+      this.remoteSources[username] = streamRemote;
+      CallHelper.addVideo(username, streamRemote, totalSourcesLength);
+    }
   }
 
   static addVideo(
@@ -88,10 +90,9 @@ export class CallHelper {
 
     const divRemoteVideos = document.getElementById("remoteVideo");
 
-		if(!divRemoteVideos)
-			throw new Error("no remotes video container found");
+    if (!divRemoteVideos) throw new Error("no remotes video container found");
 
-		divRemoteVideos.classList.add("divRemoteVideos");
+    divRemoteVideos.classList.add("divRemoteVideos");
 
     const stream = document.getElementById(userId);
     if (stream || !source.active) return;

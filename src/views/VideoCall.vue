@@ -28,17 +28,25 @@
           <font-awesome-icon icon="fa-solid fa-microphone-slash" />
         </button>
 
-        <button type="button" v-if="camera" @click="getNewPermissionVideo" class="btn-on">
+        <button
+          type="button"
+          v-if="camera"
+          @click="getNewPermissionVideo"
+          class="btn-on"
+        >
           <font-awesome-icon icon="fa-solid fa-video" />
         </button>
 
-        <button type="button" v-if="!camera" @click="getNewPermissionVideo" class="btn-off">
+        <button
+          type="button"
+          v-if="!camera"
+          @click="getNewPermissionVideo"
+          class="btn-off"
+        >
           <font-awesome-icon icon="fa-solid fa-video-slash" />
         </button>
 
-        <button id="loginBtn" type="submit">
-          Join
-        </button>
+        <button id="loginBtn" type="submit">Join</button>
       </form>
     </div>
     <div
@@ -118,7 +126,7 @@ export default {
       localVideoPermission: null,
       usernameTo: "",
       usernameFrom: "",
-			room: "",
+      room: "",
       joined: false,
       reasonError: "",
       microphone: true,
@@ -142,9 +150,9 @@ export default {
       e.preventDefault();
 
       try {
-				CallHelper.localVideoSource = this.$refs.localVideo;
+        CallHelper.localVideoSource = this.$refs.localVideo;
 
-				this.connection = new PeerConnection(this.room, this.usernameFrom);
+        this.connection = new PeerConnection(this.room, this.usernameFrom);
 
         this.joined = true;
       } catch (error) {
@@ -167,20 +175,20 @@ export default {
         this.reasonError = error.message;
       }
     },
-		hangUp() {
-			this.connection.disconnect();
+    hangUp() {
+      this.connection.disconnect();
 
-			CallHelper.removeAllSources();
-			this.joined = false;
+      CallHelper.removeAllSources();
+      this.joined = false;
 
-			location.reload();
-		},
-		async getNewPermissionVideo() {
+      location.reload();
+    },
+    async getNewPermissionVideo() {
       CallHelper.video = this.camera = !this.camera;
-		},
-		async getNewPermissionAudio() {
+    },
+    async getNewPermissionAudio() {
       CallHelper.audio = this.microphone = !this.microphone;
-		},
+    },
     async toggleCam() {
       this.camera = !this.camera;
       CallHelper.video = this.camera;
@@ -315,7 +323,7 @@ video::-webkit-media-controls-current-time-display {
 }
 
 form {
-  margin: 40vh;
+  padding: 40vh;
 }
 
 .container-message {
