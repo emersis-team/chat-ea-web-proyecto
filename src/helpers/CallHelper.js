@@ -5,8 +5,11 @@ export class CallHelper {
      */
     static removeSource(userId) {
         const video = document.getElementById("video-" + userId);
+        const audio = document.getElementById("audio-" + userId);
         if (video)
             video.remove();
+        if (audio)
+            audio.remove();
     }
     /**
      * Elimina todas las fuentes de video remotas
@@ -58,14 +61,20 @@ export class CallHelper {
     /*
      * Guarda fuentes de video en un array para que puedan ser renderizadas en vue
      * */
-    static loadRemoteVideo(username, streamRemote) {
-        console.log("adding streams", streamRemote);
+    static loadRemoteVideo(username, consumerRemote) {
+        if (!consumerRemote)
+            return;
         const totalSourcesLength = Object.values(this.remoteSources).length + 1;
-        console.log("length", totalSourcesLength);
-        if (streamRemote) {
-            this.remoteSources[username] = streamRemote;
-            CallHelper.addVideo(username, streamRemote, totalSourcesLength);
+        const streamRemote = new MediaStream();
+        streamRemote.addTrack(consumerRemote.video.track);
+        streamRemote.addTrack(consumerRemote.audio.track);
+        this.remoteSources[username] = streamRemote;
+        if (consumerRemote.screen) {
+            const streamScreen = new MediaStream();
+            streamScreen.addTrack(consumerRemote.screen.track);
+            CallHelper.addVideo(username + "_screen", streamScreen, totalSourcesLength);
         }
+        CallHelper.addVideo(username, streamRemote, totalSourcesLength);
     }
     static addVideo(userId, source, totalSourcesLength) {
         if (document.querySelector(`#video-${userId}`))

@@ -12,7 +12,8 @@ const promise = function (socket) {
 export class PeerConnection {
     constructor(roomName, username) {
         this.username = username;
-        this.room = io(`http://localhost:5000?room=${roomName}&client=${username}`);
+        this.roomName = roomName;
+        this.room = io(`https://38.109.228.250:8080?room=${roomName}&client=${username}`);
         this.room.request = promise(this.room);
         this.room.on("connect", () => __awaiter(this, void 0, void 0, function* () {
             const RtpCapabilities = yield this.room.request("getRouterRtpCapabilities");
@@ -23,9 +24,9 @@ export class PeerConnection {
         this.room.on("new", () => __awaiter(this, void 0, void 0, function* () {
             yield this.initPeers();
         }));
-        this.room.on("removePeer", ({ username }) => {
-            console.log("leaving room " + username);
-            CallHelper.removeSource(username);
+        this.room.on("removePeer", ({ usernames }) => {
+            console.log(usernames);
+            usernames.forEach((u) => CallHelper.removeSource(u));
         });
     }
     /*
@@ -35,24 +36,36 @@ export class PeerConnection {
         return __awaiter(this, void 0, void 0, function* () {
             if (!this.device)
                 throw new Error("device not initialized");
-            if (!this.transportProducerData)
-                this.transportProducerData = yield this.room.request("createProducerTransport", {
-                    rtpcapabilities: this.device.rtpCapabilities
-                });
+            this.transportProducerData = yield this.room.request("createProducerTransport", {
+                rtpcapabilities: this.device.rtpCapabilities
+            });
+            this.transportProducer = this.device.createSendTransport(this.transportProducerData);
             if (!this.transportProducer)
-                this.transportProducer = this.device.createSendTransport(this.transportProducerData);
+                throw new Error();
             this.transportProducer.on("connect", ({ dtlsParameters }, resolve, reject) => __awaiter(this, void 0, void 0, function* () {
-                const data = yield this.room.request("connectProducerTransport", { transportId: this.transportProducer.id, dtlsParameters });
+                var _a;
+                const data = yield this.room.request("connectProducerTransport", { transportId: (_a = this.transportProducer) === null || _a === void 0 ? void 0 : _a.id, dtlsParameters });
                 resolve(data);
             }));
             this.transportProducer.on("produce", ({ kind, rtpParameters }, resolve, _reject) => __awaiter(this, void 0, void 0, function* () {
-                const data = yield this.room.request("produce", { transportId: this.transportProducer.id, kind, rtpParameters });
+                var _b;
+                const data = yield this.room.request("produce", { transportId: (_b = this.transportProducer) === null || _b === void 0 ? void 0 : _b.id, kind, rtpParameters });
                 resolve(data);
             }));
-            this.localVideoStream = yield CallHelper.loadLocalVideo();
-            const videoTrack = this.localVideoStream.getVideoTracks()[0];
-            yield this.transportProducer.produce({ track: videoTrack });
+            const videoAudioTrack = yield this.produceVideoAudio();
+            this.transportProducer.appData.ss = true;
+            this.camProducer = yield this.transportProducer.produce({ track: videoAudioTrack.video });
+            this.micProducer = yield this.transportProducer.produce({ track: videoAudioTrack.audio });
             yield this.initPeers();
+        });
+    }
+    produceVideoAudio() {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.localVideoStream = yield CallHelper.loadLocalVideo();
+            return {
+                video: this.localVideoStream.getVideoTracks()[0],
+                audio: this.localVideoStream.getAudioTracks()[0]
+            };
         });
     }
     /*
@@ -71,7 +84,6 @@ export class PeerConnection {
             this.transportConsumer.on("connectionstatechange", (state) => __awaiter(this, void 0, void 0, function* () {
                 switch (state) {
                     case "connected":
-                        console.log(state);
                         const streams = yield remoteStream;
                         if (streams)
                             Object.keys(streams).map((username) => CallHelper.loadRemoteVideo(username, streams[username]));
@@ -82,7 +94,6 @@ export class PeerConnection {
                         location.reload();
                         break;
                     default:
-                        console.log(state);
                         break;
                 }
             }));
@@ -95,22 +106,52 @@ export class PeerConnection {
                 return;
             const { rtpCapabilities } = this.device;
             const { id: transportId } = this.transportConsumer;
-            const consumers = yield this.room.request("consume", { transportId, rtpCapabilities });
+            const consumers = yield this.room.request("consume", { roomName: this.roomName, transportId, rtpCapabilities });
             const streams = {};
+            console.log(consumers);
             yield Promise.all(consumers.map(({ id, producerId, kind, rtpParameters, name }) => __awaiter(this, void 0, void 0, function* () {
                 if (name === this.username)
                     return;
-                const consumer = yield this.transportConsumer.consume({ id, producerId, kind, rtpParameters });
-                const stream = new MediaStream();
-                stream.addTrack(consumer.track);
-                streams[name] = stream;
+                const kindConsume = kind === "screen" ? "video" : kind;
+                const consumer = yield this.transportConsumer.consume({ id, producerId, kind: kindConsume, rtpParameters });
+                if (!streams[name])
+                    streams[name] = { video: undefined, audio: undefined };
+                if (kind === "video")
+                    streams[name].video = consumer;
+                else if (kind === "audio")
+                    streams[name].audio = consumer;
+                else if (kind === "screen")
+                    streams[name].screen = consumer;
             })));
-            console.log(consumers, Object.keys(streams));
             return streams;
+        });
+    }
+    shareScreen() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.transportProducer)
+                return;
+            const screenShare = yield CallHelper.loadLocalScreen();
+            this.screenVideoProducer = yield this.transportProducer.produce({ track: screenShare.getVideoTracks()[0] });
+        });
+    }
+    stopShare() {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.transportProducer)
+                return;
+            yield this.room.request("close", {
+                kind: "screen",
+                username: this.username,
+                producerTransportId: this.transportProducer.id,
+                consumerTransportId: this.transportConsumer.id
+            });
+            (_a = this.screenVideoProducer) === null || _a === void 0 ? void 0 : _a.close();
         });
     }
     disconnect() {
         return __awaiter(this, void 0, void 0, function* () {
+            if (!this.transportProducer)
+                return;
             yield this.room.request("close", {
                 username: this.username,
                 producerTransportId: this.transportProducer.id,
@@ -118,8 +159,35 @@ export class PeerConnection {
             });
             if (this.transportConsumer)
                 this.transportConsumer.close();
-            if (this.transportProducer)
-                this.transportProducer.close();
+            this.transportProducer.close();
+        });
+    }
+    stateMic(state) {
+        var _a, _b;
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!state) {
+                console.log("pause the mic");
+                (_a = this.micProducer) === null || _a === void 0 ? void 0 : _a.pause();
+                yield this.room.request("pauseAudio", this.username);
+            }
+            else {
+                (_b = this.micProducer) === null || _b === void 0 ? void 0 : _b.resume();
+                yield this.room.request("resumeAudio", this.username);
+            }
+        });
+    }
+    stateCamera(state) {
+        var _a, _b;
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!state) {
+                console.log("pause the camara");
+                (_a = this.camProducer) === null || _a === void 0 ? void 0 : _a.pause();
+                yield this.room.request("pauseVideo", this.username);
+            }
+            else {
+                (_b = this.camProducer) === null || _b === void 0 ? void 0 : _b.resume();
+                yield this.room.request("resumeVideo", this.username);
+            }
         });
     }
 }

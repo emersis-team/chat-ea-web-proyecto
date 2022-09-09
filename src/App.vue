@@ -18,9 +18,10 @@ export default {
   components: { Snackbar },
   created() {
     // Vue.prototype.$localurl = "http://10.120.17.157:8080";
-    // Vue.prototype.$localurl = "http://38.109.228.250:8444";
-		Vue.prototype.$localurl = "http://localhost:8081";
+    Vue.prototype.$localurl = "https://38.109.228.250:8000";
+		// Vue.prototype.$localurl = "http://localhost:8081";
 
+    Vue.prototype.$roomurl = "http://38.109.228.250:8080";
     this.$axios.defaults.headers.common["Authorization"] =
       "Bearer " + localStorage.getItem("$token");
     if (localStorage.getItem("$token") == null) {

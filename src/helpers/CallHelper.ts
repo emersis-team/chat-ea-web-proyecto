@@ -1,4 +1,5 @@
 import { WebRtcConnection } from "@/types/WebRtcConnection";
+import { types } from "mediasoup-client";
 
 export class CallHelper {
   static localVideoSource: HTMLVideoElement;
@@ -14,8 +15,11 @@ export class CallHelper {
    */
   static removeSource(userId: string): void {
 		const video = document.getElementById("video-" + userId);
+		const audio = document.getElementById("audio-" + userId);
     if (video)
       video.remove();
+		if(audio)
+			audio.remove();
   }
 
   /**
@@ -68,15 +72,23 @@ export class CallHelper {
   /*
    * Guarda fuentes de video en un array para que puedan ser renderizadas en vue
    * */
-  static loadRemoteVideo(username: string, streamRemote: MediaStream | undefined) {
-    console.log("adding streams", streamRemote);
-    const totalSourcesLength = Object.values(this.remoteSources).length + 1;
-    console.log("length", totalSourcesLength);
+  static loadRemoteVideo(username: string, consumerRemote: any | undefined) {
+		if(!consumerRemote)
+			return;
 
-		if(streamRemote) {
-			this.remoteSources[username] = streamRemote;
-			CallHelper.addVideo(username, streamRemote, totalSourcesLength);
+    const totalSourcesLength = Object.values(this.remoteSources).length + 1;
+		const streamRemote = new MediaStream();
+		streamRemote.addTrack(consumerRemote.video.track);
+		streamRemote.addTrack(consumerRemote.audio.track);
+		this.remoteSources[username] = streamRemote;
+
+		if(consumerRemote.screen) {
+			const streamScreen = new MediaStream();
+			streamScreen.addTrack(consumerRemote.screen.track);
+			CallHelper.addVideo(username+"_screen", streamScreen, totalSourcesLength);
 		}
+
+		CallHelper.addVideo(username, streamRemote, totalSourcesLength);
   }
 
   static addVideo(

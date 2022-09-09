@@ -62,7 +62,7 @@
       </div>
       <div class="footer-mc">
         <h6 v-if="screen" class="text-center warning">
-          Estas compartiendo tu pantalla!!!
+          Esta compartiendo la pantalla!!!
         </h6>
         <div class="panel">
           <button @click="hangUp" class="btn-off">
@@ -114,7 +114,7 @@ export default {
   data() {
     return {
       connection: null,
-      screen: null,
+      screen: false,
       localVideoPermission: null,
       usernameTo: "",
       usernameFrom: "",
@@ -154,14 +154,13 @@ export default {
     async shareScreen() {
       try {
         if (this.screen) {
-          this.screen.disconnectCall();
-          this.screen.peer.destroy();
-          this.screen = null;
+          this.screen = false;
+          await this.connection.stopShare();
           return;
         }
 
-        this.screen = null;
-        await this.screen.connect(this.room);
+        await this.connection.shareScreen();
+        this.screen = true;
       } catch (error) {
         console.log(error);
         this.reasonError = error.message;
@@ -183,25 +182,11 @@ export default {
 		},
     async toggleCam() {
       this.camera = !this.camera;
-      CallHelper.video = this.camera;
-
-      if (CallHelper.permission) {
-        this.localVideoPermission = await CallHelper.loadLocalVideo();
-        this.connection.changeSourceVideo(this.localVideoPermission);
-      }
-
-      await this.connection.toggleStatusCamAndMic(this.microphone, this.camera);
+			this.connection.stateCamera(this.camera);
     },
     async toggleMic() {
       this.microphone = !this.microphone;
-      CallHelper.audio = this.microphone;
-
-      if (CallHelper.permission) {
-        this.localVideoPermission = await CallHelper.loadLocalVideo();
-        this.connection.changeSourceVideo(this.localVideoPermission);
-      }
-
-      await this.connection.toggleStatusCamAndMic(this.microphone, this.camera);
+			this.connection.stateMic(this.microphone);
     },
   },
 };
