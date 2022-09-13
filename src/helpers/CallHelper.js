@@ -5,11 +5,8 @@ export class CallHelper {
      */
     static removeSource(userId) {
         const video = document.getElementById("video-" + userId);
-        const audio = document.getElementById("audio-" + userId);
         if (video)
             video.remove();
-        if (audio)
-            audio.remove();
     }
     /**
      * Elimina todas las fuentes de video remotas
@@ -28,7 +25,7 @@ export class CallHelper {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const streamLocal = yield navigator.mediaDevices.getUserMedia({
-                    video: { width: { ideal: 256 }, height: { ideal: 144 } },
+                    video: { width: { ideal: 1280 }, height: { ideal: 720 } },
                     audio: CallHelper.audio,
                 });
                 if (CallHelper.localVideoSource) {
@@ -117,15 +114,6 @@ export class CallHelper {
         videoDiv.appendChild(videocomp);
         videoDiv.appendChild(videouser);
         divRemoteVideos.appendChild(videoDiv);
-    }
-    /*
-     * Desconecta de una llamada
-     * */
-    static leaveCall(connection) {
-        return __awaiter(this, void 0, void 0, function* () {
-            connection.disconnectCall();
-            connection.peer.destroy();
-        });
     }
 }
 /*Fuente de video de los otros participantes*/

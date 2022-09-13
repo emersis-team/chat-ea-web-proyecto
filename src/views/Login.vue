@@ -93,6 +93,7 @@ export default {
           .then(function(response) {
             localStorage.setItem("$token", response.data.token);
             localStorage.setItem("$userId", response.data.id);
+            localStorage.setItem("$username", username);
             localStorage.setItem(
               "$expire",
               Date.now() + response.data.expires_in

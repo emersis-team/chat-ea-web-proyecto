@@ -134,8 +134,10 @@ export default {
     };
   },
   mounted() {
-    this.usernameFrom = localStorage.getItem("$userName"); //this.$route.query.username;
-    this.room = localStorage.getItem("$room"); //this.$route.query.room;
+    this.usernameFrom = localStorage.getItem("$username");
+    this.room = localStorage.getItem("$room");
+
+		console.log(this.room, this.usernameFrom);
 
     CallHelper.video = this.camera;
     CallHelper.audio = this.microphone;

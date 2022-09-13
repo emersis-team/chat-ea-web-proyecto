@@ -1,5 +1,3 @@
-import { WebRtcConnection } from "@/types/WebRtcConnection";
-import { types } from "mediasoup-client";
 
 export class CallHelper {
   static localVideoSource: HTMLVideoElement;
@@ -139,12 +137,5 @@ export class CallHelper {
 
     divRemoteVideos.appendChild(videoDiv);
   }
-
-  /*
-   * Desconecta de una llamada
-   * */
-  static async leaveCall(connection: WebRtcConnection) {
-    connection.disconnectCall();
-    connection.peer.destroy();
-  }
 }
+

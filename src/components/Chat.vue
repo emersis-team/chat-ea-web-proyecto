@@ -195,13 +195,7 @@ export default {
         this.conversacion.conversation_name ||
           this.conversacion.conversation_members[0].name + this.userId + ""
       );
-      const videoComponentRedirect = this.$router.resolve({
-        name: "video",
-        /* query: {
-					username: this.userId,
-					room: this.conversacion.conversation_name || this.conversacion.conversation_members[0].name + this.userId + ""
-				} */
-      });
+      const videoComponentRedirect = this.$router.resolve({ name: "video" });
 
       window.open(videoComponentRedirect.href, "_blank");
     },

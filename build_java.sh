@@ -16,5 +16,5 @@ mvn clean package
 echo "ready to updload war. "
 scp ./target/chat-ea-web-0.0.1-SNAPSHOT.war Administrator@38.109.228.250:/C:/
 echo "war upload to server."
-echo "[WARINING]: Please enter to the server and move war file into tomcat and restart it"
+echo "[WARNING]: Please enter to the server and move war file into tomcat and restart it"
 
