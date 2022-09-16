@@ -48,7 +48,7 @@ export class PeerConnection {
 			await this.initPeers();
 		});
 
-		this.room.on(EventsWebRtc.removePeer, ({ usernames }: any) => {
+		this.room.on(EventsWebRtc.removePeer, ({ usernames }: { usernames: Array<string> }) => {
 			console.log(usernames);
 			usernames.forEach((u: string) => CallHelper.removeSource(u));
 		});
@@ -93,9 +93,7 @@ export class PeerConnection {
 
 	async shareScreen() {
 		const screenShare = await CallHelper.loadLocalScreen();
-		console.log("video")
 		await this.transportProducer?.sendScreen(screenShare);
-		console.log("send")
 	}
 
 	async stopShare() {

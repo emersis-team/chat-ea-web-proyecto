@@ -10,6 +10,7 @@ export class TransportConsumer {
 	device: types.Device;
 	roomName: string;
 	username: string;
+	consumingUsers: Array<string> = [];
 	transportConsumer?: types.Transport;
 
 	constructor(device: types.Device, room: string, username: string) {
@@ -47,15 +48,14 @@ export class TransportConsumer {
 					break;
 
 				case "failed":
-					this.transportConsumer?.close();
 					console.error("error");
-					location.reload();
+					this.transportConsumer?.restartIce({ iceParameters: transportData.iceParameters });
 				break;
 				default: break;
 			}
 		});
-
 		const remoteStream = this.consumeAllRoom(room);
+
 	}
 
 	private async consumeAllRoom(room: any) : Promise<StreamConsumers|undefined> {
@@ -75,8 +75,10 @@ export class TransportConsumer {
 
 		await Promise.all(
 			consumers.map(async ({ id, producerId, kind, rtpParameters, name }) => {
-				if(name === this.username)
+				if(name === this.username || this.consumingUsers.indexOf(name) === -1)
 					return;
+
+				this.consumingUsers.push(name);
 
 				if(!streams[name])
 					streams[name] = { video: undefined, audio: undefined, screen: undefined };
@@ -91,13 +93,14 @@ export class TransportConsumer {
 				switch(kind) {
 					case Kinds.video: streams[name].video = consumer; break;
 					case Kinds.audio: streams[name].audio = consumer; break;
-					case Kinds.screen: streams[name].screen = consumer; break;
+					//case Kinds.screen: streams[name].screen = consumer; break;
 				}
 			})
 		);
 
 		return streams;
 	}
+
 	
 	getTransportConsumerId() {
 		return this.transportConsumer?.id;
@@ -105,6 +108,7 @@ export class TransportConsumer {
 
 	stopConsume() {
 		this.transportConsumer?.close();
+		this.consumingUsers = [];
 	}
 }
 

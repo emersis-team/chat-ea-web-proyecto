@@ -24,9 +24,8 @@ export class TransportConsumer {
                         Object.keys(streams).map((username) => CallHelper.loadRemoteVideo(username, streams[username]));
                     break;
                 case "failed":
-                    (_b = this.transportConsumer) === null || _b === void 0 ? void 0 : _b.close();
                     console.error("error");
-                    location.reload();
+                    (_b = this.transportConsumer) === null || _b === void 0 ? void 0 : _b.restartIce({ iceParameters: transportData.iceParameters });
                     break;
                 default: break;
             }

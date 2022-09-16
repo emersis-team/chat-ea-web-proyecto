@@ -68,9 +68,7 @@ export class PeerConnection {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
             const screenShare = yield CallHelper.loadLocalScreen();
-            console.log("video");
             yield ((_a = this.transportProducer) === null || _a === void 0 ? void 0 : _a.sendScreen(screenShare));
-            console.log("send");
         });
     }
     stopShare() {
