@@ -154,7 +154,7 @@ export default {
       try {
         CallHelper.localVideoSource = this.$refs.localVideo;
 
-        this.connection = new PeerConnection(this.room, this.usernameFrom);
+        this.connection = new PeerConnection(this.room, this.usernameFrom, this.$roomurl);
 
         this.joined = true;
       } catch (error) {

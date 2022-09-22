@@ -32,9 +32,9 @@ enum Kinds {
 }
 
 interface Stream {
-	video?: types.Consumer;
-	audio?: types.Consumer;
-	screen?: types.Consumer;
+	video?: MediaStreamTrack;
+	audio?: MediaStreamTrack;
+	screen?: MediaStreamTrack;
 }
 
 interface StreamConsumers {

@@ -13,11 +13,11 @@ const promise = function (socket) {
     };
 };
 export class PeerConnection {
-    constructor(roomName, username) {
+    constructor(roomName, username, hostname) {
         this.username = username;
         this.roomName = roomName;
-        this.room = io(`https://38.109.228.250:8080?room=${roomName}&client=${username}`);
-        //this.room = io(`http://localhost:5000?room=${roomName}&client=${username}`);
+        //this.room = io(`https://38.109.228.250:8080?room=${roomName}&client=${username}`);
+        this.room = io(`${hostname}?room=${roomName}&client=${username}`);
         this.room.request = promise(this.room);
         this.room.on(EventsWebRtc.connect, () => __awaiter(this, void 0, void 0, function* () {
             const RtpCapabilities = yield this.room.request(TransportWebRtc.rtpCapabilities);
@@ -26,14 +26,20 @@ export class PeerConnection {
             yield this.join();
         }));
         this.room.on(EventsWebRtc.new, () => __awaiter(this, void 0, void 0, function* () {
-            yield this.initPeers();
+            var _a;
+            yield ((_a = this.transportConsumer) === null || _a === void 0 ? void 0 : _a.consumeAllRoom(this.room));
         }));
         this.room.on(EventsWebRtc.removePeer, ({ usernames }) => {
             console.log(usernames);
-            usernames.forEach((u) => CallHelper.removeSource(u));
+            usernames.forEach((u) => {
+                var _a;
+                CallHelper.removeSource(u);
+                (_a = this.transportConsumer) === null || _a === void 0 ? void 0 : _a.leaveProducer(u);
+            });
         });
     }
     join() {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             if (!this.device)
                 throw new Error("device not initialized");
@@ -43,6 +49,7 @@ export class PeerConnection {
             const videoAudioTrack = yield this.produceVideoAudio();
             yield this.transportProducer.sendVideo(videoAudioTrack);
             yield this.initPeers();
+            yield ((_a = this.transportConsumer) === null || _a === void 0 ? void 0 : _a.consumeAllRoom(this.room));
         });
     }
     produceVideoAudio() {

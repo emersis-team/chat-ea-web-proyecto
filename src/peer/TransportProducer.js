@@ -28,7 +28,13 @@ export class TransportProducer {
             if (!this.transportProducer)
                 return;
             this.screenProducer = yield this.transportProducer.produce({
-                track: screenShare.getVideoTracks()[0]
+                track: screenShare.getVideoTracks()[0],
+                encodings: [
+                    { maxBitrate: 100000 },
+                    { maxBitrate: 300000 },
+                    { maxBitrate: 900000 }
+                ],
+                codecOptions: { videoGoogleStartBitrate: 1000 },
             });
         });
     }

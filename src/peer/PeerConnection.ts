@@ -29,12 +29,12 @@ export class PeerConnection {
 	transportConsumer?: TransportConsumer;
 	transportProducer?: TransportProducer;
 
-	constructor(roomName: string, username: string) {
+	constructor(roomName: string, username: string, hostname: string) {
 		this.username = username;
 		this.roomName = roomName;
 
-		this.room = io(`https://38.109.228.250:8080?room=${roomName}&client=${username}`);
-		//this.room = io(`http://localhost:5000?room=${roomName}&client=${username}`);
+		//this.room = io(`https://38.109.228.250:8080?room=${roomName}&client=${username}`);
+		this.room = io(`${hostname}?room=${roomName}&client=${username}`);
 		this.room.request = promise(this.room);
 
 		this.room.on(EventsWebRtc.connect, async () => { 
@@ -45,12 +45,15 @@ export class PeerConnection {
 		});
 
 		this.room.on(EventsWebRtc.new, async () => {
-			await this.initPeers();
+				await this.transportConsumer?.consumeAllRoom(this.room);
 		});
 
 		this.room.on(EventsWebRtc.removePeer, ({ usernames }: { usernames: Array<string> }) => {
 			console.log(usernames);
-			usernames.forEach((u: string) => CallHelper.removeSource(u));
+			usernames.forEach((u: string) => {
+				CallHelper.removeSource(u)
+				this.transportConsumer?.leaveProducer(u);
+			});
 		});
 	}
 
@@ -69,6 +72,7 @@ export class PeerConnection {
 		await this.transportProducer.sendVideo(videoAudioTrack);
 
 		await this.initPeers();
+		await this.transportConsumer?.consumeAllRoom(this.room);
 	}
 
 	async produceVideoAudio(): Promise<TrackMedia> {

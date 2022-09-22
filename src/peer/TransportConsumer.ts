@@ -6,12 +6,15 @@ import {
 	Kinds
 } from "../types/WebRtcConnection";
 
+let producersIds: Set<string> = new Set();
+
 export class TransportConsumer {
 	device: types.Device;
 	roomName: string;
 	username: string;
 	consumingUsers: Array<string> = [];
 	transportConsumer?: types.Transport;
+	usernameByProducerId: Record<string, string> = {};
 
 	constructor(device: types.Device, room: string, username: string) {
 		this.device = device;
@@ -20,8 +23,8 @@ export class TransportConsumer {
 	}
 
 	consume(transportData: types.TransportOptions, room: any) {
+
 		this.transportConsumer = this.device.createRecvTransport(transportData);
-		console.log("updating peers");
 
 		this.transportConsumer.on(TransportWebRtc.connect,
 			async (
@@ -39,13 +42,6 @@ export class TransportConsumer {
 
 		this.transportConsumer.on(TransportWebRtc.connectionState, async (state: string) => {
 			switch(state) {
-				case "connected": 
-					const streams = await remoteStream;
-					if(streams)
-						Object.keys(streams).map(
-							(username: string) => CallHelper.loadRemoteVideo(username, streams[username])
-						);
-					break;
 
 				case "failed":
 					console.error("error");
@@ -54,13 +50,13 @@ export class TransportConsumer {
 				default: break;
 			}
 		});
-		const remoteStream = this.consumeAllRoom(room);
-
 	}
 
-	private async consumeAllRoom(room: any) : Promise<StreamConsumers|undefined> {
+	public async consumeAllRoom(room: any) : Promise<void> {
+		console.log("updating peers");
+
 		if(!this.device || !this.transportConsumer)
-			return;
+			throw new Error("no device or transport consumer created");
 
 		const { rtpCapabilities } = this.device;
 		const { id: transportId } = this.transportConsumer;
@@ -71,17 +67,25 @@ export class TransportConsumer {
 			{ roomName: this.roomName, transportId, rtpCapabilities }
 		);
 
-		console.log(consumers);
+		const wasConsumed = (id: string) => {
+			if(producersIds.has(id))
+				return true;
+			producersIds.add(id);
+			return false;
+		};
 
 		await Promise.all(
 			consumers.map(async ({ id, producerId, kind, rtpParameters, name }) => {
-				if(name === this.username || this.consumingUsers.indexOf(name) === -1)
+				if(name === this.username)
 					return;
 
-				this.consumingUsers.push(name);
+				if(kind !== Kinds.screen && wasConsumed(producerId))
+					return;
 
 				if(!streams[name])
-					streams[name] = { video: undefined, audio: undefined, screen: undefined };
+					streams[name] = {};
+
+				this.usernameByProducerId[name] = producerId
 
 				const consumer = await this.transportConsumer?.consume({
 					id,
@@ -90,15 +94,21 @@ export class TransportConsumer {
 					rtpParameters
 				});
 
+				consumer?.on('transportclose', () => {
+					producersIds.delete(consumer.id);
+				});
+
 				switch(kind) {
-					case Kinds.video: streams[name].video = consumer; break;
-					case Kinds.audio: streams[name].audio = consumer; break;
-					//case Kinds.screen: streams[name].screen = consumer; break;
+					case Kinds.video: streams[name].video = consumer?.track; break;
+					case Kinds.audio: streams[name].audio = consumer?.track; break;
+					case Kinds.screen: streams[name].screen = consumer?.track; break;
 				}
 			})
 		);
 
-		return streams;
+		Object.keys(streams).map(
+			(username: string) => CallHelper.loadRemoteVideo(username, streams[username])
+		);
 	}
 
 	
@@ -108,7 +118,13 @@ export class TransportConsumer {
 
 	stopConsume() {
 		this.transportConsumer?.close();
-		this.consumingUsers = [];
+		producersIds.clear();
+	}
+
+	leaveProducer(username: string) {
+		const producerId = this.usernameByProducerId[username];
+		if(producersIds.has(producerId))
+			producersIds.delete(producerId);
 	}
 }
 

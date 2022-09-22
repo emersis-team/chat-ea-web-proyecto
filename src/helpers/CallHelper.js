@@ -63,12 +63,15 @@ export class CallHelper {
             return;
         const totalSourcesLength = Object.values(this.remoteSources).length + 1;
         const streamRemote = new MediaStream();
-        streamRemote.addTrack(consumerRemote.video.track);
-        streamRemote.addTrack(consumerRemote.audio.track);
+        if (consumerRemote.video)
+            streamRemote.addTrack(consumerRemote.video);
+        if (consumerRemote.audio)
+            streamRemote.addTrack(consumerRemote.audio);
         this.remoteSources[username] = streamRemote;
         if (consumerRemote.screen) {
+            console.log("pantalla");
             const streamScreen = new MediaStream();
-            streamScreen.addTrack(consumerRemote.screen.track);
+            streamScreen.addTrack(consumerRemote.screen);
             CallHelper.addVideo(username + "_screen", streamScreen, totalSourcesLength);
         }
         CallHelper.addVideo(username, streamRemote, totalSourcesLength);
