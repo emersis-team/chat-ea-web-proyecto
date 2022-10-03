@@ -16,7 +16,6 @@ export class PeerConnection {
     constructor(roomName, username, hostname) {
         this.username = username;
         this.roomName = roomName;
-        //this.room = io(`https://38.109.228.250:8080?room=${roomName}&client=${username}`);
         this.room = io(`${hostname}?room=${roomName}&client=${username}`);
         this.room.request = promise(this.room);
         this.room.on(EventsWebRtc.connect, () => __awaiter(this, void 0, void 0, function* () {
@@ -30,12 +29,19 @@ export class PeerConnection {
             yield ((_a = this.transportConsumer) === null || _a === void 0 ? void 0 : _a.consumeAllRoom(this.room));
         }));
         this.room.on(EventsWebRtc.removePeer, ({ usernames }) => {
-            console.log(usernames);
             usernames.forEach((u) => {
                 var _a;
                 CallHelper.removeSource(u);
                 (_a = this.transportConsumer) === null || _a === void 0 ? void 0 : _a.leaveProducer(u);
             });
+        });
+        this.room.on(EventsWebRtc.pauseVideo, ({ username }) => {
+            var _a;
+            (_a = this.transportConsumer) === null || _a === void 0 ? void 0 : _a.pauseBlackConsumer(username);
+        });
+        this.room.on(EventsWebRtc.resumeVideo, ({ username }) => {
+            var _a;
+            (_a = this.transportConsumer) === null || _a === void 0 ? void 0 : _a.resumeBlackConsumer(username);
         });
     }
     join() {
@@ -44,8 +50,8 @@ export class PeerConnection {
             if (!this.device)
                 throw new Error("device not initialized");
             const transportProducerData = yield this.room.request(TransportWebRtc.createProducer, { rtpcapabilities: this.device.rtpCapabilities });
-            this.transportProducer = new TransportProducer(this.device);
-            this.transportProducer.producer(transportProducerData, this.room);
+            this.transportProducer = new TransportProducer(this.device, this.room);
+            this.transportProducer.producer(transportProducerData);
             const videoAudioTrack = yield this.produceVideoAudio();
             yield this.transportProducer.sendVideo(videoAudioTrack);
             yield this.initPeers();
@@ -54,10 +60,11 @@ export class PeerConnection {
     }
     produceVideoAudio() {
         return __awaiter(this, void 0, void 0, function* () {
-            this.localVideoStream = yield CallHelper.loadLocalVideo();
+            const localVideoStream = yield CallHelper.loadLocalVideo();
+            console.log(localVideoStream);
             return {
-                video: this.localVideoStream.getVideoTracks()[0],
-                audio: this.localVideoStream.getAudioTracks()[0]
+                video: localVideoStream.getVideoTracks()[0],
+                audio: localVideoStream.getAudioTracks()[0]
             };
         });
     }
@@ -121,11 +128,11 @@ export class PeerConnection {
         var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             if (!state) {
-                (_a = this.transportProducer) === null || _a === void 0 ? void 0 : _a.pauseCam();
+                (_a = this.transportProducer) === null || _a === void 0 ? void 0 : _a.pauseCam(this.username);
                 yield this.room.request(TransportWebRtc.pauseVideo, this.username);
             }
             else {
-                (_b = this.transportProducer) === null || _b === void 0 ? void 0 : _b.resumeCam();
+                (_b = this.transportProducer) === null || _b === void 0 ? void 0 : _b.resumeCam(this.username);
                 yield this.room.request(TransportWebRtc.resumeVideo, this.username);
             }
         });

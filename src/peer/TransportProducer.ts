@@ -11,11 +11,14 @@ export class TransportProducer {
 	micProducer?: types.Producer;
 	camProducer?: types.Producer;
 
-	constructor(device: types.Device) {
+	room: any;
+
+	constructor(device: types.Device, room: any) {
 		this.device = device;
+		this.room = room;
 	}
 
-	producer(transportData: types.TransportOptions, room: any) {
+	producer(transportData: types.TransportOptions) {
 		this.transportProducer = this.device.createSendTransport(transportData);
 
 		if(!this.transportProducer)
@@ -27,7 +30,7 @@ export class TransportProducer {
 				resolve: any,
 				_reject: any
 			) => {
-				const data = await room.request(
+				const data = await this.room.request(
 					TransportWebRtc.connectProducer,
 					{ transportId: this.transportProducer?.id, dtlsParameters }
 				);
@@ -41,10 +44,11 @@ export class TransportProducer {
 				resolve: (data: any) => void,
 				_reject 
 			) => {
-				const data = await room.request(
+				const data = await this.room.request(
 					TransportWebRtc.produce,
 					{ transportId: this.transportProducer?.id, kind, rtpParameters }
 				);
+
 				resolve(data);
 			}
 		);
@@ -65,7 +69,7 @@ export class TransportProducer {
 				{ maxBitrate: 300000 },
 				{ maxBitrate: 900000 }
 			],
-			codecOptions: { videoGoogleStartBitrate: 1000 },
+			//codec: this.device.rtpCapabilities.codecs?.find(c => c.mimeType.toLowerCase() === "video/vp8")
 		});
 	}
 
@@ -78,19 +82,22 @@ export class TransportProducer {
 			return;
 
 		this.camProducer = await this.transportProducer.produce({
-			track: videoAudioTrack.video
+			track: videoAudioTrack.video,
+			//codec: this.device.rtpCapabilities.codecs?.find(c => c.mimeType.toLowerCase() === "video/h264")
 		});
 		this.micProducer = await this.transportProducer.produce({
 			track: videoAudioTrack.audio
 		});
 	}
 
-	pauseCam() {
+	pauseCam(username: string) {
 		this.camProducer?.pause();
+		this.room.request("stopVideo", { username });
 	}
 
-	resumeCam() {
+	resumeCam(username: string) {
 		this.camProducer?.resume();
+		this.room.request("resumeVideo", { username });
 	}
 
 	pauseMic() {

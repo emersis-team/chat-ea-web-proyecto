@@ -31,7 +31,7 @@
         <button
           type="button"
           v-if="camera"
-          @click="getNewPermissionVideo"
+          @click="toggleCam"
           class="btn-on"
         >
           <font-awesome-icon icon="fa-solid fa-video" />
@@ -40,7 +40,7 @@
         <button
           type="button"
           v-if="!camera"
-          @click="getNewPermissionVideo"
+          @click="toggleCam"
           class="btn-off"
         >
           <font-awesome-icon icon="fa-solid fa-video-slash" />
@@ -184,19 +184,19 @@ export default {
 
       location.reload();
     },
-    async getNewPermissionVideo() {
-      CallHelper.video = this.camera = !this.camera;
-    },
-    async getNewPermissionAudio() {
-      CallHelper.audio = this.microphone = !this.microphone;
-    },
     async toggleCam() {
       this.camera = !this.camera;
-			this.connection.stateCamera(this.camera);
+			CallHelper.video = this.camera;
+
+			if(this.connection)
+				this.connection.stateCamera(this.camera);
     },
     async toggleMic() {
       this.microphone = !this.microphone;
-			this.connection.stateMic(this.microphone);
+			CallHelper.audio = this.microphone;
+
+			if(this.connection)
+				this.connection.stateMic(this.microphone);
     },
   },
 };

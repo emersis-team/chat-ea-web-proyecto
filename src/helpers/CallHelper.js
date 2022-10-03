@@ -24,13 +24,13 @@ export class CallHelper {
     static loadLocalVideo() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const streamLocal = yield navigator.mediaDevices.getUserMedia({
-                    video: { width: { ideal: 1280 }, height: { ideal: 720 } },
-                    audio: CallHelper.audio,
-                });
+                const config = {
+                    video: CallHelper.video,
+                    audio: CallHelper.audio
+                };
+                const streamLocal = yield navigator.mediaDevices.getUserMedia(config);
                 if (CallHelper.localVideoSource) {
                     CallHelper.localVideoSource.srcObject = streamLocal;
-                    CallHelper.permissionCamaraOrMic = true;
                     return streamLocal;
                 }
             }
@@ -121,5 +121,6 @@ export class CallHelper {
 }
 /*Fuente de video de los otros participantes*/
 CallHelper.remoteSources = {};
-CallHelper.permissionCamaraOrMic = false;
+CallHelper.video = true;
+CallHelper.audio = true;
 //# sourceMappingURL=CallHelper.js.map

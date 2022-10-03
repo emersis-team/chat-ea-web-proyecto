@@ -4,9 +4,8 @@ export class CallHelper {
   /*Fuente de video de los otros participantes*/
   static remoteSources: Record<string, MediaStream> = {};
   static showError: (_: Error) => void;
-  static video: boolean;
-  static audio: boolean;
-  static permissionCamaraOrMic: boolean = false;
+  static video: boolean = true;
+  static audio: boolean = true;
 
   /**
    * Elimina un tag de video
@@ -33,14 +32,14 @@ export class CallHelper {
    * */
   static async loadLocalVideo(): Promise<MediaStream> {
     try {
-      const streamLocal = await navigator.mediaDevices.getUserMedia({
-        video: { width: { ideal: 1280 }, height: { ideal: 720 } }, //minimas 256 y 144
-        audio: CallHelper.audio,
-      });
+			const config: MediaStreamConstraints = {
+				video: CallHelper.video,
+				audio: CallHelper.audio
+			};
+      const streamLocal = await navigator.mediaDevices.getUserMedia(config);
 
       if (CallHelper.localVideoSource) {
         CallHelper.localVideoSource.srcObject = streamLocal;
-        CallHelper.permissionCamaraOrMic = true;
         return streamLocal;
       }
     } catch (e) {

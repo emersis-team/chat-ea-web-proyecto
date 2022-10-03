@@ -4,6 +4,7 @@ import { TransportWebRtc, Kinds } from "../types/WebRtcConnection";
 let producersIds = new Set();
 export class TransportConsumer {
     constructor(device, room, username) {
+        this.streams = {};
         this.consumingUsers = [];
         this.usernameByProducerId = {};
         this.device = device;
@@ -30,13 +31,12 @@ export class TransportConsumer {
     }
     consumeAllRoom(room) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log("updating peers");
             if (!this.device || !this.transportConsumer)
                 throw new Error("no device or transport consumer created");
             const { rtpCapabilities } = this.device;
             const { id: transportId } = this.transportConsumer;
-            const streams = {};
             const consumers = yield room.request(TransportWebRtc.consume, { roomName: this.roomName, transportId, rtpCapabilities });
+            console.log("updating peers", consumers);
             const wasConsumed = (id) => {
                 if (producersIds.has(id))
                     return true;
@@ -49,8 +49,8 @@ export class TransportConsumer {
                     return;
                 if (kind !== Kinds.screen && wasConsumed(producerId))
                     return;
-                if (!streams[name])
-                    streams[name] = {};
+                if (!this.streams[name])
+                    this.streams[name] = {};
                 this.usernameByProducerId[name] = producerId;
                 const consumer = yield ((_a = this.transportConsumer) === null || _a === void 0 ? void 0 : _a.consume({
                     id,
@@ -61,19 +61,20 @@ export class TransportConsumer {
                 consumer === null || consumer === void 0 ? void 0 : consumer.on('transportclose', () => {
                     producersIds.delete(consumer.id);
                 });
+                this.streams[name].consumer = consumer;
                 switch (kind) {
                     case Kinds.video:
-                        streams[name].video = consumer === null || consumer === void 0 ? void 0 : consumer.track;
+                        this.streams[name].video = consumer === null || consumer === void 0 ? void 0 : consumer.track;
                         break;
                     case Kinds.audio:
-                        streams[name].audio = consumer === null || consumer === void 0 ? void 0 : consumer.track;
+                        this.streams[name].audio = consumer === null || consumer === void 0 ? void 0 : consumer.track;
                         break;
                     case Kinds.screen:
-                        streams[name].screen = consumer === null || consumer === void 0 ? void 0 : consumer.track;
+                        this.streams[name].screen = consumer === null || consumer === void 0 ? void 0 : consumer.track;
                         break;
                 }
             })));
-            Object.keys(streams).map((username) => CallHelper.loadRemoteVideo(username, streams[username]));
+            Object.keys(this.streams).map((username) => CallHelper.loadRemoteVideo(username, this.streams[username]));
         });
     }
     getTransportConsumerId() {
@@ -84,6 +85,14 @@ export class TransportConsumer {
         var _a;
         (_a = this.transportConsumer) === null || _a === void 0 ? void 0 : _a.close();
         producersIds.clear();
+    }
+    pauseBlackConsumer(username) {
+        if (this.streams[username] && this.streams[username].video)
+            this.streams[username].video.enabled = false;
+    }
+    resumeBlackConsumer(username) {
+        if (this.streams[username] && this.streams[username].video)
+            this.streams[username].video.enabled = true;
     }
     leaveProducer(username) {
         const producerId = this.usernameByProducerId[username];

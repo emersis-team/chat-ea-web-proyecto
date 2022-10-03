@@ -5,6 +5,8 @@ var EventsWebRtc;
     EventsWebRtc["new"] = "new";
     EventsWebRtc["removePeer"] = "removePeer";
     EventsWebRtc["disconnected"] = "disconnected";
+    EventsWebRtc["pauseVideo"] = "pauseVideo";
+    EventsWebRtc["resumeVideo"] = "resumeVideo";
 })(EventsWebRtc || (EventsWebRtc = {}));
 var TransportWebRtc;
 (function (TransportWebRtc) {

@@ -1,21 +1,22 @@
 import { __awaiter } from "tslib";
 import { TransportWebRtc } from "../types/WebRtcConnection";
 export class TransportProducer {
-    constructor(device) {
+    constructor(device, room) {
         this.device = device;
+        this.room = room;
     }
-    producer(transportData, room) {
+    producer(transportData) {
         this.transportProducer = this.device.createSendTransport(transportData);
         if (!this.transportProducer)
             throw new Error();
         this.transportProducer.on(TransportWebRtc.connect, ({ dtlsParameters }, resolve, _reject) => __awaiter(this, void 0, void 0, function* () {
             var _a;
-            const data = yield room.request(TransportWebRtc.connectProducer, { transportId: (_a = this.transportProducer) === null || _a === void 0 ? void 0 : _a.id, dtlsParameters });
+            const data = yield this.room.request(TransportWebRtc.connectProducer, { transportId: (_a = this.transportProducer) === null || _a === void 0 ? void 0 : _a.id, dtlsParameters });
             resolve(data);
         }));
         this.transportProducer.on(TransportWebRtc.produce, ({ kind, rtpParameters }, resolve, _reject) => __awaiter(this, void 0, void 0, function* () {
             var _b;
-            const data = yield room.request(TransportWebRtc.produce, { transportId: (_b = this.transportProducer) === null || _b === void 0 ? void 0 : _b.id, kind, rtpParameters });
+            const data = yield this.room.request(TransportWebRtc.produce, { transportId: (_b = this.transportProducer) === null || _b === void 0 ? void 0 : _b.id, kind, rtpParameters });
             resolve(data);
         }));
     }
@@ -34,7 +35,7 @@ export class TransportProducer {
                     { maxBitrate: 300000 },
                     { maxBitrate: 900000 }
                 ],
-                codecOptions: { videoGoogleStartBitrate: 1000 },
+                //codec: this.device.rtpCapabilities.codecs?.find(c => c.mimeType.toLowerCase() === "video/vp8")
             });
         });
     }
@@ -47,20 +48,23 @@ export class TransportProducer {
             if (!this.transportProducer)
                 return;
             this.camProducer = yield this.transportProducer.produce({
-                track: videoAudioTrack.video
+                track: videoAudioTrack.video,
+                //codec: this.device.rtpCapabilities.codecs?.find(c => c.mimeType.toLowerCase() === "video/h264")
             });
             this.micProducer = yield this.transportProducer.produce({
                 track: videoAudioTrack.audio
             });
         });
     }
-    pauseCam() {
+    pauseCam(username) {
         var _a;
         (_a = this.camProducer) === null || _a === void 0 ? void 0 : _a.pause();
+        this.room.request("stopVideo", { username });
     }
-    resumeCam() {
+    resumeCam(username) {
         var _a;
         (_a = this.camProducer) === null || _a === void 0 ? void 0 : _a.resume();
+        this.room.request("resumeVideo", { username });
     }
     pauseMic() {
         var _a;

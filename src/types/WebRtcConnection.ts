@@ -5,7 +5,9 @@ enum EventsWebRtc {
 	error = "error",
 	new = "new",
 	removePeer = "removePeer",
-	disconnected = "disconnected"
+	disconnected = "disconnected",
+	pauseVideo = "pauseVideo",
+	resumeVideo = "resumeVideo"
 }
 
 enum TransportWebRtc {
@@ -35,6 +37,7 @@ interface Stream {
 	video?: MediaStreamTrack;
 	audio?: MediaStreamTrack;
 	screen?: MediaStreamTrack;
+	consumer?: types.Consumer;
 }
 
 interface StreamConsumers {

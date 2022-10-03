@@ -19,7 +19,7 @@ export default {
   created() {
     //Vue.prototype.$localurl = "http://10.120.17.157:8080";
 		//Vue.prototype.$localurl = "http://localhost:8081";
-    //Vue.prototype.$roomurl = "http://localhost:5000";
+    //Vue.prototype.$roomurl = "https://localhost:5000";
 
     Vue.prototype.$localurl = "https://38.109.228.250:8000";
     Vue.prototype.$roomurl = "https://38.109.228.250:8080";

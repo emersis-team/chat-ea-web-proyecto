@@ -24,7 +24,6 @@ export class PeerConnection {
 
 	device: Device | undefined;
 	room: any;
-	localVideoStream: MediaStream | undefined;
 
 	transportConsumer?: TransportConsumer;
 	transportProducer?: TransportProducer;
@@ -33,7 +32,6 @@ export class PeerConnection {
 		this.username = username;
 		this.roomName = roomName;
 
-		//this.room = io(`https://38.109.228.250:8080?room=${roomName}&client=${username}`);
 		this.room = io(`${hostname}?room=${roomName}&client=${username}`);
 		this.room.request = promise(this.room);
 
@@ -49,11 +47,18 @@ export class PeerConnection {
 		});
 
 		this.room.on(EventsWebRtc.removePeer, ({ usernames }: { usernames: Array<string> }) => {
-			console.log(usernames);
 			usernames.forEach((u: string) => {
 				CallHelper.removeSource(u)
 				this.transportConsumer?.leaveProducer(u);
 			});
+		});
+
+		this.room.on(EventsWebRtc.pauseVideo, ({ username }: { username: string } ) => {
+			this.transportConsumer?.pauseBlackConsumer(username);
+		});
+
+		this.room.on(EventsWebRtc.resumeVideo, ({ username }: { username: string } ) => {
+			this.transportConsumer?.resumeBlackConsumer(username);
 		});
 	}
 
@@ -65,8 +70,8 @@ export class PeerConnection {
 			TransportWebRtc.createProducer,
 			{ rtpcapabilities: this.device.rtpCapabilities }
 		);
-		this.transportProducer = new TransportProducer(this.device);
-		this.transportProducer.producer(transportProducerData, this.room);
+		this.transportProducer = new TransportProducer(this.device, this.room);
+		this.transportProducer.producer(transportProducerData);
 
 		const videoAudioTrack = await this.produceVideoAudio();
 		await this.transportProducer.sendVideo(videoAudioTrack);
@@ -76,14 +81,16 @@ export class PeerConnection {
 	}
 
 	async produceVideoAudio(): Promise<TrackMedia> {
-		this.localVideoStream = await CallHelper.loadLocalVideo();
+		const localVideoStream = await CallHelper.loadLocalVideo();
+		console.log(localVideoStream);
+
 		return {
-	 	 video: this.localVideoStream.getVideoTracks()[0],
-		 audio: this.localVideoStream.getAudioTracks()[0]
+	 	 video: localVideoStream.getVideoTracks()[0],
+		 audio: localVideoStream.getAudioTracks()[0]
 		};
 	}
 
-	async initPeers() {
+	private async initPeers() {
 		if(!this.device)
 			return
 
@@ -127,7 +134,7 @@ export class PeerConnection {
 
 	async stateMic(state: boolean) {
 		if(!state) {
-			this.transportProducer?.pauseMic();
+			this.transportProducer?.pauseMic(); 
 			await this.room.request(TransportWebRtc.pauseAudio, this.username);
 		} else {
 			this.transportProducer?.resumeMic();
@@ -137,10 +144,10 @@ export class PeerConnection {
 
 	async stateCamera(state: boolean) {
 		if(!state) {
-			this.transportProducer?.pauseCam();
+			this.transportProducer?.pauseCam(this.username);
 			await this.room.request(TransportWebRtc.pauseVideo, this.username);
 		} else {
-			this.transportProducer?.resumeCam();
+			this.transportProducer?.resumeCam(this.username);
 			await this.room.request(TransportWebRtc.resumeVideo, this.username);
 		}
 	}
