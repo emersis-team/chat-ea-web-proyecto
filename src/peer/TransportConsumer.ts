@@ -2,7 +2,6 @@ import { CallHelper } from "../helpers/CallHelper";
 import { types } from "mediasoup-client";
 import {
 	TransportWebRtc,
-	StreamConsumers,
 	Kinds
 } from "../types/WebRtcConnection";
 
@@ -133,6 +132,12 @@ export class TransportConsumer {
 	}
 
 	leaveProducer(username: string) {
+
+		if(this.streams[username] && this.streams[username].consumer) {
+			this.streams[username].consumer?.close();
+			delete this.streams[username];
+		}
+
 		const producerId = this.usernameByProducerId[username];
 
 		if(producersIds.has(producerId))

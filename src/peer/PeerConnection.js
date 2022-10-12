@@ -59,12 +59,12 @@ export class PeerConnection {
         });
     }
     produceVideoAudio() {
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             const localVideoStream = yield CallHelper.loadLocalVideo();
-            console.log(localVideoStream);
             return {
-                video: localVideoStream.getVideoTracks()[0],
-                audio: localVideoStream.getAudioTracks()[0]
+                video: (_a = localVideoStream.getVideoTracks()[0]) !== null && _a !== void 0 ? _a : null,
+                audio: (_b = localVideoStream.getAudioTracks()[0]) !== null && _b !== void 0 ? _b : null
             };
         });
     }
@@ -119,7 +119,7 @@ export class PeerConnection {
                 yield this.room.request(TransportWebRtc.pauseAudio, this.username);
             }
             else {
-                (_b = this.transportProducer) === null || _b === void 0 ? void 0 : _b.resumeMic();
+                yield ((_b = this.transportProducer) === null || _b === void 0 ? void 0 : _b.resumeMic());
                 yield this.room.request(TransportWebRtc.resumeAudio, this.username);
             }
         });
@@ -128,11 +128,11 @@ export class PeerConnection {
         var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             if (!state) {
-                (_a = this.transportProducer) === null || _a === void 0 ? void 0 : _a.pauseCam(this.username);
+                (_a = this.transportProducer) === null || _a === void 0 ? void 0 : _a.pauseCam();
                 yield this.room.request(TransportWebRtc.pauseVideo, this.username);
             }
             else {
-                (_b = this.transportProducer) === null || _b === void 0 ? void 0 : _b.resumeCam(this.username);
+                yield ((_b = this.transportProducer) === null || _b === void 0 ? void 0 : _b.resumeCam());
                 yield this.room.request(TransportWebRtc.resumeVideo, this.username);
             }
         });

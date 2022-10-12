@@ -130,7 +130,7 @@ export default {
       joined: false,
       reasonError: "",
       microphone: true,
-      camera: true,
+      camera: false,
     };
   },
   mounted() {
@@ -142,6 +142,17 @@ export default {
     CallHelper.video = this.camera;
     CallHelper.audio = this.microphone;
     CallHelper.showError = this.clearError;
+
+		window.addEventListener("beforeunload", async () => {
+			if(this.connection)
+				await this.connection.disconnect();
+			/*
+			navigator.sendBeacon(
+			 `${this.$roomurl}/unexpectedclose`,
+			 JSON.stringify({ username: this.usernameFrom })
+			);
+			*/
+		});
   },
   methods: {
     clearError(e) {

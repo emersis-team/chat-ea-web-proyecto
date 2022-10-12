@@ -82,11 +82,10 @@ export class PeerConnection {
 
 	async produceVideoAudio(): Promise<TrackMedia> {
 		const localVideoStream = await CallHelper.loadLocalVideo();
-		console.log(localVideoStream);
 
 		return {
-	 	 video: localVideoStream.getVideoTracks()[0],
-		 audio: localVideoStream.getAudioTracks()[0]
+	 	 video: localVideoStream.getVideoTracks()[0] ?? null,
+		 audio: localVideoStream.getAudioTracks()[0] ?? null
 		};
 	}
 
@@ -137,17 +136,17 @@ export class PeerConnection {
 			this.transportProducer?.pauseMic(); 
 			await this.room.request(TransportWebRtc.pauseAudio, this.username);
 		} else {
-			this.transportProducer?.resumeMic();
+			await this.transportProducer?.resumeMic();
 			await this.room.request(TransportWebRtc.resumeAudio, this.username);
 		}
 	}
 
 	async stateCamera(state: boolean) {
 		if(!state) {
-			this.transportProducer?.pauseCam(this.username);
+			this.transportProducer?.pauseCam();
 			await this.room.request(TransportWebRtc.pauseVideo, this.username);
 		} else {
-			this.transportProducer?.resumeCam(this.username);
+			await this.transportProducer?.resumeCam();
 			await this.room.request(TransportWebRtc.resumeVideo, this.username);
 		}
 	}

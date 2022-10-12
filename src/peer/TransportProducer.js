@@ -1,4 +1,5 @@
 import { __awaiter } from "tslib";
+import { CallHelper } from "@/helpers/CallHelper";
 import { TransportWebRtc } from "../types/WebRtcConnection";
 export class TransportProducer {
     constructor(device, room) {
@@ -25,6 +26,7 @@ export class TransportProducer {
         return (_a = this.transportProducer) === null || _a === void 0 ? void 0 : _a.id;
     }
     sendScreen(screenShare) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             if (!this.transportProducer)
                 return;
@@ -35,7 +37,7 @@ export class TransportProducer {
                     { maxBitrate: 300000 },
                     { maxBitrate: 900000 }
                 ],
-                //codec: this.device.rtpCapabilities.codecs?.find(c => c.mimeType.toLowerCase() === "video/vp8")
+                codec: (_a = this.device.rtpCapabilities.codecs) === null || _a === void 0 ? void 0 : _a.find(c => c.mimeType.toLowerCase() === "video/vp8")
             });
         });
     }
@@ -43,40 +45,64 @@ export class TransportProducer {
         var _a;
         (_a = this.screenProducer) === null || _a === void 0 ? void 0 : _a.close();
     }
-    sendVideo(videoAudioTrack) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (!this.transportProducer)
-                return;
-            this.camProducer = yield this.transportProducer.produce({
-                track: videoAudioTrack.video,
-                //codec: this.device.rtpCapabilities.codecs?.find(c => c.mimeType.toLowerCase() === "video/h264")
-            });
-            this.micProducer = yield this.transportProducer.produce({
-                track: videoAudioTrack.audio
-            });
-        });
-    }
-    pauseCam(username) {
+    pauseCam() {
         var _a;
         (_a = this.camProducer) === null || _a === void 0 ? void 0 : _a.pause();
-        this.room.request("stopVideo", { username });
     }
-    resumeCam(username) {
-        var _a;
-        (_a = this.camProducer) === null || _a === void 0 ? void 0 : _a.resume();
-        this.room.request("resumeVideo", { username });
+    resumeCam() {
+        var _a, _b, _c;
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.camProducer)
+                (_a = this.camProducer) === null || _a === void 0 ? void 0 : _a.resume();
+            else {
+                const localVideoStream = yield CallHelper.loadLocalVideo();
+                this.sendVideo({
+                    video: (_b = localVideoStream.getVideoTracks()[0]) !== null && _b !== void 0 ? _b : null,
+                    audio: (_c = localVideoStream.getAudioTracks()[0]) !== null && _c !== void 0 ? _c : null
+                });
+            }
+        });
     }
     pauseMic() {
         var _a;
         (_a = this.micProducer) === null || _a === void 0 ? void 0 : _a.pause();
     }
     resumeMic() {
+        var _a, _b, _c;
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.micProducer)
+                (_a = this.micProducer) === null || _a === void 0 ? void 0 : _a.resume();
+            else {
+                const localVideoStream = yield CallHelper.loadLocalVideo();
+                this.sendVideo({
+                    video: (_b = localVideoStream.getVideoTracks()[0]) !== null && _b !== void 0 ? _b : null,
+                    audio: (_c = localVideoStream.getAudioTracks()[0]) !== null && _c !== void 0 ? _c : null
+                });
+            }
+        });
+    }
+    sendVideo(videoAudioTrack) {
         var _a;
-        (_a = this.micProducer) === null || _a === void 0 ? void 0 : _a.resume();
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.transportProducer)
+                return;
+            if (videoAudioTrack.video)
+                this.camProducer = yield this.transportProducer.produce({
+                    track: videoAudioTrack.video,
+                    codec: (_a = this.device.rtpCapabilities.codecs) === null || _a === void 0 ? void 0 : _a.find(c => c.mimeType.toLowerCase() === "video/h264"),
+                });
+            if (videoAudioTrack.audio)
+                this.micProducer = yield this.transportProducer.produce({
+                    track: videoAudioTrack.audio
+                });
+        });
     }
     stopProduce() {
-        var _a;
-        (_a = this.transportProducer) === null || _a === void 0 ? void 0 : _a.close();
+        var _a, _b, _c, _d;
+        (_a = this.camProducer) === null || _a === void 0 ? void 0 : _a.close();
+        (_b = this.micProducer) === null || _b === void 0 ? void 0 : _b.close();
+        (_c = this.screenProducer) === null || _c === void 0 ? void 0 : _c.close();
+        (_d = this.transportProducer) === null || _d === void 0 ? void 0 : _d.close();
     }
 }
 //# sourceMappingURL=TransportProducer.js.map

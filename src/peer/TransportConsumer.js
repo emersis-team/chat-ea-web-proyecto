@@ -95,6 +95,11 @@ export class TransportConsumer {
             this.streams[username].video.enabled = true;
     }
     leaveProducer(username) {
+        var _a;
+        if (this.streams[username] && this.streams[username].consumer) {
+            (_a = this.streams[username].consumer) === null || _a === void 0 ? void 0 : _a.close();
+            delete this.streams[username];
+        }
         const producerId = this.usernameByProducerId[username];
         if (producersIds.has(producerId))
             producersIds.delete(producerId);

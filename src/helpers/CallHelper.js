@@ -78,7 +78,7 @@ export class CallHelper {
     }
     static addVideo(userId, source, totalSourcesLength) {
         if (document.querySelector(`#video-${userId}`))
-            return;
+            CallHelper.removeSource(userId);
         const divRemoteVideos = document.getElementById("remoteVideo");
         if (!divRemoteVideos)
             throw new Error("no remotes video container found");

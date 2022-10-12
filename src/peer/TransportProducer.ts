@@ -1,3 +1,4 @@
+import { CallHelper } from "@/helpers/CallHelper";
 import { types } from "mediasoup-client";
 import {
 	TransportWebRtc,
@@ -7,6 +8,7 @@ import {
 export class TransportProducer {
 	device: types.Device;
 	transportProducer?: types.Transport;
+
 	screenProducer?: types.Producer;
 	micProducer?: types.Producer;
 	camProducer?: types.Producer;
@@ -69,7 +71,7 @@ export class TransportProducer {
 				{ maxBitrate: 300000 },
 				{ maxBitrate: 900000 }
 			],
-			//codec: this.device.rtpCapabilities.codecs?.find(c => c.mimeType.toLowerCase() === "video/vp8")
+			codec: this.device.rtpCapabilities.codecs?.find(c => c.mimeType.toLowerCase() === "video/vp8")
 		});
 	}
 
@@ -77,38 +79,58 @@ export class TransportProducer {
 		this.screenProducer?.close();
 	}
 
-	async sendVideo(videoAudioTrack: TrackMedia) {
-		if(!this.transportProducer)
-			return;
-
-		this.camProducer = await this.transportProducer.produce({
-			track: videoAudioTrack.video,
-			//codec: this.device.rtpCapabilities.codecs?.find(c => c.mimeType.toLowerCase() === "video/h264")
-		});
-		this.micProducer = await this.transportProducer.produce({
-			track: videoAudioTrack.audio
-		});
-	}
-
-	pauseCam(username: string) {
+	pauseCam() {
 		this.camProducer?.pause();
-		this.room.request("stopVideo", { username });
 	}
 
-	resumeCam(username: string) {
-		this.camProducer?.resume();
-		this.room.request("resumeVideo", { username });
+	async resumeCam() {
+		if(this.camProducer)
+			this.camProducer?.resume();
+		else {
+			const localVideoStream = await CallHelper.loadLocalVideo();
+			this.sendVideo({
+				video: localVideoStream.getVideoTracks()[0] ?? null,
+				audio: localVideoStream.getAudioTracks()[0] ?? null
+			});
+		}
 	}
 
 	pauseMic() {
 		this.micProducer?.pause();
 	}
 
-	resumeMic() {
-		this.micProducer?.resume();
+	async resumeMic() {
+		if(this.micProducer)
+			this.micProducer?.resume();
+		else {
+			const localVideoStream = await CallHelper.loadLocalVideo();
+			this.sendVideo({
+				video: localVideoStream.getVideoTracks()[0] ?? null,
+				audio: localVideoStream.getAudioTracks()[0] ?? null
+			});
+		}
+	}
+
+	async sendVideo(videoAudioTrack: TrackMedia) {
+		if(!this.transportProducer)
+			return;
+
+		if(videoAudioTrack.video)
+			this.camProducer = await this.transportProducer.produce({
+				track: videoAudioTrack.video,
+				codec: this.device.rtpCapabilities.codecs?.find(c => c.mimeType.toLowerCase() === "video/h264"),
+			});
+
+		if(videoAudioTrack.audio)
+			this.micProducer = await this.transportProducer.produce({
+				track: videoAudioTrack.audio
+			});
 	}
 
 	stopProduce() {
+		this.camProducer?.close();
+		this.micProducer?.close();
+		this.screenProducer?.close();
 		this.transportProducer?.close();
 	}
 }

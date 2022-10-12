@@ -95,11 +95,12 @@ export class CallHelper {
     source: MediaStream,
     totalSourcesLength: number
   ): void {
-    if (document.querySelector(`#video-${userId}`)) return;
+    if(document.querySelector(`#video-${userId}`))
+			CallHelper.removeSource(userId);
 
     const divRemoteVideos = document.getElementById("remoteVideo");
 
-    if (!divRemoteVideos) throw new Error("no remotes video container found");
+    if(!divRemoteVideos) throw new Error("no remotes video container found");
 
     divRemoteVideos.classList.add("divRemoteVideos");
 
