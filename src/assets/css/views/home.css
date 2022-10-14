@@ -3,6 +3,16 @@
   height: 100vh;
   background: no-repeat center/100% url("../../img/fondowp.png");
 }
+
+.user-profile-icon{
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  height: 40px;
+  width: auto;
+  cursor: pointer;
+}
+
 .home-body {
   width: 90%;
   height: 95%;
@@ -28,7 +38,6 @@
   height: 100%;
 }
 .home-logout {
-  width: 100%;
   height: 55px;
   border: none;
   border-top: 2px solid #3ea06c;
@@ -45,7 +54,6 @@
 }
 .home-right {
   width: 80%;
-  /* background-color: #e5ddd5; */
   background: no-repeat center/100% url("../../img/fondowp.png");
 }
 .home-right-with-map {

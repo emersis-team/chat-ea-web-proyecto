@@ -1,0 +1,72 @@
+.admin {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background: no-repeat center/100% url("../../img/fondowp.png");
+    z-index: 10000;
+   text-align: center;
+   font-family: Poppins-Regular;
+   color: #616060;
+}
+
+.admin h2{
+    margin: 50px;
+}
+
+label{
+  font-size: 1.15vw;
+  margin-bottom: 0.5vw;
+}
+
+.selection {
+    padding: 0 50px;
+    height: 45vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.selection div{
+    width: 50vw;
+    text-align: start;
+}
+
+.options, .user{
+    margin-bottom: 30px;
+}
+
+.options > select{
+    height: 100%;
+}
+
+.asign {
+    font-size: 1.15vw;
+    color: #ffffff;
+    background-color: #3ea06c;
+    width: 24.8vw;
+    margin: auto;
+    display: block;
+    border: none;
+    border-radius: 0.25vw;
+    height: 3.7vw;
+    position: absolute;
+    bottom: 50px;
+    right: 50px;
+    cursor: pointer;
+  }
+
+  .vs__actions{
+    justify-content: end;
+  }
+
+  .vs__dropdown-toggle{
+    margin-top: .5vw;
+  }
+
+  .back{
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    height: 3.7vw;
+    cursor: pointer;
+  }

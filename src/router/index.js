@@ -25,7 +25,17 @@ const routes = [
 		path: "/complete",
 		name: "complete",
 		component: () => import("../views/CompleteLogin.vue"),
-	}
+	},
+  {
+    path: "/admin",
+    name: "admin",
+    component: () => import("../views/Admin.vue"),
+  },
+  {
+    path: "/admin/:user",
+    name: "updateUser",
+    component: () => import("../views/UpdateUser.vue"),
+  },
 ];
 
 const router = new VueRouter({
