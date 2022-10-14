@@ -1,5 +1,8 @@
 <template>
   <div class="welcome">
+    <RouterLink :to="`/`"
+      ><img class="back" src="../assets/img/icono-contacto.png" />
+    </RouterLink>
     <div class="row">
 		<p class="welcome-message">
 			Bienvenido a ChatEaWeb.<br>

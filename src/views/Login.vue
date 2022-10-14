@@ -98,8 +98,7 @@ export default {
             localStorage.setItem("$userId", response.data.id);
             localStorage.setItem("$username", response.data.name);
 
-            //that.$router.push("/");
-							that.$router.push("/complete");
+            that.$router.push("/");
           })
           .catch(function(response) {
 						if(response.status === NOT_FOUND_USER) {
