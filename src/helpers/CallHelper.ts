@@ -1,20 +1,19 @@
-import { WebRtcConnection } from "@/types/WebRtcConnection";
 
 export class CallHelper {
   static localVideoSource: HTMLVideoElement;
   /*Fuente de video de los otros participantes*/
   static remoteSources: Record<string, MediaStream> = {};
   static showError: (_: Error) => void;
-  static video: boolean;
-  static audio: boolean;
-  static permissionCamaraOrMic: boolean = false;
+  static video: boolean = true;
+  static audio: boolean = true;
 
   /**
    * Elimina un tag de video
    */
   static removeSource(userId: string): void {
-    const video = document.getElementById("video-" + userId);
-    if (video) video.remove();
+		const video = document.getElementById("video-" + userId);
+    if (video)
+      video.remove();
   }
 
   /**
@@ -33,14 +32,14 @@ export class CallHelper {
    * */
   static async loadLocalVideo(): Promise<MediaStream> {
     try {
-      const streamLocal = await navigator.mediaDevices.getUserMedia({
-        video: { width: { ideal: 1280 }, height: { ideal: 720 } }, //minimas 256 y 144
-        audio: CallHelper.audio,
-      });
+			const config: MediaStreamConstraints = {
+				video: CallHelper.video,
+				audio: CallHelper.audio
+			};
+      const streamLocal = await navigator.mediaDevices.getUserMedia(config);
 
       if (CallHelper.localVideoSource) {
         CallHelper.localVideoSource.srcObject = streamLocal;
-        CallHelper.permissionCamaraOrMic = true;
         return streamLocal;
       }
     } catch (e) {
@@ -67,18 +66,28 @@ export class CallHelper {
   /*
    * Guarda fuentes de video en un array para que puedan ser renderizadas en vue
    * */
-  static loadRemoteVideo(
-    username: string,
-    streamRemote: MediaStream | undefined
-  ) {
-    console.log("adding streams", streamRemote);
-    const totalSourcesLength = Object.values(this.remoteSources).length + 1;
-    console.log("length", totalSourcesLength);
+  static loadRemoteVideo(username: string, consumerRemote: any | undefined) {
+		if(!consumerRemote)
+			return;
 
-    if (streamRemote) {
-      this.remoteSources[username] = streamRemote;
-      CallHelper.addVideo(username, streamRemote, totalSourcesLength);
-    }
+    const totalSourcesLength = Object.values(this.remoteSources).length + 1;
+		const streamRemote = new MediaStream();
+
+		if(consumerRemote.video)
+			streamRemote.addTrack(consumerRemote.video);
+		if(consumerRemote.audio)
+			streamRemote.addTrack(consumerRemote.audio);
+
+		this.remoteSources[username] = streamRemote;
+
+		if(consumerRemote.screen) {
+			console.log("pantalla");
+			const streamScreen = new MediaStream();
+			streamScreen.addTrack(consumerRemote.screen);
+			CallHelper.addVideo(username+"_screen", streamScreen, totalSourcesLength);
+		}
+
+		CallHelper.addVideo(username, streamRemote, totalSourcesLength);
   }
 
   static addVideo(
@@ -86,11 +95,12 @@ export class CallHelper {
     source: MediaStream,
     totalSourcesLength: number
   ): void {
-    if (document.querySelector(`#video-${userId}`)) return;
+    if(document.querySelector(`#video-${userId}`))
+			CallHelper.removeSource(userId);
 
     const divRemoteVideos = document.getElementById("remoteVideo");
 
-    if (!divRemoteVideos) throw new Error("no remotes video container found");
+    if(!divRemoteVideos) throw new Error("no remotes video container found");
 
     divRemoteVideos.classList.add("divRemoteVideos");
 
@@ -132,12 +142,5 @@ export class CallHelper {
 
     divRemoteVideos.appendChild(videoDiv);
   }
-
-  /*
-   * Desconecta de una llamada
-   * */
-  static async leaveCall(connection: WebRtcConnection) {
-    connection.disconnectCall();
-    connection.peer.destroy();
-  }
 }
+

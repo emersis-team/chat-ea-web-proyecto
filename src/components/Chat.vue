@@ -189,19 +189,21 @@ export default {
     this.$eventHub.$on("chat-get", (id) => this.getChat(id, true));
   },
   methods: {
-    joinCall() {
-      localStorage.setItem(
-        "$room",
-        this.conversacion.conversation_name ||
-          this.conversacion.conversation_members[0].name + this.userId + ""
-      );
-      const videoComponentRedirect = this.$router.resolve({
-        name: "video",
-        /* query: {
-					username: this.userId,
-					room: this.conversacion.conversation_name || this.conversacion.conversation_members[0].name + this.userId + ""
-				} */
-      });
+    async joinCall() {
+
+			let room = this.conversacion.conversation_name;
+
+			if(!this.conversacion.conversation_name) {
+				const response = await this.$axios.get(
+					`${this.$roomurl}/room?userFrom=${this.userId}&userTo=${this.conversacion.conversation_members[0].user_id}`
+				);
+				console.log(response.data);
+				room = response.data.room.toString();
+			}
+
+			localStorage.setItem("$room", room);
+
+      const videoComponentRedirect = this.$router.resolve({ name: "video" });
 
       window.open(videoComponentRedirect.href, "_blank");
     },

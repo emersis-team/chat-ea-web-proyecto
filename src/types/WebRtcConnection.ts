@@ -1,23 +1,59 @@
-import { MediaConnection, Peer } from "peerjs";
+import { types } from "mediasoup-client";
 
 enum EventsWebRtc {
-	open = "open",
+	connect = "connect",
 	error = "error",
-	call = "call",
-	stream = "stream",
-	disconnected = "disconnected"
+	new = "new",
+	removePeer = "removePeer",
+	disconnected = "disconnected",
+	pauseVideo = "pauseVideo",
+	resumeVideo = "resumeVideo"
 }
 
-interface WebRtcConnection {
-	usernameFrom: string;
-	localVideo: MediaStream;
-	peer: Peer;
-	leave: boolean;
-	call(userId: string) : MediaConnection;
-	disconnectCall() : void;
+enum TransportWebRtc {
+	connect = "connect",
+	produce = "produce",
+	consume = "consume",
+	close = "close",
+	rtpCapabilities = "getRouterRtpCapabilities",
+	connectionState = "connectionstatechange",
+	createConsumer = "createConsumerTransport",
+	connectConsumer = "connectConsumerTransport",
+	createProducer = "createProducerTransport",
+	connectProducer = "connectProducerTransport",
+	pauseVideo = "pauseVideo",
+	resumeVideo = "resumeVideo",
+	pauseAudio = "pauseAudio",
+	resumeAudio = "resumeAudio",
 }
+
+enum Kinds {
+	screen = "screen",
+  video = "video",
+	audio = "audio"
+}
+
+interface Stream {
+	video?: MediaStreamTrack;
+	audio?: MediaStreamTrack;
+	screen?: MediaStreamTrack;
+	consumer?: types.Consumer;
+}
+
+interface StreamConsumers {
+  [k: string]: Stream;
+}
+
+interface TrackMedia {
+	video: MediaStreamTrack,
+	audio: MediaStreamTrack
+}
+
 
 export {
 	EventsWebRtc,
-	WebRtcConnection
+	TransportWebRtc,
+	StreamConsumers,
+	TrackMedia,
+	Kinds
 }

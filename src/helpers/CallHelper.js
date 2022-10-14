@@ -24,13 +24,13 @@ export class CallHelper {
     static loadLocalVideo() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const streamLocal = yield navigator.mediaDevices.getUserMedia({
-                    video: { width: { ideal: 256 }, height: { ideal: 144 } },
-                    audio: CallHelper.audio,
-                });
+                const config = {
+                    video: CallHelper.video,
+                    audio: CallHelper.audio
+                };
+                const streamLocal = yield navigator.mediaDevices.getUserMedia(config);
                 if (CallHelper.localVideoSource) {
                     CallHelper.localVideoSource.srcObject = streamLocal;
-                    CallHelper.permissionCamaraOrMic = true;
                     return streamLocal;
                 }
             }
@@ -58,18 +58,27 @@ export class CallHelper {
     /*
      * Guarda fuentes de video en un array para que puedan ser renderizadas en vue
      * */
-    static loadRemoteVideo(username, streamRemote) {
-        console.log("adding streams", streamRemote);
+    static loadRemoteVideo(username, consumerRemote) {
+        if (!consumerRemote)
+            return;
         const totalSourcesLength = Object.values(this.remoteSources).length + 1;
-        console.log("length", totalSourcesLength);
-        if (streamRemote) {
-            this.remoteSources[username] = streamRemote;
-            CallHelper.addVideo(username, streamRemote, totalSourcesLength);
+        const streamRemote = new MediaStream();
+        if (consumerRemote.video)
+            streamRemote.addTrack(consumerRemote.video);
+        if (consumerRemote.audio)
+            streamRemote.addTrack(consumerRemote.audio);
+        this.remoteSources[username] = streamRemote;
+        if (consumerRemote.screen) {
+            console.log("pantalla");
+            const streamScreen = new MediaStream();
+            streamScreen.addTrack(consumerRemote.screen);
+            CallHelper.addVideo(username + "_screen", streamScreen, totalSourcesLength);
         }
+        CallHelper.addVideo(username, streamRemote, totalSourcesLength);
     }
     static addVideo(userId, source, totalSourcesLength) {
         if (document.querySelector(`#video-${userId}`))
-            return;
+            CallHelper.removeSource(userId);
         const divRemoteVideos = document.getElementById("remoteVideo");
         if (!divRemoteVideos)
             throw new Error("no remotes video container found");
@@ -109,17 +118,9 @@ export class CallHelper {
         videoDiv.appendChild(videouser);
         divRemoteVideos.appendChild(videoDiv);
     }
-    /*
-     * Desconecta de una llamada
-     * */
-    static leaveCall(connection) {
-        return __awaiter(this, void 0, void 0, function* () {
-            connection.disconnectCall();
-            connection.peer.destroy();
-        });
-    }
 }
 /*Fuente de video de los otros participantes*/
 CallHelper.remoteSources = {};
-CallHelper.permissionCamaraOrMic = false;
+CallHelper.video = true;
+CallHelper.audio = true;
 //# sourceMappingURL=CallHelper.js.map

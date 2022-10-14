@@ -31,7 +31,7 @@
         <button
           type="button"
           v-if="camera"
-          @click="getNewPermissionVideo"
+          @click="toggleCam"
           class="btn-on"
         >
           <font-awesome-icon icon="fa-solid fa-video" />
@@ -40,7 +40,7 @@
         <button
           type="button"
           v-if="!camera"
-          @click="getNewPermissionVideo"
+          @click="toggleCam"
           class="btn-off"
         >
           <font-awesome-icon icon="fa-solid fa-video-slash" />
@@ -70,7 +70,7 @@
       </div>
       <div class="footer-mc">
         <h6 v-if="screen" class="text-center warning">
-          Estas compartiendo tu pantalla!!!
+          Esta compartiendo la pantalla!!!
         </h6>
         <div class="panel">
           <button @click="hangUp" class="btn-off">
@@ -122,7 +122,7 @@ export default {
   data() {
     return {
       connection: null,
-      screen: null,
+      screen: false,
       localVideoPermission: null,
       usernameTo: "",
       usernameFrom: "",
@@ -130,16 +130,29 @@ export default {
       joined: false,
       reasonError: "",
       microphone: true,
-      camera: true,
+      camera: false,
     };
   },
   mounted() {
-    this.usernameFrom = localStorage.getItem("$userName"); //this.$route.query.username;
-    this.room = localStorage.getItem("$room"); //this.$route.query.room;
+    this.usernameFrom = localStorage.getItem("$username");
+    this.room = localStorage.getItem("$room");
+
+		console.log(this.room, this.usernameFrom);
 
     CallHelper.video = this.camera;
     CallHelper.audio = this.microphone;
     CallHelper.showError = this.clearError;
+
+		window.addEventListener("beforeunload", async () => {
+			if(this.connection)
+				await this.connection.disconnect();
+			/*
+			navigator.sendBeacon(
+			 `${this.$roomurl}/unexpectedclose`,
+			 JSON.stringify({ username: this.usernameFrom })
+			);
+			*/
+		});
   },
   methods: {
     clearError(e) {
@@ -152,7 +165,7 @@ export default {
       try {
         CallHelper.localVideoSource = this.$refs.localVideo;
 
-        this.connection = new PeerConnection(this.room, this.usernameFrom);
+        this.connection = new PeerConnection(this.room, this.usernameFrom, this.$roomurl);
 
         this.joined = true;
       } catch (error) {
@@ -162,14 +175,13 @@ export default {
     async shareScreen() {
       try {
         if (this.screen) {
-          this.screen.disconnectCall();
-          this.screen.peer.destroy();
-          this.screen = null;
+          this.screen = false;
+          await this.connection.stopShare();
           return;
         }
 
-        this.screen = null;
-        await this.screen.connect(this.room);
+        await this.connection.shareScreen();
+        this.screen = true;
       } catch (error) {
         console.log(error);
         this.reasonError = error.message;
@@ -183,33 +195,19 @@ export default {
 
       location.reload();
     },
-    async getNewPermissionVideo() {
-      CallHelper.video = this.camera = !this.camera;
-    },
-    async getNewPermissionAudio() {
-      CallHelper.audio = this.microphone = !this.microphone;
-    },
     async toggleCam() {
       this.camera = !this.camera;
-      CallHelper.video = this.camera;
+			CallHelper.video = this.camera;
 
-      if (CallHelper.permission) {
-        this.localVideoPermission = await CallHelper.loadLocalVideo();
-        this.connection.changeSourceVideo(this.localVideoPermission);
-      }
-
-      await this.connection.toggleStatusCamAndMic(this.microphone, this.camera);
+			if(this.connection)
+				this.connection.stateCamera(this.camera);
     },
     async toggleMic() {
       this.microphone = !this.microphone;
-      CallHelper.audio = this.microphone;
+			CallHelper.audio = this.microphone;
 
-      if (CallHelper.permission) {
-        this.localVideoPermission = await CallHelper.loadLocalVideo();
-        this.connection.changeSourceVideo(this.localVideoPermission);
-      }
-
-      await this.connection.toggleStatusCamAndMic(this.microphone, this.camera);
+			if(this.connection)
+				this.connection.stateMic(this.microphone);
     },
   },
 };
