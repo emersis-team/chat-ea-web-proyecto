@@ -20,6 +20,11 @@ const routes = [
 		path: "/video",
 		name: "video",
 		component: () => import("../views/VideoCall.vue"),
+	},
+	{
+		path: "/complete",
+		name: "complete",
+		component: () => import("../views/CompleteLogin.vue"),
 	}
 ];
 
