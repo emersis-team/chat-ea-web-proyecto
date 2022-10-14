@@ -17,10 +17,20 @@ const routes = [
       import(/* webpackChunkName: "login" */ "../views/Login.vue"),
   },
   {
-		path: "/video",
-		name: "video",
-		component: () => import("../views/VideoCall.vue"),
-	}
+    path: "/video",
+    name: "video",
+    component: () => import("../views/VideoCall.vue"),
+  },
+  {
+    path: "/admin",
+    name: "admin",
+    component: () => import("../views/Admin.vue"),
+  },
+  {
+    path: "/admin/:user",
+    name: "updateUser",
+    component: () => import("../views/UpdateUser.vue"),
+  },
 ];
 
 const router = new VueRouter({

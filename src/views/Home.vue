@@ -24,6 +24,12 @@
             <Conversacion :conversacion="conversacion"></Conversacion>
           </div>
         </div>
+        <RouterLink :to="`/admin`"
+          ><img
+            class="user-profile-icon"
+            src="../assets/img/icono-contacto.png"
+          />
+        </RouterLink>
         <button class="home-logout" @click="logout()">Cerrar sesión</button>
       </div>
       <div
