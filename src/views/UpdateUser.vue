@@ -1,7 +1,7 @@
 <template>
   <div class="admin">
     <RouterLink :to="`/admin`"
-      ><img class="back" src="../assets/img/icono-contacto.png" />
+      ><img class="back" src="../assets/img/volver_atras.png" />
     </RouterLink>
     <h2>Actualizar Usuario {{ selected }}</h2>
     <div class="selection">
@@ -45,6 +45,9 @@
       "
       class="asign"
       @click="asign()"
+      :disabled="
+        contactosSeleccionados.length == 0 && gruposSeleccionados.length == 0
+      "
     >
       Asignar
     </button>
