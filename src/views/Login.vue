@@ -1,42 +1,44 @@
 <template>
-  <div class="login">
-    <div class="login-row">
-      <label class="login-label">Usuario</label>
+  <div class="form">
+    <div class="row">
+      <label class="label">Usuario</label>
       <input
-        class="login-input"
+        class="input"
         type="text"
         placeholder="Escribe tu usuario aquí"
         ref="loginUser"
         v-bind:class="{ 'error-input': errorUsuario }"
       >
     </div>
-    <div class="login-row">
-      <label class="login-label">Contraseña</label>
+    <div class="row">
+      <label class="label">Contraseña</label>
       <input
-        class="login-input"
+        class="input"
         type="password"
         ref="loginPassword"
         v-on:keyup.enter="login()"
         v-bind:class="{ 'error-input': errorPassword }"
       >
       <img
-        class="login-input-ojo"
+        class="input-ojo"
         src="../assets/img/ojo.png"
         v-show="!mostrarOjoActivo"
         @click="changePasswordType('text')"
       >
       <img
-        class="login-input-ojo"
+        class="input-ojo"
         src="../assets/img/ojo-active.png"
         v-show="mostrarOjoActivo"
         @click="changePasswordType('password')"
       >
     </div>
-    <button class="login-btn" @click="login()">Ingresar</button>
+    <button class="btn" @click="login()">Ingresar</button>
   </div>
 </template>
 
 <script>
+const NOT_FOUND_USER = 404;
+
 export default {
   name: "login",
   components: {},
@@ -71,19 +73,21 @@ export default {
       var username = this.$refs.loginUser.value;
       var password = this.$refs.loginPassword.value;
 
-      if (username == "") {
+      if (username === "") {
         guardar = false;
         this.errorUsuario = true;
       } else {
         this.errorUsuario = false;
       }
-      if (password == "") {
+
+      if (password === "") {
         guardar = false;
         this.errorPassword = true;
       } else {
         this.errorPassword = false;
       }
-      if (guardar == true) {
+
+      if (guardar === true) {
         var that = this;
         this.$axios
           .post(this.$localurl + "/api/auth/login", {
@@ -91,20 +95,18 @@ export default {
             password: password
           })
           .then(function(response) {
-            localStorage.setItem("$token", response.data.token);
             localStorage.setItem("$userId", response.data.id);
-            localStorage.setItem("$username", username);
-            localStorage.setItem(
-              "$expire",
-              Date.now() + response.data.expires_in
-            );
-            that.$axios.defaults.headers.common["Authorization"] =
-              "Bearer " + localStorage.getItem("$token");
-            that.$eventHub.$emit("loged");
-            that.$router.push("/");
+            localStorage.setItem("$username", response.data.name);
+
+            //that.$router.push("/");
+							that.$router.push("/complete");
           })
           .catch(function(response) {
-            console.log(response);
+						if(response.status === NOT_FOUND_USER) {
+							that.$router.push("/complete");
+							return;
+						}
+
             that.errorUsuario = true;
             that.errorPassword = true;
           });
@@ -115,5 +117,5 @@ export default {
 </script>
 
 <style>
-@import "../assets/css/views/login.css";
+@import "../assets/css/views/forms.css";
 </style>
