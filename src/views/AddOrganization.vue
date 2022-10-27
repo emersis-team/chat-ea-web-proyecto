@@ -1,5 +1,5 @@
 <template>
-  <div class="admin">
+  <form @submit="create" class="admin">
     <RouterLink :to="`/admin`"
       ><img class="back" src="../assets/img/volver_atras.png" />
     </RouterLink>
@@ -8,24 +8,31 @@
       <div class="options">
         <label for="">Nombre</label>
         <input v-model="name" type="text" />
+        <span class="error" v-if="errors.name != ''">{{ errors.name }}</span>
       </div>
       <div class="options">
         <label for="">Direccion</label>
         <input v-model="address" type="text" />
+        <span class="error" v-if="errors.address != ''">{{
+          errors.address
+        }}</span>
       </div>
       <div class="options">
         <label for="">Contacto</label>
         <input v-model="contact" type="text" />
+        <span class="error" v-if="errors.contact != ''">{{
+          errors.contact
+        }}</span>
       </div>
     </div>
     <button
       class="create"
-      @click="create()"
+      type="submit"
       :disabled="name == '' || address == '' || contact == ''"
     >
       Crear
     </button>
-  </div>
+  </form>
 </template>
 
 <script>
@@ -43,6 +50,11 @@ export default {
       address: "",
       contact: "",
       contactos: [],
+      errors: {
+        name: "",
+        address: "",
+        contact: "",
+      },
     };
   },
   computed: {},
@@ -51,20 +63,36 @@ export default {
     this.getContactos();
   },
   methods: {
-    create() {
-      if (
-        this.name.trim() != "" &&
-        this.address.trim() != "" &&
-        this.contact.trim() != ""
-      ) {
-        console.log(
-          "se enviaran los valores: ",
-          this.name,
-          this.address,
-          this.contact
-        );
+    create(e) {
+      e.preventDefault();
+
+      if (!(this.name.trim().length >= 3 && this.name.trim().length <= 20)) {
+        this.errors.name = "Este campo debe tener entre 3 y 20 caracteres";
       } else {
-        console.log("los campos son obligatorios");
+        this.errors.name = "";
+      }
+      if (
+        !(this.address.trim().length >= 8 && this.address.trim().length <= 20)
+      ) {
+        this.errors.address = "Este campo debe tener entre 3 y 20 caracteres";
+      } else {
+        this.errors.address = "";
+      }
+      if (
+        !(this.contact.trim().length >= 8 && this.contact.trim().length <= 20)
+      ) {
+        this.errors.contact = "Este campo debe tener entre 3 y 20 caracteres";
+      } else {
+        this.errors.contact = "";
+      }
+      if (
+        this.errors.name == "" &&
+        this.errors.address == "" &&
+        this.errors.contact == ""
+      ) {
+        console.log("PETICION HTTP");
+      } else {
+        console.log("HAY ERRORES");
       }
     },
     getContactos() {
