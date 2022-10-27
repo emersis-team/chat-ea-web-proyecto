@@ -1,5 +1,5 @@
 <template>
-  <div class="admin">
+  <form @submit="create" class="admin">
     <RouterLink :to="`/admin`"
       ><img class="back" src="../assets/img/volver_atras.png" />
     </RouterLink>
@@ -26,12 +26,12 @@
     </div>
     <button
       class="create"
-      @click="create()"
+      type="submit"
       :disabled="contactosSeleccionados.length == 0"
     >
       Asignar
     </button>
-  </div>
+  </form>
 </template>
 
 <script>
@@ -55,7 +55,9 @@ export default {
     this.getContactos();
   },
   methods: {
-    create() {
+    create(e) {
+      e.preventDefault();
+
       if (this.contactosSeleccionados != []) {
         console.log(
           "los campos seleccionados son:",

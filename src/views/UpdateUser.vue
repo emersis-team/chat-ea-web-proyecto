@@ -1,5 +1,5 @@
 <template>
-  <div class="admin">
+  <form @submit="asign" class="admin">
     <RouterLink :to="`/admin`"
       ><img class="back" src="../assets/img/volver_atras.png" />
     </RouterLink>
@@ -44,14 +44,13 @@
           (gruposSeleccionados != [] && gruposSeleccionados != null))
       "
       class="asign"
-      @click="asign()"
       :disabled="
         contactosSeleccionados.length == 0 && gruposSeleccionados.length == 0
       "
     >
       Asignar
     </button>
-  </div>
+  </form>
 </template>
 
 <script>
@@ -103,8 +102,10 @@ export default {
     this.getContactos();
   },
   methods: {
-    asign() {
-      console.log("usuario: ", this.selected.email);
+    asign(e) {
+      e.preventDefault();
+
+      console.log("usuario: ", this.selected);
       if (this.contactosSeleccionados != null)
         console.log(" contacto seleccionado: ", this.contactosSeleccionados);
       if (this.gruposSeleccionados != null)

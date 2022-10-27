@@ -4,7 +4,7 @@
       ><img class="back" src="../assets/img/volver_atras.png" />
     </RouterLink>
     <h2>Panel de Administracion</h2>
-    <div class="user-container">
+    <form @submit="modify" class="user-container">
       <div class="user">
         <label for="">Usuario</label>
         <v-select
@@ -13,10 +13,10 @@
           label="email"
         ></v-select>
       </div>
-      <button class="modify" @click="modify()" :disabled="selected == null">
+      <button type="submit" class="modify" :disabled="selected == null">
         Asignar
       </button>
-    </div>
+    </form>
     <div class="place-container">
       <div class="place">
         <label for="">Nueva Organizacion</label>
@@ -52,7 +52,8 @@ export default {
     this.getContactos();
   },
   methods: {
-    modify() {
+    modify(e) {
+      e.preventDefault();
       if (this.selected != {} && this.selected != null) {
         console.log("selected: ", this.selected);
         this.$router.push(`/admin/${this.selected.email}`);

@@ -1,12 +1,13 @@
 .admin {
     position: fixed;
     width: 100vw;
-    height: 100vh;
+    height: 100%;
     background: no-repeat center/100% url("../../img/fondowp.png");
     z-index: 10000;
    text-align: center;
    font-family: Poppins-Regular;
    color: #616060;
+   overflow-y: auto;
 }
 
 .admin h2{
@@ -32,7 +33,15 @@ label{
 }
 
 .options{
-    margin-bottom: 30px;
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.options > span{
+  position: absolute;
+  bottom: -18px;
+  left: 5px;
+  color: red;
 }
 
 .options > select{
