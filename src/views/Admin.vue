@@ -4,7 +4,7 @@
 			<img class="back" src="../assets/img/icono-contacto.png" />
     </RouterLink>
     <h2>Panel de Administracion</h2>
-    <div class="selection">
+    <div class="user-container">
       <div class="user">
         <label for="">Usuario</label>
         <v-select
@@ -13,14 +13,22 @@
           label="email"
         ></v-select>
       </div>
+      <button class="modify" @click="modify()" :disabled="selected == null">
+        Asignar
+      </button>
     </div>
-    <button
-      v-if="selected != '' && selected != null"
-      class="asign"
-      @click="asign()"
-    >
-      Asignar
-    </button>
+    <div class="place-container">
+      <div class="place">
+        <label for="">Nueva Organizacion</label>
+      </div>
+      <button class="add-org" @click="addOrg()">Agregar</button>
+    </div>
+    <div class="new-admin-container">
+      <div class="new-admin">
+        <label for="">Nuevo Administrador</label>
+      </div>
+      <button class="new-admin-btn" @click="newAdmin()">Agregar</button>
+    </div>
   </div>
 </template>
 
@@ -35,7 +43,7 @@ export default {
   data() {
     return {
       contactos: [],
-      selected: "",
+      selected: null,
     };
   },
   computed: {},
@@ -44,9 +52,17 @@ export default {
     this.getContactos();
   },
   methods: {
-    asign() {
-      console.log("selected: ", this.selected);
-      this.$router.push(`/admin/${this.selected.email}`);
+    modify() {
+      if (this.selected != {} && this.selected != null) {
+        console.log("selected: ", this.selected);
+        this.$router.push(`/admin/${this.selected.email}`);
+      }
+    },
+    addOrg() {
+      this.$router.push(`/admin/addOrganization`);
+    },
+    newAdmin() {
+      this.$router.push(`/admin/newAdmin`);
     },
     getContactos() {
       var that = this;

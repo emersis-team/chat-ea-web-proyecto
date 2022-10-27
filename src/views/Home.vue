@@ -34,7 +34,11 @@
             src="../assets/img/icono-contacto.png"
           />
         </RouterLink>
-        <button class="home-logout" @click="logout()">Cerrar sesión</button>
+        <img
+          @click="logout()"
+          class="close-session-icon"
+          src="../assets/img/cerrar_sesion.png"
+        />
       </div>
       <div
         class="home-right"
