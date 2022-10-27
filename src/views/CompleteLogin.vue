@@ -1,6 +1,6 @@
 <template>
   <div class="welcome">
-    <RouterLink :to="`/`"
+    <RouterLink v-if="edit" :to="`/`">
       ><img class="back" src="../assets/img/icono-contacto.png" />
     </RouterLink>
     <div class="row">
@@ -73,11 +73,13 @@
 
 export default {
   components: {},
+	props: ["email"],
   data() {
 		return {
 			errorName: false,
 			errorLastname: false,
-			errorDni: false
+			errorDni: false,
+			edit: false,
 		}
 	},
   created() {},
@@ -98,21 +100,23 @@ export default {
       const dni = this.$refs.dni.value.trim();
       const grade = this.$refs.range.value.trim();
       const organization = this.$refs.organization.value.trim();
+			const email = this.email || "";
 
 			this.errorName = name === "";
 			this.errorLastname = lastname === "";
 			this.errorDni = dni === "" || !dni.match(/^[0-9]+$/);
 
-			this.axios
-			.post(`${this.$localurl}/api/completion`, { name, lastname, dni, range, organization })
-			.then(response => {
-				localStorage.setItem("$userId", response.data.id);
-				localStorage.setItem("$username", name);
-				that.$router.push("/");
-			})
-			.catch(response => {
-				console.log(response);
-			});
+			const that = this;
+			this.$axios
+				.post(`${this.$localurl}/api/completion`, { name, email, lastname, dni, grade, organization })
+				.then(response => {
+					localStorage.setItem("$userId", response.data.id);
+					localStorage.setItem("$username", name);
+					that.$router.push("/");
+				})
+				.catch(response => {
+					console.log(response);
+				});
 		},
 	}
 }

@@ -15,6 +15,7 @@
         <div class="home-left-conversaciones">
           <div
             v-for="(conversacion, index) in conversacionesFiltradas"
+						v-if="hasConversations"
             :key="index"
             @click="elegirConversacion(conversacion)"
             v-bind:class="{
@@ -23,6 +24,9 @@
           >
             <Conversacion :conversacion="conversacion"></Conversacion>
           </div>
+					<div v-if="!hasConversations">
+						<InfoContacts></InfoContacts>
+					</div>
         </div>
         <RouterLink :to="`/admin`"
           ><img
@@ -49,6 +53,7 @@
 
 <script>
 import Conversacion from "@/components/Conversacion.vue";
+import InfoContacts from "@/components/InfoContacts.vue";
 import Chat from "@/components/Chat.vue";
 import Mapa from "@/components/Mapa.vue";
 import Vue from "vue";
@@ -61,12 +66,14 @@ export default {
     Conversacion,
     Chat,
     Mapa,
+		InfoContacts,
   },
   data() {
     return {
       conversacionElegida: null,
       conversacionesFiltradas: [],
       conversaciones: [],
+			hasConversations: false,
       mensajes: [],
       contactos: [],
       posiciones: [],
@@ -86,18 +93,6 @@ export default {
     this.conectarWebSocket();
   },
   methods: {
-    joinCall() {
-      const videoComponentRedirect = this.$router.resolve({
-        name: "video",
-        query: {
-          username: "name", //this.userId,
-          room: "cideso", //this.conversacion.conversation_name
-        },
-      });
-
-      window.open(videoComponentRedirect.href, "_blank");
-    },
-
     conectarWebSocket() {
       var socket = new SockJS(this.$localurl + "/websocket");
       this.stompClient = Stomp.over(socket);
@@ -158,8 +153,11 @@ export default {
         .then(function (response) {
           that.conversaciones = response.data.conversations;
           that.conversacionesFiltradas = that.conversaciones;
+					that.hasConversations = true;
         })
         .catch(function (response) {
+					that.hasConversations = false;
+					debugger;
           if (
             response != null &&
             (response.response.status == 401 || response.response.status == 400)

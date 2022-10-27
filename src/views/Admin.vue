@@ -1,7 +1,7 @@
 <template>
   <div class="admin">
-    <RouterLink :to="`/`"
-      ><img class="back" src="../assets/img/icono-contacto.png" />
+    <RouterLink :to="`/`">
+			<img class="back" src="../assets/img/icono-contacto.png" />
     </RouterLink>
     <h2>Panel de Administracion</h2>
     <div class="selection">

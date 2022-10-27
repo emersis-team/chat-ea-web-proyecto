@@ -100,9 +100,9 @@ export default {
 
             that.$router.push("/");
           })
-          .catch(function(response) {
+          .catch(function({ response }) {
 						if(response.status === NOT_FOUND_USER) {
-							that.$router.push("/complete");
+							that.$router.push({ name: "complete", params: { email: username } });
 							return;
 						}
 

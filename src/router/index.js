@@ -25,6 +25,7 @@ const routes = [
 		path: "/complete",
 		name: "complete",
 		component: () => import("../views/CompleteLogin.vue"),
+		props: true
 	},
   {
     path: "/admin",

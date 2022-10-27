@@ -41,10 +41,8 @@ export default {
   mounted() {},
   created() {},
   methods: {},
-  setup(props) {
-    console.log("conversacion", props.conversacion);
-  },
+  setup(props) { },
 };
 </script>
 
-<style scoped src="../assets/css/components/conversacion.css"></style>
+<style src="../assets/css/components/conversacion.css"></style>
