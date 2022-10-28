@@ -154,15 +154,14 @@ export default {
       var that = this;
       this.$axios
         .get(this.$localurl + "/api/" + userId + "/conversations/")
-        .then(function (response) {
+        .then(response => {
           that.conversaciones = response.data.conversations;
           that.conversacionesFiltradas = that.conversaciones;
 					that.hasConversations = true;
         })
-        .catch(function (response) {
+        .catch(response => {
 					that.hasConversations = false;
-					debugger;
-          if (
+					if (
             response != null &&
             (response.response.status == 401 || response.response.status == 400)
           ) {
@@ -171,7 +170,7 @@ export default {
               that.$router.push("/login");
             }
           }
-        });
+			});
     },
     getContactos() {
       var that = this;

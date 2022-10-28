@@ -1,7 +1,7 @@
 <template>
   <div class="admin">
     <RouterLink :to="`/`">
-			<img class="back" src="../assets/img/icono-contacto.png" />
+			<img class="back" src="../assets/img/volver_atras.png" />
     </RouterLink>
     <h2>Panel de Administracion</h2>
     <form @submit="modify" class="user-container">
