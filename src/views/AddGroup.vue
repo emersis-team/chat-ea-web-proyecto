@@ -62,7 +62,6 @@ export default {
         this.errors.address == "" &&
         this.errors.contact == ""
       ) {
-        console.log("PETICION HTTP");
         this.isLoading = true;
         var that = this;
         const body = {
@@ -81,8 +80,6 @@ export default {
           })
           .then(function (response) {
             that.isLoading = false;
-
-            console.log("response: ", response.data);
             that.$router.push("/admin");
           })
           .catch(function (response) {

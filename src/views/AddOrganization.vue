@@ -76,26 +76,12 @@ export default {
       } else {
         this.errors.name = "";
       }
-      /*  if (
-        !(this.address.trim().length >= 8 && this.address.trim().length <= 20)
-      ) {
-        this.errors.address = "Este campo debe tener entre 3 y 20 caracteres";
-      } else {
-        this.errors.address = "";
-      }
-      if (
-        !(this.contact.trim().length >= 8 && this.contact.trim().length <= 20)
-      ) {
-        this.errors.contact = "Este campo debe tener entre 3 y 20 caracteres";
-      } else {
-        this.errors.contact = "";
-      } */
+
       if (
         this.errors.name == "" &&
         this.errors.address == "" &&
         this.errors.contact == ""
       ) {
-        console.log("PETICION HTTP");
         this.isLoading = true;
         var that = this;
         const body = {
@@ -114,8 +100,6 @@ export default {
           })
           .then(function (response) {
             that.isLoading = false;
-
-            console.log("response: ", response.data);
             that.$router.push("/admin");
           })
           .catch(function (response) {
@@ -138,7 +122,6 @@ export default {
         })
         .then(function (response) {
           that.contactos = response.data;
-          console.log("contactos: ", that.contactos);
         })
         .catch(function (response) {
           console.log("error", response);

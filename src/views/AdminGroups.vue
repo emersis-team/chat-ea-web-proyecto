@@ -68,7 +68,6 @@ export default {
         })
         .then(function (response) {
           that.grupos = response.data;
-          console.log("contactos: ", that.grupos);
         })
         .catch(function (response) {
           console.log("error", response);

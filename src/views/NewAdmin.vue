@@ -67,8 +67,6 @@ export default {
       e.preventDefault();
 
       if (this.contactoSeleccionado != "") {
-        console.log("el campos seleccionado es:", this.contactoSeleccionado);
-
         this.isLoading = true;
         var that = this;
         this.$axios
@@ -86,7 +84,6 @@ export default {
           )
           .then(function (response) {
             that.isLoading = false;
-            console.log("response: ", response);
             that.$router.push("/admin");
           })
           .catch(function (response) {
@@ -109,7 +106,6 @@ export default {
         })
         .then(function (response) {
           that.contactos = response.data;
-          console.log("contactos: ", that.contactos);
         })
         .catch(function (response) {
           console.log("error", response);
@@ -130,7 +126,6 @@ export default {
         })
         .then(function (response) {
           that.organizaciones = response.data;
-          console.log("organizaciones: ", that.organizaciones);
         })
         .catch(function (response) {
           console.log("error", response);

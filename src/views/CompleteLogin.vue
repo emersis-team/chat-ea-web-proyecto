@@ -93,16 +93,7 @@ export default {
     };
   },
   created() {},
-  mounted() {
-    //this.axios
-    //.get(`${this.$localurl}/lugares`)
-    //.then(response => {
-    //this.lugares = response.data.lugares;
-    //})
-    //.catch(response => {
-    //console.log(response);
-    //});
-  },
+  mounted() {},
   methods: {
     complete() {
       const name = this.$refs.name.value.trim();

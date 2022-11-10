@@ -27,8 +27,8 @@
       </tr>
       <tr v-for="(contacto, index) in contactos" :key="index">
         <td>
-          <RouterLink :to="`/admin/${contacto.email}`">
-            {{ contacto.email }}
+          <RouterLink :to="`/admin/${contacto.email}/${contacto.id}`">
+            {{ contacto.name }} - {{ contacto.email }}
           </RouterLink>
         </td>
         <td>

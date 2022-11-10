@@ -26,7 +26,7 @@
           v-model="contactosSeleccionados"
           multiple
           :options="contactosRecortados"
-          label="email"
+          label="formattedName"
         ></v-select>
       </div>
       <div class="options">
@@ -71,6 +71,7 @@ export default {
   data() {
     return {
       selected: this.$route.params.user,
+      id: this.$route.params.id,
       organizaciones: [],
       organizacionSeleccionada: "",
       contactos: [],
@@ -86,25 +87,23 @@ export default {
   computed: {
     contactosRecortados() {
       const contacts = [...this.contactos];
-      console.log("RUTA", this.$route.params.user);
 
       if (this.selected != "") {
         const index = this.contactos.findIndex(
           ({ email }) => email === this.selected
         );
-        console.log("seleccionado UPDATE: ", this.selected);
-        console.log("index: ", index);
-        contacts.splice(index, 1);
-        console.log("contactosRecortados: ", contacts);
       }
-      return contacts;
+
+      return contacts.map((c) => ({
+        ...c,
+        formattedName:
+          c.name != null ? `${c.name} - ` : "" + c.email != null ? c.email : "",
+      }));
     },
     gruposRecortados() {
       const groups = [...this.grupos];
       if (this.selected != "") {
-        console.log("seleccionado UPDATE: ", this.selected);
         this.contactos.splice(this.grupos.indexOf(this.selected), 1);
-        console.log("gruposRecortados: ", groups);
       }
       return groups;
     },
@@ -118,8 +117,6 @@ export default {
   methods: {
     asign(e) {
       e.preventDefault();
-
-      console.log("usuario: ", this.selected);
       if (this.contactosSeleccionados != null)
         console.log(
           " contacto seleccionado: ",
@@ -128,23 +125,24 @@ export default {
       if (this.gruposSeleccionados != null)
         console.log(" grupo seleccionado: ", this.gruposSeleccionados);
 
-      /* 
-       this.isLoading = true;
-        var that = this;
-        const body = {contacts:this.contactosSeleccionados, groups:this.gruposSeleccionados};
-        this.$axios
-        .put(this.$localurl + `/actualizarusuario/${this.selected}`, body)
+      this.isLoading = true;
+      var that = this;
+      const body = {
+        contacts: this.contactosSeleccionados,
+        groups: this.gruposSeleccionados,
+      };
+      this.$axios
+        .put(this.$localurl + `/nuevosContactos/${this.id}`, body)
         .then(function (response) {
-            that.isLoading = false;
+          that.isLoading = false;
 
           console.log("response: ", response.data);
         })
         .catch(function (response) {
-            that.isLoading = false;
+          that.isLoading = false;
 
           console.log("error", response);
-        }); 
-        */
+        });
     },
     getGrupos() {
       var that = this;
@@ -157,7 +155,6 @@ export default {
         })
         .then(function (response) {
           that.contactos = response.data;
-          console.log("contactos: ", that.contactos);
         })
         .catch(function (response) {
           console.log("error", response);
@@ -174,7 +171,6 @@ export default {
         })
         .then(function (response) {
           that.contactos = response.data;
-          console.log("contactos: ", that.contactos);
         })
         .catch(function (response) {
           console.log("error", response);
@@ -194,7 +190,6 @@ export default {
         })
         .then(function (response) {
           that.organizaciones = response.data;
-          console.log("organizaciones: ", that.organizaciones);
         })
         .catch(function (response) {
           console.log("error", response);
