@@ -96,7 +96,11 @@ export default {
     getContactos() {
       var that = this;
       this.$axios
-        .get(this.$localurl + "/usuarios")
+        .get(this.$localurl + "/usuarios", {
+          headers: {
+            Authorization: localStorage.getItem("$token"),
+          },
+        })
         .then(function (response) {
           that.contactos = response.data;
           console.log("contactos: ", that.contactos);
@@ -112,7 +116,11 @@ export default {
         "$userId"
       )}&name=${localStorage.getItem("$username")}`;
       this.$axios
-        .get(this.$localurl + "/locations" + query)
+        .get(this.$localurl + "/locations" + query, {
+          headers: {
+            Authorization: localStorage.getItem("$token"),
+          },
+        })
         .then(function (response) {
           that.organizaciones = response.data;
           console.log("organizaciones: ", that.organizaciones);

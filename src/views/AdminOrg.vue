@@ -55,7 +55,11 @@ export default {
         "$userId"
       )}&name=${localStorage.getItem("$username")}`;
       this.$axios
-        .get(this.$localurl + "/locations" + query)
+        .get(this.$localurl + "/locations" + query, {
+          headers: {
+            Authorization: localStorage.getItem("$token"),
+          },
+        })
         .then(function (response) {
           that.organizaciones = response.data;
           console.log("organizaciones: ", that.organizaciones);

@@ -5,7 +5,7 @@
       :can-cancel="false"
       :is-full-page="fullPage"
     ></loading>
-    <RouterLink :to="`/`"
+    <RouterLink :to="`/admin-users`"
       ><img class="back" src="../assets/img/volver_atras.png" />
     </RouterLink>
     <h2>Actualizar Usuario {{ selected }}</h2>
@@ -121,7 +121,10 @@ export default {
 
       console.log("usuario: ", this.selected);
       if (this.contactosSeleccionados != null)
-        console.log(" contacto seleccionado: ", this.contactosSeleccionados);
+        console.log(
+          " contacto seleccionado: ",
+          this.contactosSeleccionados.map(({ id }) => id)
+        );
       if (this.gruposSeleccionados != null)
         console.log(" grupo seleccionado: ", this.gruposSeleccionados);
 
@@ -147,7 +150,11 @@ export default {
       var that = this;
       // "/usuarios/lugar/this.lugar" // ocualquier otra ruta propuesta
       this.$axios
-        .get(this.$localurl + "/usuarios")
+        .get(this.$localurl + "/usuarios", {
+          headers: {
+            Authorization: localStorage.getItem("$token"),
+          },
+        })
         .then(function (response) {
           that.contactos = response.data;
           console.log("contactos: ", that.contactos);
@@ -160,7 +167,11 @@ export default {
       var that = this;
       // "/usuarios/lugar/this.lugar" // ocualquier otra ruta propuesta
       this.$axios
-        .get(this.$localurl + "/usuarios")
+        .get(this.$localurl + "/usuarios", {
+          headers: {
+            Authorization: localStorage.getItem("$token"),
+          },
+        })
         .then(function (response) {
           that.contactos = response.data;
           console.log("contactos: ", that.contactos);
@@ -176,7 +187,11 @@ export default {
         "$userId"
       )}&name=${localStorage.getItem("$username")}`;
       this.$axios
-        .get(this.$localurl + "/locations" + query)
+        .get(this.$localurl + "/locations" + query, {
+          headers: {
+            Authorization: localStorage.getItem("$token"),
+          },
+        })
         .then(function (response) {
           that.organizaciones = response.data;
           console.log("organizaciones: ", that.organizaciones);

@@ -61,7 +61,11 @@ export default {
     getGrupos() {
       var that = this;
       this.$axios
-        .get(this.$localurl + "/usuarios")
+        .get(this.$localurl + "/usuarios", {
+          headers: {
+            Authorization: localStorage.getItem("$token"),
+          },
+        })
         .then(function (response) {
           that.grupos = response.data;
           console.log("contactos: ", that.grupos);

@@ -5,7 +5,7 @@
       :can-cancel="false"
       :is-full-page="fullPage"
     ></loading>
-    <RouterLink :to="`/`"
+    <RouterLink :to="`/admin-organizations`"
       ><img class="back" src="../assets/img/volver_atras.png" />
     </RouterLink>
     <h2>Crear Organizacion</h2>
@@ -107,7 +107,11 @@ export default {
         };
 
         this.$axios
-          .post(this.$localurl + "/locations", body)
+          .post(this.$localurl + "/locations", body, {
+            headers: {
+              Authorization: localStorage.getItem("$token"),
+            },
+          })
           .then(function (response) {
             that.isLoading = false;
 
@@ -127,7 +131,11 @@ export default {
       var that = this;
       // "/api/usuarios/lugar/this.lugar" // ocualquier otra ruta propuesta
       this.$axios
-        .get(this.$localurl + "/usuarios")
+        .get(this.$localurl + "/usuarios", {
+          headers: {
+            Authorization: localStorage.getItem("$token"),
+          },
+        })
         .then(function (response) {
           that.contactos = response.data;
           console.log("contactos: ", that.contactos);

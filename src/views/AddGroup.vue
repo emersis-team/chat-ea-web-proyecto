@@ -5,7 +5,7 @@
       :can-cancel="false"
       :is-full-page="fullPage"
     ></loading>
-    <RouterLink :to="`/`"
+    <RouterLink :to="`/admin-groups`"
       ><img class="back" src="../assets/img/volver_atras.png" />
     </RouterLink>
     <h2>Crear Grupo</h2>
@@ -74,7 +74,11 @@ export default {
         };
 
         this.$axios
-          .post(this.$localurl + "/locations", body)
+          .post(this.$localurl + "/locations", body, {
+            headers: {
+              Authorization: localStorage.getItem("$token"),
+            },
+          })
           .then(function (response) {
             that.isLoading = false;
 

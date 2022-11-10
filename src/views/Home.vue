@@ -35,12 +35,12 @@
           />
         </RouterLink>
         <RouterLink :to="`/admin-groups`"
-          ><img class="group-icon" src="../assets/img/icono-contacto.png" />
+          ><img class="group-icon" src="../assets/img/grupo.png" />
         </RouterLink>
         <RouterLink :to="`/admin-organizations`"
           ><img
             class="organization-icon"
-            src="../assets/img/icono-contacto.png"
+            src="../assets/img/organizacion.png"
           />
         </RouterLink>
         <img

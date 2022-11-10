@@ -194,3 +194,7 @@ label{
     text-decoration: none;
     line-height: 3.7vw;
   }
+
+  tr td:hover > a{
+    color:#3ea06c;
+  }
