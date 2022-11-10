@@ -1,5 +1,10 @@
 <template>
   <div class="form">
+    <loading
+      :active.sync="isLoading"
+      :can-cancel="false"
+      :is-full-page="fullPage"
+    ></loading>
     <div class="row">
       <label class="label">Usuario</label>
       <input
@@ -8,7 +13,7 @@
         placeholder="Escribe tu usuario aquí"
         ref="loginUser"
         v-bind:class="{ 'error-input': errorUsuario }"
-      >
+      />
     </div>
     <div class="row">
       <label class="label">Contraseña</label>
@@ -18,19 +23,19 @@
         ref="loginPassword"
         v-on:keyup.enter="login()"
         v-bind:class="{ 'error-input': errorPassword }"
-      >
+      />
       <img
         class="input-ojo"
         src="../assets/img/ojo.png"
         v-show="!mostrarOjoActivo"
         @click="changePasswordType('text')"
-      >
+      />
       <img
         class="input-ojo"
         src="../assets/img/ojo-active.png"
         v-show="mostrarOjoActivo"
         @click="changePasswordType('password')"
-      >
+      />
     </div>
     <button class="btn" @click="login()">Ingresar</button>
   </div>
@@ -38,15 +43,20 @@
 
 <script>
 const NOT_FOUND_USER = 404;
-
+import Loading from "vue-loading-overlay";
+import "vue-loading-overlay/dist/vue-loading.css";
 export default {
   name: "login",
-  components: {},
+  components: {
+    Loading,
+  },
   data() {
     return {
       mostrarOjoActivo: false,
       errorUsuario: false,
-      errorPassword: false
+      errorPassword: false,
+      isLoading: false,
+      fullPage: true,
     };
   },
   created() {},
@@ -88,30 +98,36 @@ export default {
       }
 
       if (guardar === true) {
+        this.isLoading = true;
         var that = this;
         this.$axios
-          .post(this.$localurl + "/api/auth/login", {
+          .post(this.$localurl + "/auth/login", {
             email: username,
-            password: password
+            password: password,
           })
-          .then(function(response) {
+          .then(function (response) {
             localStorage.setItem("$userId", response.data.id);
             localStorage.setItem("$username", response.data.name);
-
+            localStorage.setItem("$email", response.data.email);
+            localStorage.setItem("$token", response.data.token);
+            that.isLoading = false;
             that.$router.push("/");
           })
-          .catch(function({ response }) {
-						if(response.status === NOT_FOUND_USER) {
-							that.$router.push({ name: "complete", params: { email: username } });
-							return;
-						}
-
+          .catch(function ({ response }) {
+            if (response.status === NOT_FOUND_USER) {
+              that.$router.push({
+                name: "complete",
+                params: { email: username },
+              });
+              return;
+            }
+            that.isLoading = false;
             that.errorUsuario = true;
             that.errorPassword = true;
           });
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

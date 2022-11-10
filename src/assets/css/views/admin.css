@@ -124,6 +124,14 @@ label{
     border-radius: 20px;
   }
 
+  .search-container{
+    display: flex;
+    justify-content: space-between;
+    text-align: start;
+    width: 70%;
+    margin: 0 auto 30px auto;
+  }
+
   .user, .place, .new-admin{
     width: 50vw;
   }
@@ -140,4 +148,49 @@ label{
     height: 34.4px;
     padding: 0 10px;
     margin-top: .5vw;
+  }
+
+  table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 70%;
+    margin: auto;
+  }
+  
+  td, th {
+    border: 1px solid #dcd8d8;
+    text-align: left;
+    padding: 8px;
+  }
+  
+  .numeros{
+    width: max-content;
+    text-align: right;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #dcd8d8;
+  }
+
+  tr td a{
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .new{
+    font-size: 1.15vw;
+    color: #ffffff;
+    background-color: #3ea06c;
+    width: 15vw;
+    display: block;
+    border: none;
+    border-radius: 0.25vw;
+    height: 3.7vw;
+    margin: 50px 15% 50px auto;
+    /* position: absolute;
+    top: 150px;
+    right: 50px; */
+    cursor: pointer;
+    text-decoration: none;
+    line-height: 3.7vw;
   }

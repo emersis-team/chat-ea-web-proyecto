@@ -1,5 +1,10 @@
 <template>
   <form @submit="create" class="admin">
+    <loading
+      :active.sync="isLoading"
+      :can-cancel="false"
+      :is-full-page="fullPage"
+    ></loading>
     <RouterLink :to="`/admin`"
       ><img class="back" src="../assets/img/volver_atras.png" />
     </RouterLink>
@@ -8,27 +13,22 @@
       <div class="options">
         <label for="">Organizacion</label>
         <v-select
-          v-model="contactosSeleccionados"
+          v-model="organizacionSeleccionada"
           placeholder="Seleccione organizacion del contacto"
-          :options="contactos"
-          label="email"
+          :options="organizaciones"
+          label="name"
         ></v-select>
       </div>
       <div class="options">
         <label for="">Usuarios</label>
         <v-select
-          v-model="contactosSeleccionados"
-          multiple
+          v-model="contactoSeleccionado"
           :options="contactos"
           label="email"
         ></v-select>
       </div>
     </div>
-    <button
-      class="create"
-      type="submit"
-      :disabled="contactosSeleccionados.length == 0"
-    >
+    <button class="create" type="submit" :disabled="contactoSeleccionado == ''">
       Asignar
     </button>
   </form>
@@ -37,44 +37,84 @@
 <script>
 import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
+import Loading from "vue-loading-overlay";
+import "vue-loading-overlay/dist/vue-loading.css";
+
 export default {
   name: "newAdmin",
   components: {
     vSelect,
+    Loading,
   },
   data() {
     return {
-      selected: this.$route.params.user,
       contactos: [],
-      contactosSeleccionados: [],
+      contactoSeleccionado: {},
+      organizaciones: [],
+      organizacionSeleccionada: "",
+      isLoading: false,
+      fullPage: true,
     };
   },
   computed: {},
   created() {},
   mounted() {
     this.getContactos();
+    this.getOrganizaciones();
   },
   methods: {
     create(e) {
       e.preventDefault();
 
-      if (this.contactosSeleccionados != []) {
-        console.log(
-          "los campos seleccionados son:",
-          this.contactosSeleccionados
-        );
+      if (this.contactoSeleccionado != "") {
+        console.log("el campos seleccionado es:", this.contactoSeleccionado);
+
+        this.isLoading = true;
+        var that = this;
+        this.$axios
+          .post(this.$localurl + `/new-admin/${this.contactoSeleccionado.id}`, {
+            id: localStorage.getItem("$userId"),
+            email: localStorage.getItem("$email"),
+          })
+          .then(function (response) {
+            that.isLoading = false;
+            console.log("response: ", response);
+            that.$router.push("/admin");
+          })
+          .catch(function (response) {
+            that.isLoading = false;
+            console.log("error", response);
+          });
       } else {
         console.log("los campos son obligatorios");
       }
     },
     getContactos() {
       var that = this;
+
       // "/api/usuarios/lugar/this.lugar" // ocualquier otra ruta propuesta
       this.$axios
-        .get(this.$localurl + "/api/usuarios")
+        .get(this.$localurl + "/usuarios")
         .then(function (response) {
           that.contactos = response.data;
           console.log("contactos: ", that.contactos);
+        })
+        .catch(function (response) {
+          console.log("error", response);
+        });
+    },
+
+    getOrganizaciones() {
+      var that = this;
+      // "/api/usuarios/lugar/this.lugar" // ocualquier otra ruta propuesta
+      const query = `?id=${localStorage.getItem(
+        "$userId"
+      )}&name=${localStorage.getItem("$username")}`;
+      this.$axios
+        .get(this.$localurl + "/locations" + query)
+        .then(function (response) {
+          that.organizaciones = response.data;
+          console.log("organizaciones: ", that.organizaciones);
         })
         .catch(function (response) {
           console.log("error", response);

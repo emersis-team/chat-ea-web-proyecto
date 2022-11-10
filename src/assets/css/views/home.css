@@ -13,6 +13,23 @@
   cursor: pointer;
 }
 
+.group-icon{
+  position: absolute;
+  bottom: 0;
+  left: 80px;
+  height: 40px;
+  width: auto;
+  cursor: pointer;
+}
+
+.organization-icon{
+  position: absolute;
+  bottom: 0;
+  left: 140px;
+  height: 40px;
+  width: auto;
+  cursor: pointer;
+}
 
 .close-session-icon{
   position: absolute;

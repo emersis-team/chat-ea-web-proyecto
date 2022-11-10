@@ -15,7 +15,7 @@
         <div class="home-left-conversaciones">
           <div
             v-for="(conversacion, index) in conversacionesFiltradas"
-						v-if="hasConversations"
+            v-if="hasConversations"
             :key="index"
             @click="elegirConversacion(conversacion)"
             v-bind:class="{
@@ -24,13 +24,22 @@
           >
             <Conversacion :conversacion="conversacion"></Conversacion>
           </div>
-					<div v-if="!hasConversations">
-						<InfoContacts></InfoContacts>
-					</div>
+          <div v-if="!hasConversations">
+            <InfoContacts></InfoContacts>
+          </div>
         </div>
-        <RouterLink :to="`/admin`"
+        <RouterLink :to="`/admin-users`"
           ><img
             class="user-profile-icon"
+            src="../assets/img/icono-contacto.png"
+          />
+        </RouterLink>
+        <RouterLink :to="`/admin-groups`"
+          ><img class="group-icon" src="../assets/img/icono-contacto.png" />
+        </RouterLink>
+        <RouterLink :to="`/admin-organizations`"
+          ><img
+            class="organization-icon"
             src="../assets/img/icono-contacto.png"
           />
         </RouterLink>
@@ -70,14 +79,14 @@ export default {
     Conversacion,
     Chat,
     Mapa,
-		InfoContacts,
+    InfoContacts,
   },
   data() {
     return {
       conversacionElegida: null,
       conversacionesFiltradas: [],
       conversaciones: [],
-			hasConversations: false,
+      hasConversations: false,
       mensajes: [],
       contactos: [],
       posiciones: [],
@@ -153,15 +162,15 @@ export default {
 
       var that = this;
       this.$axios
-        .get(this.$localurl + "/api/" + userId + "/conversations/")
-        .then(response => {
+        .get(this.$localurl + userId + "/conversations/")
+        .then((response) => {
           that.conversaciones = response.data.conversations;
           that.conversacionesFiltradas = that.conversaciones;
-					that.hasConversations = true;
+          that.hasConversations = true;
         })
-        .catch(response => {
-					that.hasConversations = false;
-					if (
+        .catch((response) => {
+          that.hasConversations = false;
+          if (
             response != null &&
             (response.response.status == 401 || response.response.status == 400)
           ) {
@@ -170,12 +179,12 @@ export default {
               that.$router.push("/login");
             }
           }
-			});
+        });
     },
     getContactos() {
       var that = this;
       this.$axios
-        .get(this.$localurl + "/api/usuarios")
+        .get(this.$localurl + "/usuarios")
         .then(function (response) {
           that.contactos = response.data;
         })
@@ -248,7 +257,7 @@ export default {
       this.$axios
         .get(
           this.$localurl +
-            "/api/position/" +
+            "/position/" +
             localStorage.getItem("$userId") +
             "/user_contacts_positions"
         )
@@ -310,7 +319,7 @@ export default {
         alt: position.coords.altitude != null ? position.coords.altitude : 0,
       };
       this.$axios
-        .post(this.$localurl + "/api/position/user_position", json)
+        .post(this.$localurl + "/position/user_position", json)
         .then(function (response) {
           console.log(response);
         })

@@ -1,7 +1,7 @@
 <template>
   <div class="admin">
     <RouterLink :to="`/`">
-			<img class="back" src="../assets/img/volver_atras.png" />
+      <img class="back" src="../assets/img/volver_atras.png" />
     </RouterLink>
     <h2>Panel de Administracion</h2>
     <form @submit="modify" class="user-container">
@@ -68,7 +68,7 @@ export default {
     getContactos() {
       var that = this;
       this.$axios
-        .get(this.$localurl + "/api/usuarios")
+        .get(this.$localurl + "/usuarios")
         .then(function (response) {
           that.contactos = response.data;
           console.log("contactos: ", that.contactos);

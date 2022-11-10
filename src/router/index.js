@@ -17,25 +17,40 @@ const routes = [
       import(/* webpackChunkName: "login" */ "../views/Login.vue"),
   },
   {
-		path: "/video",
-		name: "video",
-		component: () => import("../views/VideoCall.vue"),
-	},
-	{
-		path: "/complete",
-		name: "complete",
-		component: () => import("../views/CompleteLogin.vue"),
-		props: true
-	},
+    path: "/video",
+    name: "video",
+    component: () => import("../views/VideoCall.vue"),
+  },
   {
-    path: "/admin",
-    name: "admin",
-    component: () => import("../views/Admin.vue"),
+    path: "/complete",
+    name: "complete",
+    component: () => import("../views/CompleteLogin.vue"),
+    props: true,
+  },
+  {
+    path: "/admin-users",
+    name: "admin-users",
+    component: () => import("../views/AdminUsers.vue"),
+  },
+  {
+    path: "/admin-groups",
+    name: "admin-groups",
+    component: () => import("../views/AdminGroups.vue"),
+  },
+  {
+    path: "/admin-organizations",
+    name: "admin-organizations",
+    component: () => import("../views/AdminOrg.vue"),
   },
   {
     path: "/admin/addOrganization",
     name: "addOrganization",
     component: () => import("../views/AddOrganization.vue"),
+  },
+  {
+    path: "/admin/addGroup",
+    name: "addGroup",
+    component: () => import("../views/AddGroup.vue"),
   },
   {
     path: "/admin/newAdmin",
