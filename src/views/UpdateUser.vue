@@ -36,7 +36,7 @@
           v-model="gruposSeleccionados"
           multiple
           :options="gruposRecortados"
-          label="email"
+          label="name"
         ></v-select>
       </div>
     </div>
@@ -85,6 +85,8 @@ export default {
     };
   },
   computed: {
+		getActualInfo() {
+		},
     contactosRecortados() {
       const contacts = [...this.contactos];
 
@@ -97,7 +99,7 @@ export default {
       return contacts.map((c) => ({
         ...c,
         formattedName:
-          c.name != null ? `${c.name} - ` : "" + c.email != null ? c.email : "",
+          c.name !== "null" ? `${c.name} - ` : "" + c.email !== "null" ? c.email : "",
       }));
     },
     gruposRecortados() {
@@ -116,20 +118,18 @@ export default {
   },
   methods: {
     asign(e) {
+			let contacts, groups;
       e.preventDefault();
       if (this.contactosSeleccionados != null)
-        console.log(
-          " contacto seleccionado: ",
-          this.contactosSeleccionados.map(({ id }) => id)
-        );
+          contacts = this.contactosSeleccionados.map(({ id }) => id);
       if (this.gruposSeleccionados != null)
-        console.log(" grupo seleccionado: ", this.gruposSeleccionados);
+        groups = this.gruposSeleccionados.map(({ id }) => id);
 
       this.isLoading = true;
       var that = this;
       const body = {
-        contacts: this.contactosSeleccionados,
-        groups: this.gruposSeleccionados,
+        contacts,
+        groups
       };
       this.$axios
         .put(this.$localurl + `/nuevosContactos/${this.id}`, body)
@@ -148,13 +148,13 @@ export default {
       var that = this;
       // "/usuarios/lugar/this.lugar" // ocualquier otra ruta propuesta
       this.$axios
-        .get(this.$localurl + "/usuarios", {
+        .get(this.$localurl + "/groups", {
           headers: {
             Authorization: localStorage.getItem("$token"),
           },
         })
         .then(function (response) {
-          that.contactos = response.data;
+          that.grupos = response.data;
         })
         .catch(function (response) {
           console.log("error", response);
@@ -179,11 +179,8 @@ export default {
     getOrganizaciones() {
       var that = this;
       // "/usuarios/lugar/this.lugar" // ocualquier otra ruta propuesta
-      const query = `?id=${localStorage.getItem(
-        "$userId"
-      )}&name=${localStorage.getItem("$username")}`;
       this.$axios
-        .get(this.$localurl + "/locations" + query, {
+        .get(this.$localurl + "/locations", {
           headers: {
             Authorization: localStorage.getItem("$token"),
           },
