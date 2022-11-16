@@ -162,8 +162,9 @@ export default {
 
       var that = this;
       this.$axios
-        .get(this.$localurl + userId + "/conversations/")
+        .get(this.$localurl + "/conversations")
         .then((response) => {
+					console.log(response)
           that.conversaciones = response.data.conversations;
           that.conversacionesFiltradas = that.conversaciones;
           that.hasConversations = true;
@@ -172,7 +173,7 @@ export default {
           that.hasConversations = false;
           if (
             response != null &&
-            (response.response.status == 401 || response.response.status == 400)
+            (response.status == 401 || response.status == 400)
           ) {
             localStorage.removeItem("$expire");
             if (window.location.pathname.split("/").reverse()[0] != "login") {

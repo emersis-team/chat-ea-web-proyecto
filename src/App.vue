@@ -25,8 +25,8 @@ export default {
     //Vue.prototype.$localurl = "https://38.109.228.250:8000";
     Vue.prototype.$roomurl = "https://38.109.228.250:8080";
 
-    this.$axios.defaults.headers.common["Authorization"] =
-      "Bearer " + localStorage.getItem("$token");
+    this.$axios.defaults.headers.common["Authorization"] = localStorage.getItem("$token");
+
     /* if (localStorage.getItem("$token") == null) {
       this.$router.push("/login");
     } */
