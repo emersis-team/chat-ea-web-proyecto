@@ -44,7 +44,6 @@ export default {
     search(e) {
       e.preventDefault();
       if (this.orgSelected != {} && this.orgSelected != null) {
-        console.log("orgSelected: ", this.orgSelected);
         /*  var that = this;
       this.$axios
         .get(this.$localurl + "/usuarios/organizacion")

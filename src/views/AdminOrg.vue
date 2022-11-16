@@ -50,7 +50,6 @@ export default {
   methods: {
     getOrganizaciones() {
       var that = this;
-      // "/api/usuarios/lugar/this.lugar" // ocualquier otra ruta propuesta
       const query = `?id=${localStorage.getItem(
         "$userId"
       )}&name=${localStorage.getItem("$username")}`;
@@ -62,7 +61,6 @@ export default {
         })
         .then(function (response) {
           that.organizaciones = response.data;
-          console.log("organizaciones: ", that.organizaciones);
         })
         .catch(function (response) {
           console.log("error", response);

@@ -79,7 +79,6 @@ export default {
     search(e) {
       e.preventDefault();
       if (this.orgSelected != {} && this.orgSelected != null) {
-        console.log("orgSelected: ", this.orgSelected);
         /*  var that = this;
       this.$axios
         .get(this.$localurl + "/usuarios/organizacion")
@@ -103,7 +102,6 @@ export default {
         })
         .then(function (response) {
           that.contactos = response.data;
-          console.log("contactos: ", that.contactos);
         })
         .catch(function (response) {
           console.log("error", response);
@@ -111,7 +109,6 @@ export default {
     },
     getOrganizaciones() {
       var that = this;
-      // "/api/usuarios/lugar/this.lugar" // ocualquier otra ruta propuesta
       const query = `?id=${localStorage.getItem(
         "$userId"
       )}&name=${localStorage.getItem("$username")}`;
@@ -123,7 +120,6 @@ export default {
         })
         .then(function (response) {
           that.organizaciones = response.data;
-          console.log("organizaciones: ", that.organizaciones);
         })
         .catch(function (response) {
           console.log("error", response);
