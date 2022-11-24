@@ -1,8 +1,8 @@
-.login {
+.form {
   position: fixed;
   width: 100vw;
   height: 100vh;
-  background-color: #ececeb;
+  background: no-repeat center/100% url("../../img/fondowp.png");
   z-index: 10000;
   padding-top: 21vh;
 }
@@ -13,23 +13,23 @@
   width: 14.65vw;
   margin-bottom: 7vh;
 }
-.login-row {
+.row {
   width: 24.8vw;
   margin: auto;
   margin-bottom: 2vw;
   position: relative;
 }
-.login-label {
+.label {
   font-family: Poppins-Regular;
   font-size: 1.15vw;
   color: #616060;
   display: block;
   margin-bottom: 0.5vw;
 }
-.login-input {
+.input {
   font-family: OpenSans-Light;
   font-size: 1.1vw;
-  color: #4082c4;
+  color: #3ea06c;
   background-color: transparent;
   border: 1px solid #707070;
   border-radius: 0.25vw;
@@ -38,7 +38,7 @@
   padding-left: 1.1vw;
   box-sizing: border-box;
 }
-.login-input-ojo {
+.input-ojo {
   position: absolute;
   right: 0.95vw;
   bottom: 1vw;
@@ -46,11 +46,11 @@
   cursor: pointer;
   filter: brightness(0);
 }
-.login-btn {
+.btn {
   font-family: Poppins-Regular;
   font-size: 1.15vw;
   color: #ffffff;
-  background-color: #4082c4;
+  background-color: #3ea06c;
   width: 24.8vw;
   margin: auto;
   display: block;
@@ -64,28 +64,28 @@
 
 /* PORTRAIT */
 @media screen and (max-width: 500px) and (max-aspect-ratio: 13/9) {
-  .login-row {
+  .row {
     width: 60%;
     margin-bottom: 30px;
   }
-  .login-label {
+  .label {
     font-size: 18px;
     margin-bottom: 10px;
   }
-  .login-input {
+  .input {
     font-size: 16px;
     height: 35px;
     border-radius: 6px;
     padding-left: 10px;
   }
-  .login-btn {
+  .btn {
     font-size: 18px;
     width: 60%;
     height: 40px;
     border-radius: 6px;
     top: 20px;
   }
-  .login-input-ojo {
+  .input-ojo {
     width: 22px;
     bottom: 8px;
     right: 8px;

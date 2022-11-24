@@ -1,13 +1,35 @@
-.chat {
+.btn {
+  width: max-content;
   height: 100%;
+	float: right;
+  border: none;
+  border-left: 2px solid #3ea06c;
+  font-family: "OpenSans-SemiBold";
+  font-size: 14px;
+  box-sizing: border-box;
+  color: #3ea06c;
+  cursor: pointer;
+  background-color: rgb(208, 207, 207) ;
+}
+.btn:hover{
+  
+  background-color: #ececec;
+}
+.chat {
+  height: 95vh;
   box-sizing: border-box;
   position: relative;
+  overflow-y: auto;
+}
+.chat-scroll-container {
+  height: calc(100% - 102px);
 }
 .chat-scroll {
   overflow-y: scroll;
-  height: calc(100% - 6vw);
+  height: 100%;
   padding: 5%;
   box-sizing: border-box;
+  padding-bottom: 2vh;
 }
 .chat-container {
   display: block;
@@ -133,7 +155,7 @@
   text-align: right;
 }
 .chat-mensaje-propio > div > .chat-mensaje {
-  background-color: #d0eaf2;
+  background-color: #c0f9d394;
   border-top-left-radius: 0.25vw;
   border-top-right-radius: 0;
 }
@@ -151,6 +173,27 @@
   font-family: OpenSans-SemiBold;
   font-size: 19px;
 }
+
+.chat-top > span {
+  display:none;
+}
+
+.chat-top:hover > span{
+  display: block;
+  position: absolute;
+  bottom:-20px;
+  left: 20px;
+  background-color:  #c0f9d394;
+  font-size: 14px;
+  font-family: OpenSans-SemiBold;
+  /*border: 1px solid grey;
+   padding: 3px; */
+}
+
+
+.chat-top button img{
+  margin-right: 10px;
+}
 .chat-bottom {
   position: absolute;
   bottom: 0;
@@ -159,13 +202,14 @@
   height: 3vw;
   box-sizing: border-box;
   background-color: #efefef;
+  display: grid;
+  grid-template-columns: max-content auto max-content;
+  column-gap: 1vw;
+  padding-left: 1vw;
+  padding-right: 1vw;
+  align-items: center;
 }
 .chat-bottom > input {
-  position: absolute;
-  top: 50%;
-  left: 45%;
-  transform: translate(-50%, -50%);
-  width: 79%;
   height: 2vw;
   font-family: OpenSans-Regular;
   font-size: 17px;
@@ -174,10 +218,7 @@
   padding-left: 1vw;
 }
 .chat-enviar {
-  position: absolute;
-  right: 6%;
-  top: 50%;
-  transform: translateY(-50%);
+  position: relative;
   font-family: OpenSans-Regular;
   font-size: 17px;
   padding-left: 1vw;
@@ -188,10 +229,7 @@
   cursor: pointer;
 }
 .chat-adjuntar {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  left: 1vw;
+  position: relative;
   border-radius: 50%;
   padding: 0.1vw;
   width: 1.5vw;
@@ -222,6 +260,11 @@
   font-family: "OpenSans-Regular";
   padding-top: 3px;
   padding-bottom: 3px;
+}
+.chat-mensaje-sender {
+  display: block;
+  font-size: 14px;
+  color: #000 !important;
 }
 
 /* PORTRAIT */
@@ -292,6 +335,7 @@
   .chat-top > p {
     left: 50px;
   }
+  
   .chat-top > img {
     width: 20px;
     position: absolute;
@@ -343,6 +387,7 @@
   .chat-top > p {
     left: 50px;
   }
+  
   .chat-top > img {
     width: 20px;
     position: absolute;

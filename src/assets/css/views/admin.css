@@ -1,0 +1,200 @@
+.admin {
+    position: fixed;
+    width: 100vw;
+    height: 100%;
+    background: no-repeat center/100% url("../../img/fondowp.png");
+    z-index: 10000;
+   text-align: center;
+   font-family: Poppins-Regular;
+   color: #616060;
+   overflow-y: auto;
+}
+
+.admin h2{
+    margin: 50px;
+}
+
+label{
+  font-size: 1.15vw;
+  margin-bottom: 0.5vw;
+}
+
+.selection {
+    padding: 0 50px;
+    height: 45vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.selection div{
+    width: 50vw;
+    text-align: start;
+}
+
+.options{
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.options > span{
+  position: absolute;
+  bottom: -18px;
+  left: 5px;
+  color: red;
+}
+
+.options > select{
+    height: 100%;
+}
+
+.modify, .add-org, .new-admin-btn{
+  font-size: 1.15vw;
+  color: #ffffff;
+  background-color: #3ea06c;
+  width: 10vw;
+  align-items: end;
+  border: none;
+  border-radius: 0.25vw;
+  height: 3.7vw;
+  cursor: pointer;
+}
+
+.modify:disabled, .asign:disabled, .create:disabled{
+  background-color: #616060;
+  cursor: default;
+}
+
+.asign {
+    font-size: 1.15vw;
+    color: #ffffff;
+    background-color: #3ea06c;
+    width: 10vw;
+    margin: auto;
+    display: block;
+    border: none;
+    border-radius: 0.25vw;
+    height: 3.7vw;
+    position: absolute;
+    bottom: 50px;
+    right: 50px;
+    cursor: pointer;
+  }
+
+  .create{
+    font-size: 1.15vw;
+    color: #ffffff;
+    background-color: #3ea06c;
+    width: 10vw;
+    margin: auto;
+    display: block;
+    border: none;
+    border-radius: 0.25vw;
+    height: 3.7vw;
+    position: absolute;
+    bottom: 50px;
+    right: 50px;
+    cursor: pointer;
+  }
+
+  .vs__actions{
+    justify-content: end;
+  }
+
+  .vs__dropdown-toggle{
+    margin-top: .5vw;
+  }
+
+  .back{
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    height: 3.7vw;
+    cursor: pointer;
+  }
+
+  .user-container, .place-container, .new-admin-container{
+    display: flex;
+    justify-content: space-between;
+    text-align: start;
+    width: 65vw;
+    margin: 0 auto 30px auto;
+    border: 3px solid #616060;
+    padding: 30px;
+    border-radius: 20px;
+  }
+
+  .search-container{
+    display: flex;
+    justify-content: space-between;
+    text-align: start;
+    width: 70%;
+    margin: 0 auto 30px auto;
+  }
+
+  .user, .place, .new-admin{
+    width: 50vw;
+  }
+
+  .place, .new-admin {
+    display: flex;
+    align-items: center;
+  }
+
+  .options > input{
+    width: calc(100% - 20px);
+    border: .5px solid #d3d3d3;
+    border-radius: 5px;
+    height: 34.4px;
+    padding: 0 10px;
+    margin-top: .5vw;
+  }
+
+  table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 70%;
+    margin: auto;
+  }
+  
+  td, th {
+    border: 1px solid #dcd8d8;
+    text-align: left;
+    padding: 8px;
+  }
+  
+  .numeros{
+    width: max-content;
+    text-align: right;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #dcd8d8;
+  }
+
+  tr td a{
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .new{
+    font-size: 1.15vw;
+    color: #ffffff;
+    background-color: #3ea06c;
+    width: 15vw;
+    display: block;
+    border: none;
+    border-radius: 0.25vw;
+    height: 3.7vw;
+    margin: 50px 15% 50px auto;
+    /* position: absolute;
+    top: 150px;
+    right: 50px; */
+    cursor: pointer;
+    text-decoration: none;
+    line-height: 3.7vw;
+  }
+
+  tr td:hover > a{
+    color:#3ea06c;
+  }

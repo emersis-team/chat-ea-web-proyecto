@@ -13,13 +13,58 @@ const routes = [
   {
     path: "/login",
     name: "login",
-    component: () =>
-      import(/* webpackChunkName: "login" */ "../views/Login.vue"),
+    component: () => import("../views/Login.vue"),
   },
   {
-    path: "/chat/:id/:user_dest_id",
-    name: "chat",
-    component: () => import(/* webpackChunkName: "chat" */ "../views/Chat.vue"),
+    path: "/video",
+    name: "video",
+    component: () => import("../views/VideoCall.vue"),
+  },
+  {
+    path: "/complete",
+    name: "complete",
+    component: () => import("../views/CompleteLogin.vue"),
+    props: true,
+  },
+  {
+    path: "/admin-users",
+    name: "admin-users",
+    component: () => import("../views/AdminUsers.vue"),
+  },
+  {
+    path: "/admin-groups",
+    name: "admin-groups",
+    component: () => import("../views/AdminGroups.vue"),
+  },
+  {
+    path: "/admin-organizations",
+    name: "admin-organizations",
+    component: () => import("../views/AdminOrg.vue"),
+  },
+  {
+    path: "/admin/addOrganization",
+    name: "addOrganization",
+    component: () => import("../views/AddOrganization.vue"),
+  },
+  {
+    path: "/admin/addGroup",
+    name: "addGroup",
+    component: () => import("../views/AddGroup.vue"),
+  },
+  {
+    path: "/admin/newAdmin",
+    name: "newAdmin",
+    component: () => import("../views/NewAdmin.vue"),
+  },
+  {
+    path: "/admin/:user/:id",
+    name: "updateUser",
+    component: () => import("../views/UpdateUser.vue"),
+  },
+  {
+    path: "/profile",
+    name: "UserProfile",
+    component: () => import("../views/UserProfile.vue"),
   },
 ];
 

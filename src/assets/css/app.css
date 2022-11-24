@@ -17,7 +17,6 @@ body {
   height: auto;
   background-color: #ffffff;
   overflow-x: hidden;
-  display: flex;
 }
 .app-body {
   width: 84%;

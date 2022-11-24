@@ -1,8 +1,45 @@
 .home {
   width: 100vw;
   height: 100vh;
-  background-color: #ececec;
+  background: no-repeat center/100% url("../../img/fondowp.png");
 }
+
+.user-profile-icon{
+  position: absolute;
+  bottom: 0;
+  left: 20px;
+  height: 40px;
+  width: auto;
+  cursor: pointer;
+}
+
+.group-icon{
+  position: absolute;
+  bottom: 0;
+  left: 80px;
+  height: 40px;
+  width: auto;
+  cursor: pointer;
+}
+
+.organization-icon{
+  position: absolute;
+  bottom: 0;
+  left: 140px;
+  height: 40px;
+  width: auto;
+  cursor: pointer;
+}
+
+.close-session-icon{
+  position: absolute;
+  bottom: 0;
+  right: 20px;
+  height: 40px;
+  width: auto;
+  cursor: pointer;
+}
+
 .home-body {
   width: 90%;
   height: 95%;
@@ -13,6 +50,8 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  padding-left: 3vw;
+  padding-right: 3vw;
 }
 .home-left {
   width: 20%;
@@ -26,10 +65,9 @@
   height: 100%;
 }
 .home-logout {
-  width: 100%;
   height: 55px;
   border: none;
-  border-top: 2px solid #4082c4;
+  border-top: 2px solid #3ea06c;
   font-family: "OpenSans-SemiBold";
   font-size: 14px;
   box-sizing: border-box;
@@ -39,11 +77,15 @@
   bottom: 0;
   background-color: #fff;
   cursor: pointer;
-  color: #4082c4;
+  color: #3ea06c;
 }
 .home-right {
   width: 80%;
-  background-color: #e5ddd5;
+  background: no-repeat center/100% url("../../img/fondowp.png");
+}
+.home-right-with-map {
+  display: grid;
+  grid-template-columns: 50% 50%;
 }
 .home-buscar {
   width: 92%;
@@ -57,7 +99,7 @@
   position: absolute;
   top: 0;
   background-color: #fff;
-  color: #4082c4;
+  color: #3ea06c;
 }
 .home-buscar-img {
   position: absolute;

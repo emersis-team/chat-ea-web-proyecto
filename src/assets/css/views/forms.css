@@ -1,0 +1,121 @@
+.form  {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  background: no-repeat center/100% url("../../img/fondowp.png");
+  z-index: 10000;
+  padding-top: 21vh;
+}
+.welcome {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  background: no-repeat center/100% url("../../img/fondowp.png");
+  z-index: 10000;
+  padding-top: 5vh;
+  font-family: Poppins-Regular;
+   color: #616060;
+   overflow-y: auto;
+}
+.welcome h2{
+  text-align: center;
+  margin: 50px;
+}
+.welcome-message {
+  font-family: Poppins-Regular;
+  font-size: 1.15vw;
+  color: #616060;
+  display: block;
+}
+.login-logo {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 14.65vw;
+  margin-bottom: 7vh;
+}
+.row {
+  width: 24.8vw;
+  margin: auto;
+  margin-bottom: 2vw;
+  position: relative;
+}
+.label {
+  font-family: Poppins-Regular;
+  font-size: 1.15vw;
+  color: #616060;
+  display: block;
+  margin-bottom: 0.5vw;
+}
+.input {
+  font-family: OpenSans-Light;
+  font-size: 1.1vw;
+  color: #3ea06c;
+  background-color: transparent;
+  border: 1px solid #707070;
+  border-radius: 0.25vw;
+  width: 100%;
+  height: 3vw;
+  padding-left: 1.1vw;
+  box-sizing: border-box;
+}
+.input-ojo {
+  position: absolute;
+  right: 0.95vw;
+  bottom: 1vw;
+  width: 1.5vw;
+  cursor: pointer;
+  filter: brightness(0);
+}
+.btn {
+  font-family: Poppins-Regular;
+  font-size: 1.15vw;
+  color: #ffffff;
+  background-color: #3ea06c;
+  width: 24.8vw;
+  margin: auto;
+  display: block;
+  border: none;
+  border-radius: 0.25vw;
+  height: 3.7vw;
+  position: relative;
+  top: 0.9vw;
+  cursor: pointer;
+}
+.back{
+  position: absolute;
+  top: 50px;
+  left: 50px;
+  height: 3.7vw;
+  cursor: pointer;
+}
+
+/* PORTRAIT */
+@media screen and (max-width: 500px) and (max-aspect-ratio: 13/9) {
+  .row {
+    width: 60%;
+    margin-bottom: 30px;
+  }
+  .label {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  .input {
+    font-size: 16px;
+    height: 35px;
+    border-radius: 6px;
+    padding-left: 10px;
+  }
+  .btn {
+    font-size: 18px;
+    width: 60%;
+    height: 40px;
+    border-radius: 6px;
+    top: 20px;
+  }
+  .input-ojo {
+    width: 22px;
+    bottom: 8px;
+    right: 8px;
+  }
+}

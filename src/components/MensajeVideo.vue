@@ -1,21 +1,13 @@
 <template>
   <div class="chat-mensaje">
     <label class="chat-mensaje-hora">{{ getHora() }}</label>
-    <div
-      class="chat-mensaje-video"
-      v-for="file in mensaje.message.files"
-      :key="file.id"
-    >
-      <label>{{ file.original_file }}</label>
+    <div class="chat-mensaje-video">
+      <label v-show="sender != null" class="chat-mensaje-sender">{{sender}}</label>
+      <label>{{ mensaje.message.original_file }}</label>
       <video controls name="media">
-        <source
-          :src="$localurl + '/public/storage/' + file.file"
-          type="video/mp4"
-        />
+        <source :src="'http://10.120.17.157:8081/storage/' + mensaje.message.file" type="video/mp4">
       </video>
-      <a :href="$localurl + '/public/storage/' + file.file" download
-        >Descargar</a
-      >
+      <a :href="'http://10.120.17.157:8081/storage/' + mensaje.message.file" download>Descargar</a>
     </div>
   </div>
 </template>
@@ -27,12 +19,12 @@ export default {
   data() {
     return {};
   },
-  props: { mensaje: [Object] },
+  props: { mensaje: [Object], sender: [String] },
   computed: {},
   mounted() {},
   created() {},
   methods: {
-    getHora(){
+    getHora() {
       var hora = this.mensaje.created_at.split("T")[1].split(":");
       return hora[0] + ":" + hora[1];
     }
