@@ -61,6 +61,11 @@ const routes = [
     name: "updateUser",
     component: () => import("../views/UpdateUser.vue"),
   },
+  {
+    path: "/profile",
+    name: "UserProfile",
+    component: () => import("../views/UserProfile.vue"),
+  },
 ];
 
 const router = new VueRouter({

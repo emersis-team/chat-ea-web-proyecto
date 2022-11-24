@@ -13,6 +13,13 @@
   background: no-repeat center/100% url("../../img/fondowp.png");
   z-index: 10000;
   padding-top: 5vh;
+  font-family: Poppins-Regular;
+   color: #616060;
+   overflow-y: auto;
+}
+.welcome h2{
+  text-align: center;
+  margin: 50px;
 }
 .welcome-message {
   font-family: Poppins-Regular;
@@ -73,6 +80,13 @@
   height: 3.7vw;
   position: relative;
   top: 0.9vw;
+  cursor: pointer;
+}
+.back{
+  position: absolute;
+  top: 50px;
+  left: 50px;
+  height: 3.7vw;
   cursor: pointer;
 }
 

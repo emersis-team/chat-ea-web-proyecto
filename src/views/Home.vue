@@ -28,16 +28,22 @@
             <InfoContacts></InfoContacts>
           </div>
         </div>
-        <RouterLink :to="`/admin-users`"
+        <RouterLink v-if="isAdmin == 'false'" :to="`/profile`"
           ><img
             class="user-profile-icon"
             src="../assets/img/icono-contacto.png"
           />
         </RouterLink>
-        <RouterLink :to="`/admin-groups`"
+        <RouterLink v-if="isAdmin == 'true'" :to="`/admin-users`"
+          ><img
+            class="user-profile-icon"
+            src="../assets/img/icono-contacto.png"
+          />
+        </RouterLink>
+        <RouterLink v-if="isAdmin == 'true'" :to="`/admin-groups`"
           ><img class="group-icon" src="../assets/img/grupo.png" />
         </RouterLink>
-        <RouterLink :to="`/admin-organizations`"
+        <RouterLink v-if="isAdmin == 'true'" :to="`/admin-organizations`"
           ><img
             class="organization-icon"
             src="../assets/img/organizacion.png"
@@ -93,6 +99,7 @@ export default {
       stompClient: null,
       count: 0,
       ultimaPosicion: null,
+      isAdmin: "false",
     };
   },
   mounted() {
@@ -104,8 +111,13 @@ export default {
     this.getPosiciones();
 
     this.conectarWebSocket();
+    this.isAdmin();
   },
   methods: {
+    isAdmin() {
+      this.isAdmin = localStorage.getItem("$admin");
+      console.log("is admin???? ", this.isAdmin);
+    },
     conectarWebSocket() {
       var socket = new SockJS(this.$localurl + "/websocket");
       this.stompClient = Stomp.over(socket);
@@ -164,7 +176,7 @@ export default {
       this.$axios
         .get(this.$localurl + "/conversations")
         .then((response) => {
-					console.log(response)
+          console.log(response);
           that.conversaciones = response.data.conversations;
           that.conversacionesFiltradas = that.conversaciones;
           that.hasConversations = true;
@@ -246,9 +258,16 @@ export default {
       }
     },
     logout() {
-      localStorage.removeItem("$token");
       localStorage.removeItem("$userId");
-      localStorage.removeItem("$expire");
+      localStorage.removeItem("$username");
+      localStorage.removeItem("$email");
+      localStorage.removeItem("$token");
+      localStorage.removeItem("$admin");
+      localStorage.removeItem("$dni");
+      localStorage.removeItem("$lastname");
+      localStorage.removeItem("$organization");
+      localStorage.removeItem("$room");
+
       if (window.location.pathname.split("/").reverse()[0] != "login") {
         this.$router.push("/login");
       }
