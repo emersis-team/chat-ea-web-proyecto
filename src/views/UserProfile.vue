@@ -138,6 +138,8 @@ export default {
     },
   },
 };
+   /*  "@vue-leaflet/vue-leaflet": "^0.6.1", */
+
 </script>
 <style>
 @import "../assets/css/views/forms.css";
