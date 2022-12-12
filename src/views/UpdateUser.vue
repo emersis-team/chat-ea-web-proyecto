@@ -85,8 +85,7 @@ export default {
     };
   },
   computed: {
-		getActualInfo() {
-		},
+    getActualInfo() {},
     contactosRecortados() {
       const contacts = [...this.contactos];
 
@@ -99,7 +98,11 @@ export default {
       return contacts.map((c) => ({
         ...c,
         formattedName:
-          c.name !== "null" ? `${c.name} - ` : "" + c.email !== "null" ? c.email : "",
+          c.name !== "null"
+            ? `${c.name} - `
+            : "" + c.email !== "null"
+            ? c.email
+            : "",
       }));
     },
     gruposRecortados() {
@@ -118,10 +121,10 @@ export default {
   },
   methods: {
     asign(e) {
-			let contacts, groups;
+      let contacts, groups;
       e.preventDefault();
       if (this.contactosSeleccionados != null)
-          contacts = this.contactosSeleccionados.map(({ id }) => id);
+        contacts = this.contactosSeleccionados.map(({ id }) => id);
       if (this.gruposSeleccionados != null)
         groups = this.gruposSeleccionados.map(({ id }) => id);
 
@@ -129,10 +132,10 @@ export default {
       var that = this;
       const body = {
         contacts,
-        groups
+        groups,
       };
       this.$axios
-        .put(this.$localurl + `/nuevosContactos/${this.id}`, body)
+        .put(this.$localurl + `/api/admin/user/${this.id}`, body)
         .then(function (response) {
           that.isLoading = false;
 
@@ -180,7 +183,7 @@ export default {
       var that = this;
       // "/usuarios/lugar/this.lugar" // ocualquier otra ruta propuesta
       this.$axios
-        .get(this.$localurl + "/locations", {
+        .get(this.$localurl + "/api/admin/locations", {
           headers: {
             Authorization: localStorage.getItem("$token"),
           },
