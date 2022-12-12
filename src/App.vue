@@ -18,10 +18,10 @@ export default {
   components: { Snackbar },
   created() {
     //Vue.prototype.$localurl = "http://10.120.17.157:8080";
-    Vue.prototype.$localurl = "http://localhost:8081";
+    //Vue.prototype.$localurl = "http://localhost:8081";
     Vue.prototype.$roomurl = "https://localhost:5000";
 
-    //Vue.prototype.$localurl = "https://chatea-api-front-2.nahuelde.repl.co";
+    Vue.prototype.$localurl = "https://chatea-api-front-2.nahuelde.repl.co";
 
     //Vue.prototype.$roomurl = "https://38.109.228.250:8080";
 
