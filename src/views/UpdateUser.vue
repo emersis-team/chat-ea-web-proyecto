@@ -151,7 +151,7 @@ export default {
       var that = this;
       // "/usuarios/lugar/this.lugar" // ocualquier otra ruta propuesta
       this.$axios
-        .get(this.$localurl + "/groups", {
+        .get(this.$localurl + "/api/admin/groups", {
           headers: {
             Authorization: localStorage.getItem("$token"),
           },
