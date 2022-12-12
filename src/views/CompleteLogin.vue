@@ -68,13 +68,13 @@
         label="name"
         placeholder="Todas"
       ></v-select>
-      <input
+      <!-- <input
         class="input"
         type="text"
         ref="organization"
         placeholder="Seleccione su lugar de trabajo"
         v-on:keyup.enter="complete()"
-      />
+      /> -->
     </div>
     <button class="btn" @click="complete()">Continuar</button>
   </div>
