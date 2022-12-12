@@ -50,36 +50,45 @@
     </div>
 
     <div class="row">
-      <label class="label">Rango</label>
+      <label class="label">Grado</label>
       <input
         class="input"
         type="text"
         ref="range"
-        placeholder="Escriba su rango militar"
+        placeholder="Escriba su grado militar"
         v-on:keyup.enter="update()"
       />
     </div>
 
     <div class="row">
-      <label class="label">select Lugar</label>
-      <input
+      <label class="label">Seleccione Lugar</label>
+      <v-select
+        v-model="orgSelected"
+        :options="organizaciones"
+        label="name"
+        placeholder="Seleccione su lugar de trabajo"
+      ></v-select>
+      <!--  <input
         class="input"
         type="text"
         ref="organization"
         placeholder="Seleccione su lugar de trabajo"
         v-on:keyup.enter="update()"
-      />
+      /> -->
     </div>
-    <button class="btn" @click="update()">Continuar</button>
+    <button class="btn" @click="update()">Editar</button>
   </div>
 </template>
 
 <script>
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/vue-loading.css";
+import vSelect from "vue-select";
+import "vue-select/dist/vue-select.css";
 export default {
   components: {
     Loading,
+    vSelect,
   },
   props: ["email"],
   data() {
@@ -90,11 +99,14 @@ export default {
       edit: false,
       isLoading: false,
       fullPage: true,
+      orgSelected: null,
+      organizaciones: [],
     };
   },
   created() {},
   mounted() {
     this.getData();
+    this.getOrganizaciones();
   },
   methods: {
     getData() {
@@ -136,10 +148,26 @@ export default {
 
       this.isLoading = true;
     },
+    getOrganizaciones() {
+      var that = this;
+      const query = `?id=${localStorage.getItem(
+        "$userId"
+      )}&name=${localStorage.getItem("$username")}`;
+      this.$axios
+        .get(this.$localurl + "/locations" + query, {
+          headers: {
+            Authorization: localStorage.getItem("$token"),
+          },
+        })
+        .then(function (response) {
+          that.organizaciones = response.data;
+        })
+        .catch(function (response) {
+          console.log("error", response);
+        });
+    },
   },
 };
-   /*  "@vue-leaflet/vue-leaflet": "^0.6.1", */
-
 </script>
 <style>
 @import "../assets/css/views/forms.css";

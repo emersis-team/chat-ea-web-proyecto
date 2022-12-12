@@ -15,7 +15,7 @@
         <div class="home-left-conversaciones">
           <div
             v-for="(conversacion, index) in conversacionesFiltradas"
-            v-if="hasConversations"
+            :v-if="hasConversations"
             :key="index"
             @click="elegirConversacion(conversacion)"
             v-bind:class="{
@@ -24,26 +24,26 @@
           >
             <Conversacion :conversacion="conversacion"></Conversacion>
           </div>
-          <div v-if="!hasConversations">
+          <div :v-if="!hasConversations">
             <InfoContacts></InfoContacts>
           </div>
         </div>
-        <RouterLink v-if="isAdmin == 'false'" :to="`/profile`"
+        <RouterLink v-if="isAdmin" :to="`/admin-users`"
           ><img
             class="user-profile-icon"
             src="../assets/img/icono-contacto.png"
           />
         </RouterLink>
-        <RouterLink v-if="isAdmin == 'true'" :to="`/admin-users`"
+        <RouterLink v-if="!isAdmin" :to="`/profile`"
           ><img
             class="user-profile-icon"
             src="../assets/img/icono-contacto.png"
           />
         </RouterLink>
-        <RouterLink v-if="isAdmin == 'true'" :to="`/admin-groups`"
+        <RouterLink v-if="isAdmin" :to="`/admin-groups`"
           ><img class="group-icon" src="../assets/img/grupo.png" />
         </RouterLink>
-        <RouterLink v-if="isAdmin == 'true'" :to="`/admin-organizations`"
+        <RouterLink v-if="isAdmin" :to="`/admin-organizations`"
           ><img
             class="organization-icon"
             src="../assets/img/organizacion.png"
@@ -60,7 +60,7 @@
         :class="{ 'home-right-with-map': conversacionElegida != null }"
       >
         <Chat
-          v-if="conversacionElegida != null"
+          :v-if="conversacionElegida != null"
           :conversacion="conversacionElegida"
           :contactos="contactos"
         ></Chat>
@@ -99,7 +99,7 @@ export default {
       stompClient: null,
       count: 0,
       ultimaPosicion: null,
-      isAdmin: "false",
+      isAdmin: true,
     };
   },
   mounted() {
@@ -111,13 +111,14 @@ export default {
     this.getPosiciones();
 
     this.conectarWebSocket();
-    this.isAdmin();
+    //this.getIsAdmin();
   },
   methods: {
-    isAdmin() {
+    /* getIsAdmin() {
       this.isAdmin = localStorage.getItem("$admin");
       console.log("is admin???? ", this.isAdmin);
-    },
+      console.log("typeof admin???? ", typeOf(this.isAdmin));
+    }, */
     conectarWebSocket() {
       var socket = new SockJS(this.$localurl + "/websocket");
       this.stompClient = Stomp.over(socket);

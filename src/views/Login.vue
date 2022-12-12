@@ -124,7 +124,9 @@ export default {
                 name: "complete",
                 params: { email: username },
               });
-              return;
+              /* return; */
+            } else {
+              that.$router.push("/login");
             }
             that.isLoading = false;
             that.errorUsuario = true;

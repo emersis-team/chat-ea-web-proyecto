@@ -57,7 +57,7 @@
 import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
 export default {
-  name: "admin",
+  name: "admin-users",
   components: {
     vSelect,
   },
@@ -78,18 +78,21 @@ export default {
   methods: {
     search(e) {
       e.preventDefault();
-      if (this.orgSelected != {} && this.orgSelected != null) {
-        /*  var that = this;
+      console.log("orgSelected", this.orgSelected.id);
+      var that = this;
       this.$axios
-        .get(this.$localurl + "/usuarios/organizacion")
+        .get(
+          this.$localurl + "/api/admin/users/" + this.orgSelected.id
+            ? this.orgSelected.id
+            : ""
+        )
         .then(function (response) {
           that.contactos = response.data;
           console.log("contactos: ", that.contactos);
         })
         .catch(function (response) {
           console.log("error", response);
-        });   */
-      }
+        });
     },
 
     getContactos() {
@@ -109,17 +112,18 @@ export default {
     },
     getOrganizaciones() {
       var that = this;
-      const query = `?id=${localStorage.getItem(
+      /* const query = `?id=${localStorage.getItem(
         "$userId"
-      )}&name=${localStorage.getItem("$username")}`;
+      )}&name=${localStorage.getItem("$username")}`; */
       this.$axios
-        .get(this.$localurl + "/locations" + query, {
+        .get(this.$localurl + "/locations", {
           headers: {
             Authorization: localStorage.getItem("$token"),
           },
         })
         .then(function (response) {
           that.organizaciones = response.data;
+          console.log("getorganizaciones: ", response.data);
         })
         .catch(function (response) {
           console.log("error", response);
