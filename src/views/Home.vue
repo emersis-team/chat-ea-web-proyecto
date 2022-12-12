@@ -28,27 +28,35 @@
             <InfoContacts></InfoContacts>
           </div>
         </div>
-        <RouterLink v-if="isAdmin" :to="`/admin-users`"
-          ><img
-            class="user-profile-icon"
-            src="../assets/img/icono-contacto.png"
-          />
-        </RouterLink>
-        <RouterLink v-if="!isAdmin" :to="`/profile`"
-          ><img
-            class="user-profile-icon"
-            src="../assets/img/icono-contacto.png"
-          />
-        </RouterLink>
-        <RouterLink v-if="isAdmin" :to="`/admin-groups`"
-          ><img class="group-icon" src="../assets/img/grupo.png" />
-        </RouterLink>
-        <RouterLink v-if="isAdmin" :to="`/admin-organizations`"
-          ><img
-            class="organization-icon"
-            src="../assets/img/organizacion.png"
-          />
-        </RouterLink>
+        <div v-if="!isAdmin">
+          <RouterLink :to="`/profile`"
+            ><img
+              class="user-profile-icon"
+              src="../assets/img/icono-contacto.png"
+            />
+          </RouterLink>
+        </div>
+        <div v-if="isAdmin">
+          <RouterLink :to="`/admin-users`"
+            ><img
+              class="user-profile-icon"
+              src="../assets/img/icono-contacto.png"
+            />
+          </RouterLink>
+        </div>
+        <div v-if="isAdmin">
+          <RouterLink :to="`/admin-groups`"
+            ><img class="group-icon" src="../assets/img/grupo.png" />
+          </RouterLink>
+        </div>
+        <div v-if="isAdmin">
+          <RouterLink :to="`/admin-organizations`"
+            ><img
+              class="organization-icon"
+              src="../assets/img/organizacion.png"
+            />
+          </RouterLink>
+        </div>
         <img
           @click="logout()"
           class="close-session-icon"
@@ -99,26 +107,24 @@ export default {
       stompClient: null,
       count: 0,
       ultimaPosicion: null,
-      isAdmin: true,
+      isAdmin: false,
     };
   },
   mounted() {
     if (this.$isMobile) {
       this.mostrarChat = false;
     }
+
+    if (localStorage.getItem("$admin") == "true") this.isAdmin = true;
+    else this.isAdmin = false;
+
     this.getConversaciones();
     this.getContactos();
     this.getPosiciones();
 
     this.conectarWebSocket();
-    //this.getIsAdmin();
   },
   methods: {
-    /* getIsAdmin() {
-      this.isAdmin = localStorage.getItem("$admin");
-      console.log("is admin???? ", this.isAdmin);
-      console.log("typeof admin???? ", typeOf(this.isAdmin));
-    }, */
     conectarWebSocket() {
       var socket = new SockJS(this.$localurl + "/websocket");
       this.stompClient = Stomp.over(socket);
