@@ -183,7 +183,7 @@ export default {
       this.$axios
         .get(this.$localurl + "/conversations")
         .then((response) => {
-          console.log(response);
+          console.log("conversaciones", response);
           that.conversaciones = response.data.conversations;
           that.conversacionesFiltradas = that.conversaciones;
           that.hasConversations = true;
@@ -232,6 +232,7 @@ export default {
       if (conversacion != this.conversacionElegida) {
         conversacion.ammount_no_read = 0;
         conversacion.conversacionElegida = true;
+				console.log("eligiendo", conversacion);
         this.conversacionElegida = conversacion;
         Vue.prototype.$conversacionElegida = conversacion;
 
