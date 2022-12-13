@@ -292,7 +292,7 @@ export default {
       var that = this;
       this.$axios
         .get(
-          this.$localurl + "/api/" + userId + "/conversations/" + id + "?page=0"
+          this.$localurl + "/" + userId + "/conversations/" + id + "?page=0"
         )
         .then(function (response) {
           if (
@@ -353,7 +353,7 @@ export default {
       this.$axios
         .get(
           this.$localurl +
-            "/api/" +
+            "/" +
             userId +
             "/conversations/" +
             this.conversacion.conversation_id +
@@ -459,6 +459,7 @@ export default {
     },
 
     enviar() {
+			console.log(this.conversacion);
       this.scrollToBottom();
       var texto = this.$refs.inputTexto.value;
       if (texto != "") {
@@ -473,7 +474,7 @@ export default {
 
         var that = this;
         this.$axios
-          .post(this.$localurl + "/api/messages/textMessage", data)
+          .post(this.$localurl + "/messages/textMessage", data)
           .then(function () {
             that.getChat(null, true);
           })
