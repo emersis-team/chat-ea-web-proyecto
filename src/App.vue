@@ -19,11 +19,8 @@ export default {
   created() {
     //Vue.prototype.$localurl = "http://10.120.17.157:8080";
 
-    Vue.prototype.$localurl = "https://10.24.194.246:8081";
-    Vue.prototype.$roomurl = "https://10.24.194.246:5000";
-
-    //Vue.prototype.$localurl = "http://localhost:8081";
-    //Vue.prototype.$roomurl = "https://localhost:5000";
+		Vue.prototype.$localurl = "http://localhost:8081";
+		Vue.prototype.$roomurl = "https://localhost:5000";
 
     //Vue.prototype.$localurl = "https://chatea-api-front-2.nahuelde.repl.co";
 
