@@ -24,7 +24,7 @@
           >
             <Conversacion :conversacion="conversacion"></Conversacion>
           </div>
-          <div :v-if="!hasConversations">
+          <div :v-if="!userId && !hasConversations">
             <InfoContacts></InfoContacts>
           </div>
         </div>
@@ -108,6 +108,7 @@ export default {
       count: 0,
       ultimaPosicion: null,
       isAdmin: false,
+      userId: localStorage.getItem("$userId"),
     };
   },
   mounted() {
