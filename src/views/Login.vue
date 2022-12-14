@@ -106,12 +106,11 @@ export default {
             password: password,
           })
           .then(function (response) {
-            console.log("RESPONSE: ", response.data);
             localStorage.setItem("$userId", response.data.id);
             localStorage.setItem("$username", response.data.name);
             localStorage.setItem("$email", response.data.email);
             localStorage.setItem("$token", response.data.token);
-            localStorage.setItem("$admin", response.data.admin);
+            localStorage.setItem("$admin", response.data.isAdmin);
             localStorage.setItem("$dni", response.data.dni);
             localStorage.setItem("$lastname", response.data.lastname);
             localStorage.setItem("$organization", response.data.organization);
@@ -124,7 +123,9 @@ export default {
                 name: "complete",
                 params: { email: username },
               });
-              return;
+              /* return; */
+            } else {
+              that.$router.push("/login");
             }
             that.isLoading = false;
             that.errorUsuario = true;

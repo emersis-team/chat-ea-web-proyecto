@@ -73,7 +73,7 @@ export default {
         };
 
         this.$axios
-          .post(this.$localurl + "/locations", body, {
+          .post(this.$localurl + "/api/admin/locations", body, {
             headers: {
               Authorization: localStorage.getItem("$token"),
             },

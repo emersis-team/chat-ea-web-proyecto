@@ -20,12 +20,13 @@ export default {
     //Vue.prototype.$localurl = "http://10.120.17.157:8080";
 
     Vue.prototype.$localurl = "http://localhost:8081";
-    //Vue.prototype.$roomurl = "https://localhost:5000";
+    Vue.prototype.$roomurl = "https://localhost:5000";
 
-    //Vue.prototype.$localurl = "https://38.109.228.250:8000";
-    Vue.prototype.$roomurl = "https://38.109.228.250:8080";
+    //Vue.prototype.$localurl = "https://chatea-api-front-2.nahuelde.repl.co";
+    //Vue.prototype.$roomurl = "https://38.109.228.250:8080";
 
-    this.$axios.defaults.headers.common["Authorization"] = localStorage.getItem("$token");
+    this.$axios.defaults.headers.common["Authorization"] =
+      localStorage.getItem("$token");
 
     /* if (localStorage.getItem("$token") == null) {
       this.$router.push("/login");

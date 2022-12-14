@@ -61,14 +61,20 @@
     </div>
 
     <div class="row">
-      <label class="label">select Lugar</label>
-      <input
+      <label class="label">Seleccione Organizacion</label>
+      <v-select
+        v-model="orgSelected"
+        :options="organizaciones"
+        label="name"
+        placeholder="Todas"
+      ></v-select>
+      <!-- <input
         class="input"
         type="text"
         ref="organization"
         placeholder="Seleccione su lugar de trabajo"
         v-on:keyup.enter="complete()"
-      />
+      /> -->
     </div>
     <button class="btn" @click="complete()">Continuar</button>
   </div>
@@ -77,9 +83,13 @@
 <script>
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/vue-loading.css";
+import vSelect from "vue-select";
+import "vue-select/dist/vue-select.css";
+
 export default {
   components: {
     Loading,
+    vSelect,
   },
   props: ["email"],
   data() {

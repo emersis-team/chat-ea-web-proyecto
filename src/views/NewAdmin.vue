@@ -119,7 +119,7 @@ export default {
         "$userId"
       )}&name=${localStorage.getItem("$username")}`;
       this.$axios
-        .get(this.$localurl + "/locations" + query, {
+        .get(this.$localurl + "/api/admin/locations" + query, {
           headers: {
             Authorization: localStorage.getItem("$token"),
           },

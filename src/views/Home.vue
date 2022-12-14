@@ -15,7 +15,7 @@
         <div class="home-left-conversaciones">
           <div
             v-for="(conversacion, index) in conversacionesFiltradas"
-            v-if="hasConversations"
+            :v-if="hasConversations"
             :key="index"
             @click="elegirConversacion(conversacion)"
             v-bind:class="{
@@ -24,31 +24,39 @@
           >
             <Conversacion :conversacion="conversacion"></Conversacion>
           </div>
-          <div v-if="!hasConversations">
+          <div :v-if="!userId && !hasConversations">
             <InfoContacts></InfoContacts>
           </div>
         </div>
-        <RouterLink v-if="isAdmin == 'false'" :to="`/profile`"
-          ><img
-            class="user-profile-icon"
-            src="../assets/img/icono-contacto.png"
-          />
-        </RouterLink>
-        <RouterLink v-if="isAdmin == 'true'" :to="`/admin-users`"
-          ><img
-            class="user-profile-icon"
-            src="../assets/img/icono-contacto.png"
-          />
-        </RouterLink>
-        <RouterLink v-if="isAdmin == 'true'" :to="`/admin-groups`"
-          ><img class="group-icon" src="../assets/img/grupo.png" />
-        </RouterLink>
-        <RouterLink v-if="isAdmin == 'true'" :to="`/admin-organizations`"
-          ><img
-            class="organization-icon"
-            src="../assets/img/organizacion.png"
-          />
-        </RouterLink>
+        <div v-if="!isAdmin">
+          <RouterLink :to="`/profile`"
+            ><img
+              class="user-profile-icon"
+              src="../assets/img/icono-contacto.png"
+            />
+          </RouterLink>
+        </div>
+        <div v-if="isAdmin">
+          <RouterLink :to="`/admin-users`"
+            ><img
+              class="user-profile-icon"
+              src="../assets/img/icono-contacto.png"
+            />
+          </RouterLink>
+        </div>
+        <div v-if="isAdmin">
+          <RouterLink :to="`/admin-groups`"
+            ><img class="group-icon" src="../assets/img/grupo.png" />
+          </RouterLink>
+        </div>
+        <div v-if="isAdmin">
+          <RouterLink :to="`/admin-organizations`"
+            ><img
+              class="organization-icon"
+              src="../assets/img/organizacion.png"
+            />
+          </RouterLink>
+        </div>
         <img
           @click="logout()"
           class="close-session-icon"
@@ -60,7 +68,7 @@
         :class="{ 'home-right-with-map': conversacionElegida != null }"
       >
         <Chat
-          v-if="conversacionElegida != null"
+          :v-if="conversacionElegida != null"
           :conversacion="conversacionElegida"
           :contactos="contactos"
         ></Chat>
@@ -99,25 +107,25 @@ export default {
       stompClient: null,
       count: 0,
       ultimaPosicion: null,
-      isAdmin: "false",
+      isAdmin: false,
+      userId: localStorage.getItem("$userId"),
     };
   },
   mounted() {
     if (this.$isMobile) {
       this.mostrarChat = false;
     }
+
+    if (localStorage.getItem("$admin") == "true") this.isAdmin = true;
+    else this.isAdmin = false;
+
     this.getConversaciones();
     this.getContactos();
     this.getPosiciones();
 
     this.conectarWebSocket();
-    this.isAdmin();
   },
   methods: {
-    isAdmin() {
-      this.isAdmin = localStorage.getItem("$admin");
-      console.log("is admin???? ", this.isAdmin);
-    },
     conectarWebSocket() {
       var socket = new SockJS(this.$localurl + "/websocket");
       this.stompClient = Stomp.over(socket);
@@ -176,7 +184,7 @@ export default {
       this.$axios
         .get(this.$localurl + "/conversations")
         .then((response) => {
-          console.log(response);
+          console.log("conversaciones", response);
           that.conversaciones = response.data.conversations;
           that.conversacionesFiltradas = that.conversaciones;
           that.hasConversations = true;
@@ -225,6 +233,7 @@ export default {
       if (conversacion != this.conversacionElegida) {
         conversacion.ammount_no_read = 0;
         conversacion.conversacionElegida = true;
+				console.log("eligiendo", conversacion);
         this.conversacionElegida = conversacion;
         Vue.prototype.$conversacionElegida = conversacion;
 

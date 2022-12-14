@@ -5,9 +5,9 @@
       :can-cancel="false"
       :is-full-page="fullPage"
     ></loading>
-    <RouterLink :to="`/admin-users`"
+<a :href="$router.resolve({name: 'admin-users'}).href">
       ><img class="back" src="../assets/img/volver_atras.png" />
-    </RouterLink>
+</a>
     <h2>Actualizar Usuario {{ selected }}</h2>
     <div class="selection">
       <div class="options">
@@ -85,8 +85,6 @@ export default {
     };
   },
   computed: {
-		getActualInfo() {
-		},
     contactosRecortados() {
       const contacts = [...this.contactos];
 
@@ -99,7 +97,11 @@ export default {
       return contacts.map((c) => ({
         ...c,
         formattedName:
-          c.name !== "null" ? `${c.name} - ` : "" + c.email !== "null" ? c.email : "",
+          c.name !== "null"
+            ? `${c.name} - `
+            : "" + c.email !== "null"
+            ? c.email
+            : "",
       }));
     },
     gruposRecortados() {
@@ -115,13 +117,33 @@ export default {
     this.getContactos();
     this.getOrganizaciones();
     this.getGrupos();
+		this.getActualInfo();
   },
   methods: {
+		getActualInfo() {
+			const that = this;
+      this.$axios
+        .get(this.$localurl + `/user/${this.id}`)
+				.then(function(res) {
+						that.contactosSeleccionados = that.contactos
+							.filter(({ id }) => res.data.contacts.includes(""+id))
+							.map((c) => ({
+								...c,
+								formattedName: c.name !== "null" ? `${c.name} - ` : "" + c.email !== "null" ? c.email : ""
+							}));
+
+						that.gruposSeleccionados = that.grupos
+							.filter(({ id }) => res.data.groups.includes(""+id))
+							.map(d => { console.log(d); return d });
+				}).catch(function(res) {
+					console.log(res);
+				});
+		},
     asign(e) {
-			let contacts, groups;
+      let contacts, groups;
       e.preventDefault();
       if (this.contactosSeleccionados != null)
-          contacts = this.contactosSeleccionados.map(({ id }) => id);
+        contacts = this.contactosSeleccionados.map(({ id }) => id);
       if (this.gruposSeleccionados != null)
         groups = this.gruposSeleccionados.map(({ id }) => id);
 
@@ -129,14 +151,13 @@ export default {
       var that = this;
       const body = {
         contacts,
-        groups
+        groups,
       };
       this.$axios
-        .put(this.$localurl + `/nuevosContactos/${this.id}`, body)
+        .put(this.$localurl + `/api/admin/user/${this.id}`, body)
         .then(function (response) {
           that.isLoading = false;
-
-          console.log("response: ", response.data);
+          that.$router.push("/admin-users");
         })
         .catch(function (response) {
           that.isLoading = false;
@@ -146,9 +167,8 @@ export default {
     },
     getGrupos() {
       var that = this;
-      // "/usuarios/lugar/this.lugar" // ocualquier otra ruta propuesta
       this.$axios
-        .get(this.$localurl + "/groups", {
+        .get(this.$localurl + "/api/admin/groups", {
           headers: {
             Authorization: localStorage.getItem("$token"),
           },
@@ -180,7 +200,7 @@ export default {
       var that = this;
       // "/usuarios/lugar/this.lugar" // ocualquier otra ruta propuesta
       this.$axios
-        .get(this.$localurl + "/locations", {
+        .get(this.$localurl + "/api/admin/locations", {
           headers: {
             Authorization: localStorage.getItem("$token"),
           },
